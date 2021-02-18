@@ -1,0 +1,39 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<!-- <router-outlet></router-outlet> -->
+
+<nav class="navbar navbar-dark bg-dark">
+    <a routerLink="" class="navbar-brand text-white">Home</a>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/adminpanel">Admin Panel</a>
+        </li>
+    </ul>
+    <p>{{cartService.cartList.record[cartService.cartListSize].title}}</p>
+    <button class="btn btn-danger my-2 my-sm-0" routerLink="user/profile">Profile</button>
+    <button class="btn btn-danger my-2 my-sm-0" (click)="onLogout()">{{userStore.userStatus}}</button>
+</nav>
+<div class="d-flex" id="wrapper">
+    <div class="bg-light border-right" id="sidebar-wrapper" style="width:170px">
+        <div class="sidebar-heading"></div>
+
+        <ng-container *ngIf="categoryStore.categoriesReplay$ | async; let categories">
+            <mat-accordion >
+                <mat-expansion-panel class="mat-elevation-z0" *ngFor="let category of categories;">
+                    <mat-expansion-panel-header (click)='showSelectedProducts(category, null)'>
+                        <mat-panel-title>
+                            {{category?.name}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <ul class="gw-submenu" *ngFor="let subCategory of category.subCategories;">
+                        <ng-container *ngIf="subCategory.name">
+                            <a (click)='showSelectedProducts(category, subCategory)'>{{subCategory?.name}}</a>
+                        </ng-container>
+                    </ul>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </ng-container>
+    </div>
+
+    <router-outlet></router-outlet>
+</div>

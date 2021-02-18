@@ -1,0 +1,12 @@
+<p>
+  products works!
+</p>
+
+<ng-container *ngIf="{category: productService.categoryReplay$ | async} as source">
+    <ng-container [ngSwitch]=source?.category>
+        <app-records *ngSwitchCase="CategoryEnum.Records"></app-records>
+        <app-clothings *ngSwitchCase="CategoryEnum.Clothings"></app-clothings>
+        <app-shoes *ngSwitchCase="CategoryEnum.Shoes"></app-shoes>
+    </ng-container>
+</ng-container>
+

@@ -1,0 +1,131 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormGroup, FormControl } from '@angular/forms';
+
+import { Observable, ReplaySubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { Clothing } from '../models/clothing.model';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+	providedIn: 'root'
+})
+export class ClothingStore {
+	readonly baseUrl = environment.baseUrl;
+	public imageRootPath = environment.baseUrl + '/Images/original/';
+	list: Clothing[];
+	private clothingsReplay: ReplaySubject<Clothing[]> = new ReplaySubject<Clothing[]>(1);
+	public clothingsReplay$: Observable<Clothing[]> = this.clothingsReplay.asObservable();
+
+	private clothingItemReplay: ReplaySubject<Clothing> = new ReplaySubject<Clothing>(1);
+
+	public clothingItemReplay$: Observable<Clothing> = this.clothingItemReplay.asObservable();
+
+	form: FormGroup = new FormGroup({
+		id: new FormControl(null),
+		title: new FormControl(''),
+		price: new FormControl(''),
+		size: new FormControl(''),
+		image: new FormControl(null),
+		imagePath: new FormControl('default-image.png'),
+		description: new FormControl(''),
+		category: new FormControl('Clothing'),
+		userId: new FormControl(null),
+		// userName: new FormControl(''),
+		subCategory: new FormControl('')
+	});
+
+	constructor(private http: HttpClient) { }
+
+	initializeFormGroup() {
+		this.form.setValue({
+			id: null,
+			title: '',
+			price: '',
+			size: '',
+			image: null,
+			imagePath: '',
+			description: '',
+			category: 'Clothing',
+			userId: null,
+			//userName: '',
+			subCategory: ''
+		});
+	}
+
+	getClothings(): Observable<Clothing[]> {
+		return this.http.get<Clothing[]>(this.baseUrl + '/Clothings').pipe(tap(items => {
+			this.clothingsReplay.next(items);
+		}));
+	}
+
+	getClothing(id: number): Observable<Clothing> {
+		return this.http.get<Clothing>(this.baseUrl + '/Clothings/' + id).pipe(tap(item => {
+			this.clothingItemReplay.next(item);
+		}));
+	}
+
+	postClothing(modelFormData: Clothing, fileToUpload: File) {
+		const formData: FormData = new FormData();
+
+		formData.append('title', modelFormData.title);
+		formData.append('price', modelFormData.price.toString());
+		formData.append('size', modelFormData.size);
+		formData.append('description', modelFormData.description);
+		formData.append('image', fileToUpload, fileToUpload.name);
+		formData.append('imagePath', modelFormData.imagePath);
+		formData.append('category', modelFormData.categoryId.toString());
+		formData.append('userId', modelFormData.userId.toString());
+		formData.append('subCategory', modelFormData.subCategoryId.toString());
+		formData.append('userName', modelFormData.userName);
+
+		return this.http.post(this.baseUrl + '/Clothings', formData);
+	}
+
+	putClothing(modelFormData: Clothing, fileToUpload: File) {
+		const formData: FormData = new FormData();
+
+		formData.append('title', modelFormData.title);
+		formData.append('id', modelFormData.id.toString());
+		formData.append('price', modelFormData.price.toString());
+		formData.append('size', modelFormData.size);
+		formData.append('description', modelFormData.description);
+		if (fileToUpload != null) {
+			formData.append('Image', fileToUpload, fileToUpload.name);
+		}
+		formData.append('imagePath', modelFormData.imagePath);
+		formData.append('category', modelFormData.categoryId.toString());
+		formData.append('userId', modelFormData.userId.toString());
+		formData.append('subCategory', modelFormData.subCategoryId.toString());
+
+		return this.http.put(
+			this.baseUrl + '/Clothings/' + modelFormData.id,
+			formData
+		);
+	}
+
+	populateForm(clothing) {
+		console.log(clothing);
+		this.form.setValue(clothing);
+	}
+
+	deleteClothing(id: number) {
+		return this.http.delete(this.baseUrl + '/Clothings/' + id);
+	}
+
+	getClothingByUserName(userName: string): Observable<Clothing[]> {
+		return this.http.get<Clothing[]>(
+			this.baseUrl + '/Clothings/username/' + userName
+		);
+	}
+
+	refreshList() {
+		this.http
+			.get(this.baseUrl + '/Clothings')
+			.toPromise()
+			.then(res => {
+				this.list = res as Clothing[];
+			});
+	}
+}

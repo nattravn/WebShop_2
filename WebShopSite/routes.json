@@ -1,0 +1,6 @@
+{
+    "/Record/username/:user": "/Record/",
+    "/Clothing/username/:user": "/Clothing/",
+    "/Flag/username/:user": "/Flag/",
+    "/ApplicationUser/": "/User/"
+}

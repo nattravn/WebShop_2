@@ -1,0 +1,35 @@
+<form [formGroup]="userStore.formModel" autocomplete="on" (submit)="onSubmit()">
+  <div class="form-group required">
+    <label>Username</label>
+    <input class="form-control" formControlName="UserName">
+    <label class="text-danger" *ngIf="userStore.formModel.get('UserName').touched && userStore.formModel.get('UserName').errors?.required">This is mandatory.</label>
+  </div>
+  <div class="form-group required">
+    <label>Email</label>
+    <input class="form-control" formControlName="Email">
+    <label class="text-danger" *ngIf="userStore.formModel.get('Email').touched && userStore.formModel.get('Email').errors?.email">Invalid email adress</label>
+  </div>
+  <div class="form-group">
+    <label>Full Name</label>
+    <input class="form-control" formControlName="FullName">
+  </div>
+  <div formGroupName="Passwords">
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-control" formControlName="Password">
+      <label class="text-danger" *ngIf="userStore.formModel.get('Passwords.Password').touched && userStore.formModel.get('Passwords.Password').errors?.required">This is mandatory.</label>
+      <label class="text-danger" *ngIf="userStore.formModel.get('Passwords.Password').touched && userStore.formModel.get('Passwords.Password').errors?.minlength">Minimum 4 characters required</label>
+    </div>
+    <div class="form-group required">
+      <label>Confirm Password</label>
+      <input type="password" class="form-control" formControlName="ConfirmPassword">
+      <label class="text-danger" *ngIf="userStore.formModel.get('Passwords.ConfirmPassword').touched && userStore.formModel.get('Passwords.ConfirmPassword').errors?.required">This is mandatory.</label>
+      <label class="text-danger" *ngIf="userStore.formModel.get('Passwords.ConfirmPassword').touched && userStore.formModel.get('Passwords.ConfirmPassword').errors?.passwordMismatch">Confirmed password does not match.</label>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-8 offset-md-2">
+        <button type="submit" class="btn btn-lg btn-block" [disabled]="!userStore.formModel.valid">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</form>

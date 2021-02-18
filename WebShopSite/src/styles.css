@@ -1,0 +1,170 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+body{
+    /* background-color: #ffc107;; */
+}
+
+input.form-control,input.form-control:focus{
+    background-color: #ffc107;
+    color: black;
+    border-color: black;
+    border-radius: 0px;
+    border-width: 2px;
+}
+
+input.form-control:focus{
+    box-shadow: none;
+    border-bottom-color: black;
+}
+
+button[type=submit].btn{
+    border-radius: 20px;
+    background-color: #000;
+    color: #fff;
+}
+
+div.form-group label{
+    color: black;
+    font-weight: bold;
+}
+
+div.form-group.required>label:first-child:after{
+    content:'*';
+    color: #dc3545;
+	padding-left: 5px;
+}
+
+#toast-container > div {
+    opacity:1;
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column; 
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .wrapped-div {
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    background: #2e3137;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    padding: 0px;
+    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+  }
+
+  /* Tabs */
+.tab-header{
+    text-align: center;
+}
+
+  .tab-header h2.active {
+    color: #fff;
+    border-bottom: 4px solid #fff;
+  }
+
+  .tab-header h2 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    display:inline-block;
+    padding: 30px 40px 10px 40px;
+    cursor: pointer;
+    color: #545d6a;
+    border-bottom: 2px solid #545d6a;
+  }
+
+  .tab-header h2:focus {
+      outline: none;
+  }
+
+form{
+    margin: 0px 16px;
+}
+
+div.side-header{
+    border:3px solid black;
+}
+
+div.form-group input.invalid{
+    border: 1px solid #dc3545;
+}
+div.form-group label:first-child{
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.hide{
+    display: none;
+}
+
+/* mat-table */
+mat-footer-row mat-footer-cell{
+    justify-content: center;
+    font-style: italic;
+}
+
+/* filter controls */
+.search-div{
+    margin: 10px;
+      }
+      .search-form-field{
+          width: 60%;
+          margin-left: 10px;
+          padding: 5px 10px;
+          background-color: #f5f5f5;
+          border-radius: 5px;
+          }
+          .search-form-field div.mat-form-field-underline {
+              display: none;
+          }
+          .search-form-field div.mat-form-field-infix{
+              border-top: 0px;
+          }
+          .search-form-field div.mat-form-field-wrapper{
+            padding-bottom: 0px;
+        }
+        .search-form-field div.mat-form-field-suffix button{
+            height: 32px;
+            width: 32px;
+        }
+
+
+div.container{
+    margin: 0px 40px;
+}
+
+.fill-remaining-space{
+    flex: 1 1 auto;
+}
+
+.controls-container{
+    width: 100%;
+    padding: 5%;
+}
+
+.controls-container > *{
+    width: 100%;
+}
+
+.add-bottom-padding{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.container{
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+

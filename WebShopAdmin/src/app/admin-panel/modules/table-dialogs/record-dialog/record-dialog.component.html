@@ -1,0 +1,58 @@
+<form [formGroup]="recordDialogService.form" (submit)="onSubmit()">
+	<div class="controls-container">
+		<input hidden formControlName="categoryName" [value]="recordDialogService.form.value.category" matInput>
+
+		<mat-form-field class="w-100">
+			<input formControlName="id" [readonly]="true" matInput placeholder="RecordID">
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="title" matInput placeholder="Title">
+			<mat-error>This field is mandatory.</mat-error>
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="band" matInput placeholder="Band">
+			<mat-error>This field is mandatory.</mat-error>
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="album" matInput placeholder="Album">
+			<mat-error>This field is mandatory.</mat-error>
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="year" matInput placeholder="Year">
+			<mat-error>This field is mandatory.</mat-error>
+		</mat-form-field>
+
+		<mat-select formControlName="genre" placeholder="Genre" *ngIf="recordDialogService.category$ | async; let category">
+			<mat-option *ngFor="let subCategory of category.subCategories" [value]="subCategory.name">
+				{{ subCategory.name }}
+			</mat-option>
+		</mat-select>
+
+		<mat-form-field class="w-100">
+			<input formControlName="price" matInput placeholder="Price">
+			<mat-error>Invalid email address.</mat-error>
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="description" matInput placeholder="Description">
+		</mat-form-field>
+
+		<div class="d-flex justify-content-center w-100">
+			<img [src]="(recordDialogService.imgSrcReplay$ | async) || recordDialogService.defaultimageRootPath" (click)="fileInput.click()" style="width: 250px; height: 200px">
+		</div>
+
+		<label>Select file to upload</label>
+		<br>
+		<input ngInput #fileInput type="file" accept="image/*" (change)="showPreview(fileInput.files[0])">
+
+		<div class="button-row">
+			<button mat-raised-button color="primary" type="submit"
+				[disabled]="recordDialogService.form.invalid">Submit</button>
+			<button mat-raised-button color="warn" type='button' (click)="recordDialogService.onClear()">Clear</button>
+		</div>
+	</div>
+</form>

@@ -1,0 +1,50 @@
+﻿{
+   "ContextClassName": "UserdbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "DoNotCombineNamespace": false,
+   "IdReplace": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": "",
+   "OutputContextPath": null,
+   "OutputPath": "Entities",
+   "ProjectRootNamespace": "UserApi",
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetRoleClaims]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetRoles]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetUserClaims]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetUserLogins]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetUserRoles]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetUsers]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[AspNetUserTokens]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseSpatial": false
+}

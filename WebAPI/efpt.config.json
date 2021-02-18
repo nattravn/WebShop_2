@@ -1,0 +1,49 @@
+﻿{
+   "ContextClassName": "RecorddbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Entities",
+   "ProjectRootNamespace": "WebAPI",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Category]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Clothing]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Other]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Record]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Shoe]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[SubCategory]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseNodaTime": false,
+   "UseSpatial": false,
+   "UseStoredProcedures": false
+}

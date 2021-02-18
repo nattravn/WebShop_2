@@ -1,0 +1,15 @@
+<div class="card mb-4 box-shadow">
+    <a class="fancybox" rel="gallery" [routerLink]="'/clothing/'+clothing.id">
+        <img class="card-img-top" [src]="imageRootPath + clothing.imagePath" style="height: 225px; width: 100%; display: block;" alt="{{clothing.title}}" class="img img-responsive full-width thumbnail" />
+    </a>
+    <div class="card-body">
+    <p class="card-text">{{clothing?.title}}</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="btn-group">
+        <button type="button"  [routerLink]="'../clothing/'+clothing.id" class="btn btn-sm btn-outline-secondary">View</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cartService.addItemToCart(clothing)">Add</button>
+        </div>
+        <small class="text-muted">9 mins</small>
+    </div>
+    </div>
+</div>

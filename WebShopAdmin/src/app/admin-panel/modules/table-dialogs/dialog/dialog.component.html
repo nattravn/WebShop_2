@@ -1,0 +1,24 @@
+modal-wrapper-component
+
+<div mat-dialog-content>
+    <p class="dialog-paragraph">{{ data.headerText }}</p>
+
+    <mat-toolbar>
+        <span class="fill-remaining-space"></span>
+            <button class="btn-dialog-close" mat-stroked-button (click)="onClose()" tabIndex="-1"><mat-icon>clear</mat-icon></button>
+        <span class="fill-remaining-space"></span>
+    </mat-toolbar>
+
+	<app-category-dropdown (selectCategory)="selectedCataegory($event)" *ngIf="data.createNew"></app-category-dropdown>
+	<div [ngSwitch]="categoryChange?.name | lowercase">
+		{{categoryChange?.name | json}}
+		<app-record-dialog *ngSwitchCase=categoryEnum.Record></app-record-dialog>
+		<app-clothing-dialog *ngSwitchCase=categoryEnum.Clothing></app-clothing-dialog>
+		<app-shoe *ngSwitchCase=categoryEnum.Shoe></app-shoe>
+		<app-category-dialog *ngSwitchCase=categoryEnum.Category></app-category-dialog>
+		<div *ngSwitchDefault>Default</div>
+	</div>
+
+
+    <ng-container [ngTemplateOutlet]="data.template"></ng-container>
+</div>

@@ -1,0 +1,92 @@
+{
+    "Record": [
+        {
+            "id": 1,
+            "band": "test",
+            "album": "test",
+            "year": "test",
+            "genre": "test",
+            "description": "test test description",
+            "image": null,
+            "imagePath": "test",
+            "title": "test",
+            "price": "test",
+            "category": "record",
+            "username": "testUser"
+        },
+        {
+            "id": 2,
+            "band": "test",
+            "album": "test",
+            "year": "test",
+            "genre": "test",
+            "description": "",
+            "image": null,
+            "imagePath": "test",
+            "title": "test",
+            "price": "test",
+            "category": "record",
+            "username": "testUser2"
+        }
+    ],
+    "Clothing": [
+        {
+            "id": 1,
+            "title": "test",
+            "size": "test",
+            "price": "test",
+            "description": "test",
+            "image": null,
+            "imagePath": "test",
+            "category": "clothing",
+            "userName": "testUser"
+        }
+    ],
+    "Flag": [
+        {
+            "id": 1,
+            "title": "test",
+            "price": "test",
+            "description": "test",
+            "image": null,
+            "imagePath": "test",
+            "category": "flag",
+            "userName": "testUser"
+        }
+    ],
+    "UserProfile": {
+        "UserName": "testUserProfile",
+        "Email": "email"
+    },
+    "Menu": [
+        {
+            "id": 1,
+            "Title": "titel",
+            "category": "Kategori",
+            "subheader": true
+        },
+        {
+            "id": 2,
+            "Title": "titel2",
+            "category": "Kategori2",
+            "subheader": true
+        }
+    ],
+    "User": [
+        {
+            "UserName": "testUser",
+            "Email": "email"
+        }
+    ],
+    "Category": [
+        {
+            "CategoryID": 1,
+            "CategoryName": "flag"
+        },
+        {
+            "CategoryID": 2,
+            "CategoryName": "clothing"
+        }
+    ],
+    "ApplicationUser": []
+}

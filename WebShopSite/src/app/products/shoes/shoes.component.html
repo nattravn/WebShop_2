@@ -1,0 +1,14 @@
+Shoes:
+<ng-container *ngIf="{  shoes: shoeStore.shoesReplay$ | async,
+                        subCategoryId : productService.subCategoryReplay$ | async } as source">
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4" *ngFor="let shoe of source.shoes | productFilter : source?.subCategoryId | orderBy: order : false | paginate: config">
+                    <app-shoe-item [shoe]="shoe"></app-shoe-item>
+                </div>
+            </div>
+        </div>
+        <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+    </div>
+</ng-container>

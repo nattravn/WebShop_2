@@ -1,0 +1,5 @@
+<ng-container *ngIf="recordStore.recordItemReplay$ | async; let record">
+    Product information: id: {{record?.id}} || name: {{record?.price}}
+    <img style="width: 500px" [src]="imageRootPath + record?.imagePath">
+    <br><a routerLink="/records">Go To Products List</a>
+</ng-container>

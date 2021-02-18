@@ -1,0 +1,6 @@
+
+<ng-container *ngIf="clothingStore.clothingItemReplay$ | async; let clothing">
+    Product information: id: {{clothing?.id}} || name: {{clothing?.size}}
+    <img style="width: 500px" [src]="imageRootPath + clothing?.imagePath">
+    <br><a routerLink="/clothings">Go To Products List</a>
+</ng-container>
