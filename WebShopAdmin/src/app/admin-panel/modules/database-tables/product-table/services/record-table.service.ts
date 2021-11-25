@@ -49,8 +49,6 @@ export class RecordTableService implements OnDestroy {
 
 	refreshMatTable(productString: string): Observable<MatTableDataSource<Record>> {
 
-		console.log('productString: ', productString);
-
 		return this.tableData$ = this.recordStore.getProducts(productString).pipe(
 			switchMap(records => {
 				this.dataSource.data = records;

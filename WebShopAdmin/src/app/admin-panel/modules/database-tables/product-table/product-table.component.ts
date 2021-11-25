@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -17,7 +17,7 @@ import { CategoryStore } from '../../../stores/category.store';
 import { RecordStore } from '../../../stores/record.store';
 import { Record } from '../../../models/record.model';
 import { FormControl, FormGroup } from '@angular/forms';
-import { shareReplay, switchMap, tap } from 'rxjs/operators';
+import { first, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/router';
 
 @UntilDestroy()
@@ -25,7 +25,8 @@ import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/
 	selector: 'app-product-table',
 	templateUrl: './product-table.component.html',
 	styleUrls: ['./product-table.component.scss'],
-	providers: [DialogFactoryService]
+	providers: [DialogFactoryService],
+	changeDetection: ChangeDetectionStrategy.Default
 })
 export class ProductTableComponent implements OnInit, OnDestroy {
 	displayedColumns: string[] = [
@@ -46,9 +47,11 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
-	dialog: DialogService;
+	dialogService: DialogService;
 	userDialogTemplate: TemplateRef<any>;
 	public imageRootPath = environment.baseUrl + '/Images/original/';
+
+	routerEvent$: Observable<any>;
 
 	constructor(
 		private recordStore: RecordStore,
@@ -61,18 +64,24 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		private activatedRoute: ActivatedRoute
 
 	) { }
-	ngOnDestroy(): void { }
+	ngOnDestroy(): void {
+
+	}
 
 	ngOnInit() {
 		this.recordListService.dataSource.sort = this.sort;
 		this.recordListService.dataSource.paginator = this.paginator;
 
-		this.router.events.subscribe(e => {
-			if (e instanceof ActivationStart && e.snapshot.outlet === "tablesOutlet"){
-				console.log('deactivate');
-			  	this.outlet.deactivate();
-			}
-		});
+
+		this.routerEvent$ = this.router.events.pipe(
+			untilDestroyed(this),
+			tap(e => {
+				if (e instanceof ActivationStart && e.snapshot.outlet === "tablesOutlet"){
+					console.log('deactivate');
+					this.outlet.deactivate();
+				}
+			})
+		);
 
 	}
 
@@ -103,7 +112,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.recordDialogService.form.reset();
 		this.recordDialogService.imgSrcReplay.next(this.imageRootPath + 'default-image.png');
 
-		this.dialog = this.dialogFactoryService.open({
+		this.dialogService = this.dialogFactoryService.open({
 			headerText: 'Header text',
 			category: {
 				id: 99,
@@ -115,25 +124,34 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		});
 
 		// Change the header of the dialog
-		this.dialog.setHeaderText('New header');
+		this.dialogService.setHeaderText('New header');
 
 		// Change the content of the dialog
-		this.dialog.setTemplate(this.userDialogTemplate);
+		this.dialogService.setTemplate(this.userDialogTemplate);
 	}
 
 	onEdit(row: Record) {
 		this.recordDialogService.populateForm(row);
 
-		console.log('this.router.url: ', this.router.url);
 		this.activatedRoute.paramMap.pipe(
 			untilDestroyed(this),
 			tap( paramMap => {
 				if(paramMap.get('product')){
-					console.log('paramMap: ', paramMap);
 					this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')+'/modal', {outlets: {tablesOutlet: paramMap.get('product')+'/modal'}}]);
 				}
 			})
 		).subscribe();
+
+		// this.dialogService = this.dialogFactoryService.open({
+		// 	headerText: 'Header text',
+		// 	category: {
+		// 		id: 0,
+		// 		name: 'record',
+		// 		route: this.activatedRoute.snapshot.params['product']
+		// 	},
+		// 	createNew: false,
+		// 	template: this.userDialogTemplate
+		// });
 
 		// this.dialog = this.dialogFactoryService.open({
 		// 	headerText: 'Header text',

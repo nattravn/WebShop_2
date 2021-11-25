@@ -6,7 +6,7 @@ import { RecordDialogComponent } from './record-dialog/record-dialog.component';
 const routes: Routes = [
 	{
 		path: '',
-		component: ModalWrapperComponent,
+		component: ModalWrapperComponent
 	},
 ];
 

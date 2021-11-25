@@ -83,11 +83,9 @@ export class CategoryTableComponent implements OnInit {
 	}
 
 	toggleRow(element: Category) {
-		console.log("this.innerTables: ", this.innerTables);
 		(this.expandedElement = this.expandedElement === element ? null : element);
 		this.cd.detectChanges();
 		this.innerTables.forEach((table, index) => {
-			console.log('table: ', (table.dataSource));
 			(table.dataSource as MatTableDataSource<SubCategory>).sort = this.innerSort.toArray()[index];
 		}
 

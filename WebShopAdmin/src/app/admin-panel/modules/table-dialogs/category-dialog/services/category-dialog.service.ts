@@ -33,9 +33,6 @@ export class CategoryDialogService {
 
 		this.subCategoryArray.clear();
 
-		console.log('category: ', category);
-
-
 		category?.subCategories?.forEach(subCategory => {
 			this.addItem({
 				'id': subCategory.id,

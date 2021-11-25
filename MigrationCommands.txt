@@ -1,5 +1,0 @@
-Add-Migration "InitialCreate"
-Add-Migration "InitialCreate" -Context WebApplication1_delete.Models.RecordContext
-Update-Database -Context WebApplication1_delete.Models.RecordContext
-
-Update-Package Microsoft.AspNet.WebApi -reinstall

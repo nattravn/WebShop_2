@@ -1,3 +1,4 @@
+<ng-container *ngIf="{routerEvent: routerEvent$ | async } as source">
 <div class="container float-left">
 	<div class="my-2">
 		<button class="p-2" mat-raised-button (click)="onCreate()">
@@ -72,3 +73,4 @@
 <a [routerLink]="['/adminpanel/tables/products/clothings']">clothing</a>
 
 <router-outlet name='tablesOutlet'></router-outlet>
+</ng-container>

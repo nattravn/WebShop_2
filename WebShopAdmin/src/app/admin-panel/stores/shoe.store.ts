@@ -68,7 +68,6 @@ export class ShoeStore {
 
 	postShoe(modelFormData: Shoe, fileToUpload: File) {
 		const formData: FormData = new FormData;
-		console.log('modelFormData: ', modelFormData);
 
 		formData.append('title', modelFormData.title);
 		formData.append('price', modelFormData.price);
@@ -96,8 +95,6 @@ export class ShoeStore {
 		formData.append('category', modelFormData.categoryId.toString());
 		formData.append('userName', modelFormData.userName);
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
-
-		console.log('modelFormData: ', modelFormData);
 
 		return this.http.put(this.baseUrl + '/shoes/' + modelFormData.id, formData);
 	}

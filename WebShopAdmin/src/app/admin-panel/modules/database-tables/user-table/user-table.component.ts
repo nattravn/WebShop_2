@@ -38,7 +38,7 @@ export class UserTableComponent implements OnInit {
 
 	refreshMatTable() {
 		this.userStore.getUsers().subscribe((user: User[]) => {
-			console.log(user)
+
 			this.dataSource.data = user;
 			this.dataSource.sort = this.sort;
 			this.dataSource.paginator = this.paginator;

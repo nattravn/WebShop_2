@@ -41,7 +41,6 @@ export class DialogFactoryService<T = undefined> implements OnDestroy{
 			untilDestroyed(this),
 			first(),
 			tap(() => {
-				console.log('afterClosed: ', dialogData.category.route);
 
 				this.router.navigate(['../', { outlets: { tablesOutlet: null } }]);
 				//this.router.navigate([ { outlets: { tablesOutlet: null } }]);
@@ -50,7 +49,6 @@ export class DialogFactoryService<T = undefined> implements OnDestroy{
 				//this.router.navigate(['adminpanel/tables/products/'+dialogData.category.route]).then(() =>
 				//this.router.navigate([".", { outlets: { tablesOutlet: null } }]));
 				//this.activatedRoute.snapshot.routeConfig.children[0].path = "";
-				console.log('this.activatedRoute: ', this.activatedRoute.snapshot);
 		})).subscribe();
 
 		return new DialogService(dialogRef);

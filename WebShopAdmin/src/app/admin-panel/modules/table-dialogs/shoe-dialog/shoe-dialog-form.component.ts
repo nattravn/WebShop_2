@@ -36,8 +36,6 @@ export class ShoeDialogFormComponent implements OnInit {
 			const reader = new FileReader();
 
 			reader.onload = (event: any) => {
-				console.log('event.target: ', event);
-				console.log('inputNode.files[0]: ', inputNode.files[0]);
 				this.shoeStore.imageRootPath = event.target.result;
 				this.shoeStore.form.value.ImagePath = inputNode.files[0].name;
 
@@ -83,7 +81,6 @@ export class ShoeDialogFormComponent implements OnInit {
 	}
 
 	updateShoe(form: any) {
-		console.log('form.value: ', form.value);
 		this.shoeStore.putShoe(form.value, this.fileToUpload).subscribe(res => {
 			this.toastr.info('updated successfully', 'EMP. Register');
 		});

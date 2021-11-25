@@ -106,7 +106,6 @@ export class ClothingStore {
 	}
 
 	populateForm(clothing) {
-		console.log(clothing);
 		this.form.setValue(clothing);
 	}
 

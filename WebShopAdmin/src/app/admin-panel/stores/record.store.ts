@@ -109,12 +109,10 @@ export class RecordStore implements OnDestroy {
 	}
 
 	deleteRecord(row: any) {
-		console.log('row: ', row);
 		return this.http.delete(this.baseUrl + '/' + row.categoryName + '/' + row.id);
 	}
 
 	getProducts(route: string): Observable<Record[]> {
-		console.log('route: ', route);
 		return this.http.get<Record[]>(this.baseUrl + '/'+route).pipe(
 			untilDestroyed(this),
 			tap(items => this.recordsReplay.next(items))

@@ -86,7 +86,7 @@ export class ClothingDialogComponent implements OnInit {
 	}
 
 	updateClothing(form: any) {
-		console.log('form.value: ', form.value);
+
 		this.clothingStore
 			.putClothing(form.value, this.fileToUpload)
 			.subscribe(res => {

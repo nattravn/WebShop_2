@@ -1,11 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Observable } from 'rxjs';
+import { take, tap } from 'rxjs/operators';
 import { AdminCategoryEnum } from 'src/app/admin-panel/enums/AdminCategory.enum';
 import { Category } from 'src/app/admin-panel/models/category.model';
 import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
 import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
+import { DialogService } from '../services/dialog.service';
 
+@UntilDestroy()
 @Component({
 	selector: 'app-dialog',
 	templateUrl: './dialog.component.html',
@@ -17,17 +22,25 @@ export class DialogComponent {
 
 	public categoryChange: Category = new Category();
 
+	@ViewChild(RouterOutlet) outlet: RouterOutlet;
+
+
+
+	paramMapProduct$: Observable<any>;
+
 	/**
 	 * Initializes the component.
 	 *
 	 * @param dialogRef - A reference to the dialog opened.
 	 */
 	constructor(
-		public dialogRef: MatDialogRef<DialogComponent>,
+		//public dialogRef: MatDialogRef<DialogComponent>,
 		public categoryStore: CategoryStore,
 		@Inject(MAT_DIALOG_DATA)
 		public data: DialogData,
-		public router: Router
+		public router: Router,
+
+		private activatedRoute: ActivatedRoute
 	) {
 		this.categoryChange.name="records";
 		this.categoryStore.getCategories().subscribe();
@@ -38,9 +51,23 @@ export class DialogComponent {
 
 	}
 
+	ngOnDestroy(): void {
+
+	}
+
 	onClose() {
-		console.log('close');
-		this.dialogRef.close();
+		//this.dialogRef.close();
+
+		//this.dialogService.close();
+
+		this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
+			take(1),
+			untilDestroyed(this),
+			tap( paramMap => {
+				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')]);
+
+			})
+		)
 	}
 
 	public selectedCataegory(event: Category){

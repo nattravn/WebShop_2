@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
@@ -10,8 +10,9 @@ import { DialogFactoryService } from './services/dialog-factory.service';
 import { DialogService } from './services/dialog.service';
 import { TemplateRef } from '@angular/core';
 import { take, tap } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Observable } from 'rxjs';
 
 @UntilDestroy()
 /**
@@ -23,19 +24,28 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 	templateUrl: './modal-wrapper.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalWrapperComponent implements OnInit, OnDestroy{
+export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChecked {
 
 	public categoryEnum = AdminCategoryEnum;
 
 	public categoryChange: Category = new Category();
 
-	public dialogRef: MatDialogRef<RecordDialogComponent>
+	//public dialogRef: MatDialogRef<RecordDialogComponent>
 
 	dialogService: DialogService;
 
 	private closedOnDestroy = false;
 
 	userDialogTemplate: TemplateRef<any>;
+
+	paramMapProduct$: Observable<any>;
+
+	@ViewChild(RouterOutlet) outlet: RouterOutlet;
+
+	@ViewChild('firstDialogTemplate') firstDialogTemplate: TemplateRef<any>;
+
+	routerEvent$: Observable<any>;
+
 	/**
 	 * Initializes the component.
 	 * @param dialogRef - A reference to the dialog opened.
@@ -46,16 +56,27 @@ export class ModalWrapperComponent implements OnInit, OnDestroy{
 		@Inject(MAT_DIALOG_DATA)
 		public data: DialogData,
 		private router: Router,
+		private cdr: ChangeDetectorRef,
 		private activatedRoute: ActivatedRoute,
 		private dialogFactoryService: DialogFactoryService,
 	) {
 
 	}
+
+	ngAfterContentChecked(): void {
+		this.cdr.detectChanges();
+	}
+
 	ngOnInit(): void {
-		console.log('open dialog');
-		this.openDialog();
+		console.log('ngOnInit: ModalWrapperComponent');
+		setTimeout(() => {
+			this.openDialog();
+		}, );
+
 		this.categoryChange.name="records";
-		this.categoryStore.getCategories().subscribe();
+		// this.categoryStore.getCategories().pipe(
+		// 	untilDestroyed(this)
+		// ).subscribe();
 	}
 
 	public onDeactivate(event) {
@@ -68,7 +89,7 @@ export class ModalWrapperComponent implements OnInit, OnDestroy{
 	}
 
 	openDialog(){
-		console.log('modal:', this.activatedRoute.snapshot.params['product'] );
+
 		this.dialogService = this.dialogFactoryService.open({
 			headerText: 'Header text',
 			category: {
@@ -77,20 +98,39 @@ export class ModalWrapperComponent implements OnInit, OnDestroy{
 				route: this.activatedRoute.snapshot.params['product']
 			},
 			createNew: false,
-			template: this.userDialogTemplate
+			template: this.firstDialogTemplate
 		});
 
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		console.log('eventUrl: ', eventUrl);
-		console.log('this.router: ', this.router);
-		console.log('this.activatedRoute.snapshot: ', this.activatedRoute.snapshot.params['product']);
-		console.log('this.activatedRoute.data: ', this.activatedRoute.data);
+		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+	}
+
+	onClose() {
+
+		this.dialogService.close();
+
+		this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
+			take(1),
+			untilDestroyed(this),
+			tap( paramMap => {
+				console.log('change route', paramMap.get('product'));
+				console.log('paramMap', paramMap);
+				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product') +'/modal', {outlets: {tablesOutlet: null}}]);
+				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')]);
+
+			})
+		)
 	}
 
 	public ngOnDestroy(): void {
+		// this.activatedRoute.paramMap.pipe(
+		// 	untilDestroyed(this),
+		// 	tap( paramMap => {
+		// 		console.log('paramMap: ', paramMap);
+		// 		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')]);
+
+		// 	})
+		// ).subscribe();
 		this.closedOnDestroy = true;
-		this.dialogService.close();
-		console.log('close')
 	  }
 }
 
