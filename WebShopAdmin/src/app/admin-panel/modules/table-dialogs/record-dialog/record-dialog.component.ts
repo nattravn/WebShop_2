@@ -9,7 +9,7 @@ import { UserStore } from 'src/app/admin-panel/stores/user.store';
 import { environment } from 'src/environments/environment';
 import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
 import { RecordDialogService } from './services/record-dialog.service';
-import { RecordTableService } from '../../database-tables/product-table/services/record-table.service';
+import { ProductTableService } from '../../database-tables/product-table/services/product-table.service';
 
 @UntilDestroy()
 @Component({
@@ -26,7 +26,7 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		public recordStore: RecordStore,
 		public categoryStore: CategoryStore,
 		public recordDialogService: RecordDialogService,
-		public recordListService: RecordTableService,
+		public recordListService: ProductTableService,
 		private userStore: UserStore) { }
 	ngOnInit(): void { }
 	ngOnDestroy(): void { }

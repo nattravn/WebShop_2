@@ -12,7 +12,7 @@ import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import { Category } from '../../../models/category.model';
 import { RecordDialogService } from '../../table-dialogs/record-dialog/services/record-dialog.service';
-import { RecordTableService } from './services/record-table.service';
+import { ProductTableService } from './services/product-table.service';
 import { CategoryStore } from '../../../stores/category.store';
 import { RecordStore } from '../../../stores/record.store';
 import { Record } from '../../../models/record.model';
@@ -59,7 +59,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		private toastr: ToastrService,
 		private categoryStore: CategoryStore,
 		private dialogFactoryService: DialogFactoryService,
-		public recordListService: RecordTableService,
+		public recordListService: ProductTableService,
 		private router: Router,
 		private activatedRoute: ActivatedRoute
 
@@ -73,15 +73,15 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.recordListService.dataSource.paginator = this.paginator;
 
 
-		this.routerEvent$ = this.router.events.pipe(
-			untilDestroyed(this),
-			tap(e => {
-				if (e instanceof ActivationStart && e.snapshot.outlet === "tablesOutlet"){
-					console.log('deactivate');
-					this.outlet.deactivate();
-				}
-			})
-		);
+		// this.routerEvent$ = this.router.events.pipe(
+		// 	untilDestroyed(this),
+		// 	tap(e => {
+		// 		if (e instanceof ActivationStart && e.snapshot.outlet === "tablesOutlet"){
+		// 			console.log('deactivate');
+		// 			this.outlet.deactivate();
+		// 		}
+		// 	})
+		// );
 
 	}
 
@@ -137,7 +137,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 			untilDestroyed(this),
 			tap( paramMap => {
 				if(paramMap.get('product')){
-					this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')+'/modal', {outlets: {tablesOutlet: paramMap.get('product')+'/modal'}}]);
+					this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}]);
 				}
 			})
 		).subscribe();

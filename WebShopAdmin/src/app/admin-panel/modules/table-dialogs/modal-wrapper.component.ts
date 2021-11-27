@@ -59,21 +59,19 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 		private cdr: ChangeDetectorRef,
 		private activatedRoute: ActivatedRoute,
 		private dialogFactoryService: DialogFactoryService,
-	) {
-
-	}
+	) { }
 
 	ngAfterContentChecked(): void {
-		this.cdr.detectChanges();
+		//this.cdr.detectChanges();
 	}
 
 	ngOnInit(): void {
-		console.log('ngOnInit: ModalWrapperComponent');
 		setTimeout(() => {
 			this.openDialog();
 		}, );
 
 		this.categoryChange.name="records";
+
 		// this.categoryStore.getCategories().pipe(
 		// 	untilDestroyed(this)
 		// ).subscribe();
@@ -107,16 +105,17 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 	onClose() {
 
 		this.dialogService.close();
+		//this.router.navigate(['/', {outlets: {secondary: null}}]);
 
+		console.log('this.router: ', this.router);
+		console.log('this.activatedRoute: ', this.activatedRoute);
+
+		console.log('reset url');
 		this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
-			take(1),
+			//take(1),
 			untilDestroyed(this),
 			tap( paramMap => {
-				console.log('change route', paramMap.get('product'));
-				console.log('paramMap', paramMap);
-				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product') +'/modal', {outlets: {tablesOutlet: null}}]);
-				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')]);
-
+				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
 			})
 		)
 	}

@@ -2,8 +2,6 @@ import { Injectable, OnDestroy } from '@angular/core';
 
 import { first, tap } from 'rxjs/operators';
 
-import { ModalWrapperComponent } from '../modal-wrapper.component';
-
 // Services
 import { DialogService } from './dialog.service';
 import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
@@ -36,20 +34,6 @@ export class DialogFactoryService<T = undefined> implements OnDestroy{
 				data: dialogData
 			}
 		);
-
-		dialogRef.afterClosed().pipe(
-			untilDestroyed(this),
-			first(),
-			tap(() => {
-
-				this.router.navigate(['../', { outlets: { tablesOutlet: null } }]);
-				//this.router.navigate([ { outlets: { tablesOutlet: null } }]);
-				//this.router.navigateByUrl('adminpanel/tables/products/'+dialogData.category.route);
-				//this.router.navigate(['adminpanel/tables/products/'+dialogData.category.route+'/modal',{ outlets: { tablesOutlet: null } }]);
-				//this.router.navigate(['adminpanel/tables/products/'+dialogData.category.route]).then(() =>
-				//this.router.navigate([".", { outlets: { tablesOutlet: null } }]));
-				//this.activatedRoute.snapshot.routeConfig.children[0].path = "";
-		})).subscribe();
 
 		return new DialogService(dialogRef);
 	}

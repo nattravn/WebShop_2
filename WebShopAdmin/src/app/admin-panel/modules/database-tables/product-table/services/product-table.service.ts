@@ -12,7 +12,7 @@ import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular
 
 @UntilDestroy()
 @Injectable()
-export class RecordTableService implements OnDestroy {
+export class ProductTableService implements OnDestroy {
 
 	public tableData$ = new Observable<MatTableDataSource<Record>>();
 	public dataSource = new MatTableDataSource<Record>();

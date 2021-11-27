@@ -1,16 +1,16 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, inject, waitForAsync } from '@angular/core/testing';
-import { RecordTableService } from './record-table.service';
+import { ProductTableService } from './product-table.service';
 
 describe('Service: RecordList', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RecordTableService]
+      providers: [ProductTableService]
     });
   });
 
-  it('should ...', inject([RecordTableService], (service: RecordTableService) => {
+  it('should ...', inject([ProductTableService], (service: ProductTableService) => {
     expect(service).toBeTruthy();
   }));
 });

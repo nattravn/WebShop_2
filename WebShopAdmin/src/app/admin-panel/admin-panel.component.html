@@ -9,7 +9,7 @@
 			<div class="col-2">
 				<h1>Record Register</h1>
 				<ul *ngFor="let category of source.categoris ">
-					<li [routerLink]="['/adminpanel/tables/products/'+category.route]" [replaceUrl]="true"  (click)=recordTableService.refreshMatTable(category.route)>{{category.name}}</li>
+					<li (click)=categoryRoute(category)>{{category.name}}</li>
 				</ul>
 				<ul>
 					<li [routerLink]="['tables/categories/'+AdminCategoryEnum.Category,  {outlets: {tablesOutlet: null}}]" >Categories</li>
@@ -24,7 +24,7 @@
 			<div class="col-10">
 				<router-outlet></router-outlet>
 				<!-- The modal -->
-				<router-outlet name='tablesOutlet'></router-outlet>
+
 			</div>
 		</div>
     </div>

@@ -10,7 +10,7 @@ const routes: Routes = [
 		children: [
 			{
 				path: 'tables',
-				loadChildren: () => import('./modules/database-tables/database-table.module').then(m => m.CategoryTablesModule)
+				loadChildren: () => import('./modules/database-tables/category-table.module').then(m => m.CategoryTablesModule)
 			},
 		],
 		data : {permittedRoles: ['Admin']},

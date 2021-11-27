@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
 	selector: 'app-product-lists',
-	templateUrl: './database-table-container.component.html',
-	styleUrls: ['./database-table-container.component.css'],
+	templateUrl: './category-table-container.component.html',
+	styleUrls: ['./category-table-container.component.css'],
 
 })
 export class DatabaseTableContainerComponent {
