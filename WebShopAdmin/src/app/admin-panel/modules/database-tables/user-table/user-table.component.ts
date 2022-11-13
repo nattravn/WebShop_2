@@ -10,6 +10,7 @@ import { User } from '../../../models/user.model';
 import { UserStore } from '../../../stores/user.store';
 import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
 import { DialogService } from '../../table-dialogs/services/dialog.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'app-user-table',
@@ -30,6 +31,7 @@ export class UserTableComponent implements OnInit {
 		private userStore: UserStore,
 		private toastr: ToastrService,
 		private dialogFactoryService: DialogFactoryService,
+		public activatedRoute: ActivatedRoute
 	) {
 		this.refreshMatTable();
 	}
@@ -74,25 +76,32 @@ export class UserTableComponent implements OnInit {
 		}
 	}
 
-	onEdit(row: any) {
-		console.log('row: ', row);
-		const dialogConfig = new MatDialogConfig();
-		dialogConfig.disableClose = false;
-		dialogConfig.autoFocus = true;
-		dialogConfig.width = '60%';
+	onEdit(row: any, paramMap: any) {
 
-		this.userStore.populateMenuForm(row);
+		// this.recordDialogService.populateForm(row);
 
-		this.dialog2 = this.dialogFactoryService.open({
-			headerText: 'Header text',
-			category: {
-				id: 99,
-				name: 'User',
-				route: 'user'
-			},
-			createNew: false,
-			template: this.userDialogTemplate
-		});
+		// if(paramMap.get('product')){
+		// 	this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}]);
+		// }
+
+		// console.log('row: ', row);
+		// const dialogConfig = new MatDialogConfig();
+		// dialogConfig.disableClose = false;
+		// dialogConfig.autoFocus = true;
+		// dialogConfig.width = '60%';
+
+		// this.userStore.populateMenuForm(row);
+
+		// this.dialog2 = this.dialogFactoryService.open({
+		// 	headerText: 'Header text',
+		// 	category: {
+		// 		id: 99,
+		// 		name: 'User',
+		// 		route: 'user'
+		// 	},
+		// 	createNew: false,
+		// 	template: this.userDialogTemplate
+		// });
 		// this.dialog
 		//     .open(AddUserComponent, dialogConfig)
 		//     .afterClosed()

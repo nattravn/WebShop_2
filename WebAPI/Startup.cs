@@ -111,7 +111,7 @@ namespace WebAPI
                     Mode = RetryMode.Exponential
                     }
                 };
-                var client = new SecretClient(new Uri("https://recordapisecret.vault.azure.net/"), new DefaultAzureCredential(), options);
+                var client = new SecretClient(new Uri("https://yourapisecret.vault.azure.net/"), new DefaultAzureCredential(), options);
 
                 KeyVaultSecret password = client.GetSecret("sqlServerPassword");
                 KeyVaultSecret userId = client.GetSecret("UserId");

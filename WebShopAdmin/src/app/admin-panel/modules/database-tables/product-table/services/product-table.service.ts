@@ -9,15 +9,18 @@ import { RecordStore } from '../../../../stores/record.store';
 import { Record } from '../../../../models/record.model';
 import { filter, finalize, map, shareReplay, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { Clothing } from 'src/app/admin-panel/models/clothing.model';
 
 @UntilDestroy()
 @Injectable()
 export class ProductTableService implements OnDestroy {
 
-	public tableData$ = new Observable<MatTableDataSource<Record>>();
-	public dataSource = new MatTableDataSource<Record>();
+	public tableData$ = new Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}>();
+	public dataSource = new MatTableDataSource<Record | Clothing>();
 
 	private eventUrl = '';
+
+	public initPageLimit = 5;
 
 	constructor(
 		private recordStore: RecordStore,
@@ -42,21 +45,25 @@ export class ProductTableService implements OnDestroy {
 		// });
 
 
-		this.refreshMatTable(eventUrl);
+		this.refreshMatTable(eventUrl,5,1);
 	}
 
 	ngOnDestroy(): void { }
 
-	refreshMatTable(productString: string): Observable<MatTableDataSource<Record>> {
-
-		return this.tableData$ = this.recordStore.getProducts(productString).pipe(
-			switchMap(records => {
-				this.dataSource.data = records;
-				return of(this.dataSource);
-			}),
+	refreshMatTable(productString: string, pageLimit: number = null, page: number = null): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
+		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page).pipe(
 			untilDestroyed(this),
+			switchMap(records => {
+				this.dataSource.data = records.items;
+
+
+				console.log('records.Items: ', records);
+				return of({items: this.dataSource, totalItems: records.totalItems});
+			}),
 			shareReplay(1),
 		)
+
+		return this.tableData$;
 	}
 
 }

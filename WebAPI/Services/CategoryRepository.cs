@@ -2,20 +2,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
+using WebAPI.Extensions;
+using AutoMapper;
 
 namespace WebAPI.Services
 {
     public class CategoryRepository : ICategoryRepository, IDisposable
     {
         private RecorddbContext _context;
+        private readonly IMapper _mapper;
 
-        public CategoryRepository(RecorddbContext context)
+        public CategoryRepository(
+            RecorddbContext context,
+            IMapper mapper
+        )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public bool CategoryExists(int categoryId)
@@ -126,6 +134,29 @@ namespace WebAPI.Services
                     _context = null;
                 }
             }
+        }
+
+        public async Task<GetTableListResponseDto<CategoryDto>> GetCategoriesWithParams(int limit, int page, CancellationToken cancellationToken)
+        {
+            var category = await _context.Categories
+                           .AsNoTracking()
+                           .Include(b => b.SubCategories)
+                           .OrderBy(p => p.Id)
+                           .PaginateAsync(page, limit, cancellationToken);
+
+            return new GetTableListResponseDto<CategoryDto>
+            {
+                CurrentPage = category.CurrentPage,
+                TotalPages = category.TotalPages,
+                TotalItems = category.TotalItems,
+                Items = category.Items.Select(p => new CategoryDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Route = p.Route,
+                    SubCategories = _mapper.Map<ICollection<SubCategoryDto>>(p.SubCategories) 
+                }).ToList()
+            };
         }
     }
 }

@@ -9,7 +9,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
 
     constructor(private router: Router) {
-
     }
 
     intercept(req: import('@angular/common/http').HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -22,9 +21,11 @@ export class AuthInterceptor implements HttpInterceptor {
                     succ => {},
                     err => {
                         if (err.status == 401) {
+							console.log('401 not auth');
                             localStorage.removeItem('ACCESS_TOKEN');
                             this.router.navigateByUrl('/user/login');
                         } else if (err.status == 403) {
+							console.log('403 not auth');
                             this.router.navigateByUrl('/forbidden');
                         }
 

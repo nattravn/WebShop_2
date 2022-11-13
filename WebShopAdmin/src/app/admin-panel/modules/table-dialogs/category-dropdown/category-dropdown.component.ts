@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'src/app/admin-panel/modules/table-dialogs/services/dialog.service';
@@ -15,7 +15,8 @@ import { shareReplay } from 'rxjs/operators';
 @Component({
 	selector: 'app-category-dropdown',
 	templateUrl: './category-dropdown.component.html',
-	styleUrls: ['./category-dropdown.component.css']
+	styleUrls: ['./category-dropdown.component.css'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryDropdownComponent implements OnInit {
 

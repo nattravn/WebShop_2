@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
+using WebAPI.Models;
 using WebAPI.ResourceParameters;
 
 namespace WebAPI.Services
@@ -10,6 +12,7 @@ namespace WebAPI.Services
     public interface IShoeRepository
     {
         Shoe GetShoe(int shoeId);
+        Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(int limit, int page, CancellationToken cancellationToken);
         IEnumerable<Shoe> GetShoes();
         IEnumerable<Shoe> GetShoesFromUserId(string shoeId);
         IEnumerable<Shoe> GetShoes(CommonResourceParameters commonResourceParameters);

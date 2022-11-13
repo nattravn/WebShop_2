@@ -66,15 +66,16 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 	}
 
 	ngOnInit(): void {
+
+		this.paramMapProduct$ = this.activatedRoute.queryParams;
+
+		this.activatedRoute.paramMap.subscribe(params => {
+			this.categoryChange.name=params.get('product');
+		});
+
 		setTimeout(() => {
 			this.openDialog();
-		}, );
-
-		this.categoryChange.name="records";
-
-		// this.categoryStore.getCategories().pipe(
-		// 	untilDestroyed(this)
-		// ).subscribe();
+		},);
 	}
 
 	public onDeactivate(event) {
@@ -103,21 +104,14 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 	}
 
 	onClose() {
-
 		this.dialogService.close();
-		//this.router.navigate(['/', {outlets: {secondary: null}}]);
 
-		console.log('this.router: ', this.router);
-		console.log('this.activatedRoute: ', this.activatedRoute);
-
-		console.log('reset url');
-		this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
-			//take(1),
-			untilDestroyed(this),
-			tap( paramMap => {
-				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
-			})
-		)
+		// this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
+		// 	untilDestroyed(this),
+		// 	tap( paramMap => {
+		// 		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
+		// 	})
+		// )
 	}
 
 	public ngOnDestroy(): void {

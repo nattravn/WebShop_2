@@ -1,6 +1,13 @@
-<form [formGroup]="recordDialogService.form" (submit)="onSubmit()">
+<ng-container *ngIf="{
+	noooothing: populateForm$ | async,
+	formValue: formValue$ | async
+} as source">
+<pre>{{source.noooothing | json}}</pre>
+source.formValue.value: <pre>{{source.formValue | json}}</pre>
+source.formValue.invalid: <pre>{{source.formValue.invalid | json}}</pre>
+<form [formGroup]="form" (submit)="onSubmit(source.formValue)">
 	<div class="controls-container">
-		<input hidden formControlName="categoryName" [value]="recordDialogService.form.value.category" matInput>
+		<!-- <input hidden formControlName="categoryName" [value]="source.formValue.value.category" matInput> -->
 
 		<mat-form-field class="w-100">
 			<input formControlName="id" [readonly]="true" matInput placeholder="RecordID">
@@ -26,7 +33,7 @@
 			<mat-error>This field is mandatory.</mat-error>
 		</mat-form-field>
 
-		<mat-select formControlName="genre" placeholder="Genre" *ngIf="recordDialogService.category$ | async; let category">
+		<mat-select formControlName="genre" placeholder="Genre" *ngIf="category$ | async; let category">
 			<mat-option *ngFor="let subCategory of category.subCategories" [value]="subCategory.name">
 				{{ subCategory.name }}
 			</mat-option>
@@ -42,7 +49,7 @@
 		</mat-form-field>
 
 		<div class="d-flex justify-content-center w-100">
-			<img [src]="(recordDialogService.imgSrcReplay$ | async) || recordDialogService.defaultimageRootPath" (click)="fileInput.click()" style="width: 250px; height: 200px">
+			<img [src]="(imgSrcReplay$ | async) || defaultimageRootPath" (click)="fileInput.click()" style="width: 250px; height: 200px">
 		</div>
 
 		<label>Select file to upload</label>
@@ -51,8 +58,8 @@
 
 		<div class="button-row">
 			<button mat-raised-button color="primary" type="submit"
-				[disabled]="recordDialogService.form.invalid">Submit</button>
-			<button mat-raised-button color="warn" type='button' (click)="recordDialogService.onClear()">Clear</button>
+				[disabled]="form.invalid">Submit</button>
+			<button mat-raised-button color="warn" type='button' (click)="onClear()">Clear</button>
 		</div>
 	</div>
 </form>

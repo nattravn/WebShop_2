@@ -25,6 +25,19 @@ const routes: Routes = [
 
 			},
 			{
+				path: 'products',
+				component: ProductTableComponent,
+				children: [
+					{
+						path: '',   //flytta till separata modal routes, inte child routes
+						outlet: 'tablesOutlet',
+						pathMatch: 'full',
+						loadChildren: () => import('../table-dialogs/modal-wrapper.module').then(m => m.ModalWrapperModule)
+					},
+				],
+
+			},
+			{
 				path: 'users/:'+AdminCategoryEnum.User,
 				component: UserTableComponent,
 				children: [

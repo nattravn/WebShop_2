@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
+using WebAPI.Extensions;
 
 namespace WebAPI.Services
 {
@@ -128,6 +130,35 @@ namespace WebAPI.Services
         public IEnumerable<Shoe> GetShoesFromUserId(string userId)
         {
             return _context.Shoes.Where(f => f.UserId == userId).ToList();
+        }
+
+        public async Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(int limit, int page, CancellationToken cancellationToken)
+        {
+            var shoes = await _context.Shoes
+                           .AsNoTracking()
+                           .OrderBy(p => p.Id)
+                           .PaginateAsync(page, limit, cancellationToken);
+
+            return new GetTableListResponseDto<ShoeDto>
+            {
+                CurrentPage = shoes.CurrentPage,
+                TotalPages = shoes.TotalPages,
+                TotalItems = shoes.TotalItems,
+                Items = shoes.Items.Select(p => new ShoeDto
+                {
+                    Id = p.Id,
+                    CategoryId = p.CategoryId.GetValueOrDefault(),
+                    Title = p.Title,
+                    SubCategoryId = p.SubCategoryId.GetValueOrDefault(),
+                    Price = p.Price.GetValueOrDefault(),
+                    ImagePath = p.ImagePath,
+                    Description = p.Description,
+                    CategoryName = p.CategoryName,
+                    Image = p.Image,
+                    UserId = p.UserId
+                    
+                }).ToList()
+            };
         }
     }
 }

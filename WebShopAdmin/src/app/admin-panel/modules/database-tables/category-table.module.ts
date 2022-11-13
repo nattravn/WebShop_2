@@ -47,11 +47,6 @@ import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/materia
 	providers: [
 		RecordStore,
 		UserStore,
-		UserStore, {
-            provide: HTTP_INTERCEPTORS,
-            useClass: AuthInterceptor,
-            multi: true
-        },
 		RecordDialogService,
 		ToastrService,
 		CategoryStore,

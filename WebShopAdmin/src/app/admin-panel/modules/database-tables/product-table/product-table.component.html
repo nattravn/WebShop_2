@@ -1,77 +1,86 @@
-<ng-container *ngIf="{routerEvent: routerEvent$ | async } as source">
+<ng-container *ngIf="{
+	routerEvent: routerEvent$ | async,
+	activatedRouteEvent: activatedRoute.paramMap | async,
+	tableData: productTableService.tableData$ | async
+} as source">
 
-<div class="container float-left">
-	<div class="my-2">
-		<button class="p-2" mat-raised-button (click)="onCreate()">
-			<mat-icon>add</mat-icon>Create
-		</button>
+	<div class="container float-left">
+		<div class="my-2">
+			<button class="p-2" mat-raised-button (click)="onCreate(source.activatedRouteEvent)">
+				<mat-icon>add</mat-icon>Create
+			</button>
 
-		<form form class="d-inline p-2" [formGroup]="filterForm">
-			<mat-form-field >
-				<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event)" #input/>
-			</mat-form-field>
-		</form>
-		<button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear()">
-			<mat-icon>close</mat-icon>
-		</button>
+			<form form class="d-inline p-2" [formGroup]="filterForm">
+				<mat-form-field >
+					<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event)" #input/>
+				</mat-form-field>
+			</form>
+			<button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear()">
+				<mat-icon>close</mat-icon>
+			</button>
+		</div>
+
+		<div class="mat-elevation-z8">
+			<mat-table [dataSource]="source.tableData?.items" matSort>
+				<ng-container matColumnDef="id">
+					<mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+					<mat-cell *matCellDef="let element">{{ element.id }}</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="title">
+					<mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
+					<mat-cell *matCellDef="let element">{{ element.title }}</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="price">
+					<mat-header-cell *matHeaderCellDef mat-sort-header>Price</mat-header-cell>
+					<mat-cell *matCellDef="let element">{{ element.price }}</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="categoryName">
+					<mat-header-cell *matHeaderCellDef mat-sort-header>CategoryName</mat-header-cell>
+					<mat-cell *matCellDef="let element">{{element.categoryName}}</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="imagePath">
+					<mat-header-cell *matHeaderCellDef mat-sort-header>Image</mat-header-cell>
+					<mat-cell *matCellDef="let element">
+						<img [src]="imageRootPath + element.imagePath" height="40px" width="40px"
+							alt="{{ element.imagePath }}" />
+					</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="actions">
+					<mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+					<mat-cell *matCellDef="let row">
+						<a class="btn btn-sm btn-info text-white" (click)="onEdit(row, source.activatedRouteEvent)"><i class="fa fa-pencil"></i></a>
+						<a class="btn btn-sm btn-danger text-white ml-1" (click)="onDelete(row)"><i class="fa fa-trash"></i></a>
+					</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="loading">
+					<mat-footer-cell *matFooterCellDef colspan="6">
+						Loading data...
+					</mat-footer-cell>
+				</ng-container>
+				<ng-container matColumnDef="noData">
+					<mat-footer-cell *matFooterCellDef colspan="6">
+						No data.
+					</mat-footer-cell>
+				</ng-container>
+
+				<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+				<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+				<mat-footer-row *matFooterRowDef="['loading']" [hidden]="!source.tableData?.items?.length">
+				</mat-footer-row>
+				<mat-footer-row *matFooterRowDef="['noData']" [hidden]="source.tableData?.items != null">
+				</mat-footer-row>
+			</mat-table>
+			<mat-paginator
+				[length]="source.tableData?.totalItems"
+				[pageSizeOptions]="[5, 10, 25, 100]"
+				[pageSize]="productTableService.initPageLimit"
+				(page)="updateTable(source.activatedRouteEvent, $event)" showFirstLastButtons>
+			</mat-paginator>
+		</div>
 	</div>
 
-	<div class="mat-elevation-z8">
-		<mat-table [dataSource]="recordListService.tableData$ | async" matSort>
-			<ng-container matColumnDef="id">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-				<mat-cell *matCellDef="let element">{{ element.id }}</mat-cell>
-			</ng-container>
-			<ng-container matColumnDef="title">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
-				<mat-cell *matCellDef="let element">{{ element.title }}</mat-cell>
-			</ng-container>
-			<ng-container matColumnDef="price">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>Price</mat-header-cell>
-				<mat-cell *matCellDef="let element">{{ element.price }}</mat-cell>
-			</ng-container>
-			<ng-container matColumnDef="categoryName">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>CategoryName</mat-header-cell>
-				<mat-cell *matCellDef="let element">{{element.categoryName}}</mat-cell>
-			</ng-container>
-			<ng-container matColumnDef="imagePath">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>Image</mat-header-cell>
-				<mat-cell *matCellDef="let element">
-					<img [src]="imageRootPath + element.imagePath" height="40px" width="40px"
-						alt="{{ element.imagePath }}" />
-				</mat-cell>
-			</ng-container>
-			<ng-container matColumnDef="actions">
-				<mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-				<mat-cell *matCellDef="let row">
-					<a class="btn btn-sm btn-info text-white" (click)="onEdit(row)"><i class="fa fa-pencil"></i></a>
-					<a class="btn btn-sm btn-danger text-white ml-1" (click)="onDelete(row)"><i class="fa fa-trash"></i></a>
-				</mat-cell>
-			</ng-container>
-			<ng-container matColumnDef="loading">
-				<mat-footer-cell *matFooterCellDef colspan="6">
-					Loading data...
-				</mat-footer-cell>
-			</ng-container>
-			<ng-container matColumnDef="noData">
-				<mat-footer-cell *matFooterCellDef colspan="6">
-					No data.
-				</mat-footer-cell>
-			</ng-container>
+	<a [routerLink]="['./']">reset</a>
+	<a [routerLink]="['/adminpanel/tables/products/clothings']">clothing</a>
 
-			<mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-			<mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-			<mat-footer-row *matFooterRowDef="['loading']" [hidden]="(recordListService.tableData$ | async)?.data?.length">
-			</mat-footer-row>
-			<mat-footer-row *matFooterRowDef="['noData']" [hidden]="(recordListService.tableData$ | async)?.data != null">
-			</mat-footer-row>
-		</mat-table>
-		<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5" showFirstLastButtons></mat-paginator>
-	</div>
-</div>
-
-<a [routerLink]="['./']">reset</a>
-<a [routerLink]="['/adminpanel/tables/products/clothings']">clothing</a>
-
-<router-outlet name='tablesOutlet'></router-outlet>
+	<router-outlet name='tablesOutlet'></router-outlet>
 </ng-container>

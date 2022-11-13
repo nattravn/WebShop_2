@@ -29,8 +29,7 @@ export class AdminPanelComponent implements OnInit {
 		this.categories$ = this.categoryStore.getCategories().pipe(shareReplay(1));
 	}
 
-	ngOnInit() {
-	}
+	ngOnInit() {}
 
 	loggaIn(){
 
@@ -50,7 +49,7 @@ export class AdminPanelComponent implements OnInit {
 		//this.router.navigate(['adminpanel/tables/products/'+category.route+'/', repla }]);
 		//this.router.navigate([ { outlets: { secondary: null } }]);
 
-		this.recordTableService.refreshMatTable(category.route)
+		this.recordTableService.refreshMatTable(category.route,5,1)
 	}
 
 	logout() {

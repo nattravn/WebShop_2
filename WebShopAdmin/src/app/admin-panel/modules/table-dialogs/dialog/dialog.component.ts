@@ -60,14 +60,14 @@ export class DialogComponent {
 
 		//this.dialogService.close();
 
-		this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
-			take(1),
-			untilDestroyed(this),
-			tap( paramMap => {
-				this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')]);
+		// this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
+		// 	take(1),
+		// 	untilDestroyed(this),
+		// 	tap( paramMap => {
+		// 		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')]);
 
-			})
-		)
+		// 	})
+		// )
 	}
 
 	public selectedCataegory(event: Category){

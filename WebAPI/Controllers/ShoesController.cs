@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +19,7 @@ using WebAPI.Entities;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Services;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Controllers
 {
@@ -49,6 +51,28 @@ namespace WebAPI.Controllers
         {
             var shoesFromRepo = _shoeRepository.GetShoes(comonResourceParameters);
             return Ok(_mapper.Map<IEnumerable<ShoeDto>>(shoesFromRepo));
+        }
+
+        [HttpGet("GetPagedProducts", Name = "GetShoeListAsync")]
+        [ProducesResponseType(typeof(GetTableListResponseDto<RecordDto>), Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
+        public async Task<IActionResult> GetShoeListAsync(
+            [FromQuery] UrlQueryParameters urlQueryParameters,
+            CancellationToken cancellationToken)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // https://vmsdurano.com/asp-net-core-5-implement-web-api-pagination-with-hateoas-links/
+            var records = await _shoeRepository.GetShoesWithParams(
+                                    urlQueryParameters.Limit,
+                                    urlQueryParameters.Page,
+                                    cancellationToken);
+
+            return Ok(records);
         }
 
 

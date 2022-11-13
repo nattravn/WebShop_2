@@ -14,17 +14,15 @@ export class CategoryTableService implements OnDestroy {
 	public tableData = new ReplaySubject<MatTableDataSource<Category>>(1);
 	public dataSource = new MatTableDataSource<Category>();
 
-	constructor(private categoryStore: CategoryStore) {
-		this.refreshMatTable();
-	}
+	constructor(private categoryStore: CategoryStore) {}
 	ngOnDestroy(): void { }
 
 	refreshMatTable() {
-		this.categoryStore.getCategories().pipe(
+		this.categoryStore.getPagedCategories(5,1).pipe(
 			untilDestroyed(this)
 		).subscribe(items => {
 			console.log('items: ', items);
-			this.dataSource.data = items;
+			this.dataSource.data = items.items;
 			this.tableData.next(this.dataSource);
 		});
 	}

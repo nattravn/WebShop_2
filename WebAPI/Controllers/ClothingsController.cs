@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Services;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Controllers
 {
@@ -36,6 +39,27 @@ namespace WebAPI.Controllers
         {
             var clothingsFromRepo = _clothingRepository.GetClothings(commonResourceParameters);
             return Ok(_mapper.Map<IEnumerable<ClothingDto>>(clothingsFromRepo));
+        }
+
+        [HttpGet("GetPagedProducts", Name = "GetClothingListAsync")]
+        [ProducesResponseType(typeof(GetTableListResponseDto<ClothingDto>), Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
+        public async Task<IActionResult> GetClothingListAsync(
+            [FromQuery] UrlQueryParameters urlQueryParameters,
+            CancellationToken cancellationToken)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var records = await _clothingRepository.GetClothingsWithParams(
+                                    urlQueryParameters.Limit,
+                                    urlQueryParameters.Page,
+                                    cancellationToken);
+
+            return Ok(records);
         }
 
 
@@ -97,12 +121,16 @@ namespace WebAPI.Controllers
         [HttpPut("{clothingId}")]
         public IActionResult UpdateClothing([FromForm] ClothingForCreationDto clothingToUpdate, int clothingId)
         {
-            var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
+            if (Request.Form.Files.Count != 0)
+            {
+                var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
 
-            _imageService.uploadImage(resizedImage, "resized");
-            _imageService.uploadImage(Request.Form.Files[0], "original");
+                _imageService.uploadImage(resizedImage, "resized");
+                _imageService.uploadImage(Request.Form.Files[0], "original");
 
-            clothingToUpdate.ImagePath = Request.Form.Files[0].FileName;
+                clothingToUpdate.ImagePath = Request.Form.Files[0].FileName;
+            }
+            
 
             if (!_clothingRepository.ClothingExists(clothingId))
             {

@@ -21,6 +21,8 @@ using UserApi.Models;
 using UserApi.ResourceParameters;
 using UserApi.Services;
 using WebAPI.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UserApi.Controllers
 {
@@ -54,6 +56,7 @@ namespace UserApi.Controllers
         // GET: api/ApplicationUser
         [HttpGet()]
         [HttpHead]
+        [Authorize(Roles = "Admin")]
         public ActionResult<IEnumerable<ApplicationUserDto>> GetAspNetUsers([FromQuery] UsersResourceParameters usersResourceParameters)
         {
             var userEntity = _userRepository.GetUsers(usersResourceParameters);

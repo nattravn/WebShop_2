@@ -7,6 +7,10 @@ using AutoMapper;
 using WebAPI.ResourceParameters;
 using Microsoft.AspNetCore.Razor.Language;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using static Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Hosting;
 
 namespace WebAPI.Controllers
 {
@@ -19,11 +23,14 @@ namespace WebAPI.Controllers
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
 
+        private readonly IHostingEnvironment _hostEnvironment;
+
         public RecordsController(
             IMapper mapper,
             IRecordRepository recordRepository,
             ICategoryRepository categoryRepository,
-            ImageService imageService)
+            ImageService imageService,
+            IHostingEnvironment hostingEnvironment)
         {
             _recordRepository = recordRepository
                 ?? throw new ArgumentNullException(nameof(recordRepository));
@@ -31,6 +38,7 @@ namespace WebAPI.Controllers
                 ?? throw new ArgumentNullException(nameof(categoryRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _imageService = imageService;
+            _hostEnvironment = hostingEnvironment;
         }
         
         // GET: api/Records
@@ -44,6 +52,27 @@ namespace WebAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<RecordDto>>(recordsFromRepo));
         }
 
+        [HttpGet("GetPagedProducts", Name = "GetRecordListAsync")]
+        [ProducesResponseType(typeof(GetTableListResponseDto<RecordDto>), Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
+        public async Task<IActionResult> GetRecordListAsync(
+            [FromQuery] UrlQueryParameters urlQueryParameters,
+            CancellationToken cancellationToken)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // https://vmsdurano.com/asp-net-core-5-implement-web-api-pagination-with-hateoas-links/
+            var records = await _recordRepository.GetRecordWithParams(
+                                    urlQueryParameters.Limit,
+                                    urlQueryParameters.Page,
+                                    cancellationToken);
+
+            return Ok(records);
+        }
 
         // GET: api/Records/5
         [HttpGet("{recordId}", Name = "GetRecord")]
@@ -70,12 +99,16 @@ namespace WebAPI.Controllers
         [HttpPost]
         public ActionResult<RecordDto> CreateRecord([FromForm] RecordForCreationDto recordToCreate)
         {
-            var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
+            if (Request.Form.Files.Count != 0)
+            {
+                var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
 
-            _imageService.uploadImage(resizedImage, "resized");
-            _imageService.uploadImage(Request.Form.Files[0], "original");
+                _imageService.uploadImage(resizedImage, "resized");
+                _imageService.uploadImage(Request.Form.Files[0], "original");
+                recordToCreate.ImagePath = Request.Form.Files[0].FileName;
+            } 
 
-            recordToCreate.ImagePath = Request.Form.Files[0].FileName;
+            
 
             var recordEntity = _mapper.Map<Entities.Record>(recordToCreate);
 
@@ -167,4 +200,6 @@ namespace WebAPI.Controllers
             return NoContent();
         }
     }
+
+    public record UrlQueryParameters(int Limit = 50, int Page = 1);
 }

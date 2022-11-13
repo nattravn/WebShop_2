@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using WebAPI.Models;
 using WebAPI.ResourceParameters;
 //using WebAPI.Models;
 using WebAPI.Services;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace WebAPI.Controllers
 {
@@ -162,6 +164,28 @@ namespace WebAPI.Controllers
             _categoryRepository.Save();
 
             return NoContent();
+        }
+
+        [HttpGet("GetPagedCategories", Name = "GetCategoryListAsync")]
+        [ProducesResponseType(typeof(GetTableListResponseDto<RecordDto>), Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
+        public async Task<IActionResult> GetCategoryListAsync(
+            [FromQuery] UrlQueryParameters urlQueryParameters,
+            CancellationToken cancellationToken)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // https://vmsdurano.com/asp-net-core-5-implement-web-api-pagination-with-hateoas-links/
+            var categories = await _categoryRepository.GetCategoriesWithParams(
+                                    urlQueryParameters.Limit,
+                                    urlQueryParameters.Page,
+                                    cancellationToken);
+
+            return Ok(categories);
         }
     }
 }

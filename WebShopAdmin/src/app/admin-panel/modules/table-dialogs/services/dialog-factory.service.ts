@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 
-import { first, tap } from 'rxjs/operators';
+import { first, switchMap, tap } from 'rxjs/operators';
 
 // Services
 import { DialogService } from './dialog.service';
@@ -31,11 +31,25 @@ export class DialogFactoryService<T = undefined> implements OnDestroy{
 			DialogComponent,
 			{
 				...this.fetchOptions(options),
+				hasBackdrop: true,
 				data: dialogData
 			}
 		);
 
-		return new DialogService(dialogRef);
+		dialogRef.afterClosed().pipe(
+			untilDestroyed(this),
+			switchMap(() => this.activatedRoute.paramMap.pipe(
+				tap( paramMap => {
+					console.log('afterClosed')
+					this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
+				})
+			))
+		).subscribe(() => {
+			console.log('cloooose');
+		});
+
+
+		return new DialogService(dialogRef, this.activatedRoute, this.router);
 	}
 
 	private fetchOptions({width,disableClose}: DialogOptions): Pick<MatDialogConfig<DialogData>,'width' | 'disableClose'> {

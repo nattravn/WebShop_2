@@ -8,6 +8,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { Record } from '../models/record.model';
 import { environment } from 'src/environments/environment';
+import { PagedProducts } from '../models/paged-records.model';
 
 @UntilDestroy()
 @Injectable({
@@ -19,8 +20,8 @@ export class RecordStore implements OnDestroy {
 	filter: string;
 	readonly baseUrl = environment.baseUrl;
 	public imageRootPath = this.baseUrl + '/Images/original/default-image.png';
-	private recordsReplay: ReplaySubject<Record[]> = new ReplaySubject<Record[]>(1);
-	public recordsReplay$: Observable<Record[]> = this.recordsReplay.asObservable();
+	private recordsReplay: ReplaySubject<PagedProducts> = new ReplaySubject<PagedProducts>(1);
+	public recordsReplay$: Observable<PagedProducts> = this.recordsReplay.asObservable();
 
 	private recordItemReplay: ReplaySubject<Record> = new ReplaySubject<Record>(1);
 	public recordItemReplay$: Observable<Record> = this.recordItemReplay.asObservable();
@@ -62,7 +63,11 @@ export class RecordStore implements OnDestroy {
 		formData.append('album', modelFormData.album);
 		formData.append('year', modelFormData.year);
 		formData.append('genre', modelFormData.genre);
-		formData.append('image', fileToUpload, fileToUpload.name);
+
+		if(fileToUpload){
+			formData.append('image', fileToUpload, fileToUpload.name);
+		}
+
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('title', modelFormData.title);
 		formData.append('price', modelFormData.price);
@@ -112,8 +117,8 @@ export class RecordStore implements OnDestroy {
 		return this.http.delete(this.baseUrl + '/' + row.categoryName + '/' + row.id);
 	}
 
-	getProducts(route: string): Observable<Record[]> {
-		return this.http.get<Record[]>(this.baseUrl + '/'+route).pipe(
+	getProducts(route: string, limit: number, page: number): Observable<PagedProducts> {
+		return this.http.get<PagedProducts>(`${this.baseUrl}/${route}/GetPagedProducts?limit=${limit}&page=${page}`).pipe(
 			untilDestroyed(this),
 			tap(items => this.recordsReplay.next(items))
 		);

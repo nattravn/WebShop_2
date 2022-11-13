@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { RecordComponent } from './record.component';
+import { RecordDialogComponent } from './record-dialog.component';
 
-describe('RecordComponent', () => {
-  let component: RecordComponent;
-  let fixture: ComponentFixture<RecordComponent>;
+describe('RecordDialogComponent', () => {
+  let component: RecordDialogComponent;
+  let fixture: ComponentFixture<RecordDialogComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RecordComponent ]
+      declarations: [ RecordDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RecordComponent);
+    fixture = TestBed.createComponent(RecordDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

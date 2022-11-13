@@ -7,6 +7,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { Category } from '../models/category.model';
 import { environment } from 'src/environments/environment';
+import { PagedCategory } from '../models/paged-category.model';
 
 @UntilDestroy()
 @Injectable()
@@ -15,13 +16,18 @@ export class CategoryStore implements OnDestroy {
 	readonly rootURL = environment.baseUrl;
 	showCategories = false;
 
-	constructor(private http: HttpClient) {
-		this.getCategories().subscribe();
-	}
+	constructor(private http: HttpClient) {}
+
 	ngOnDestroy(): void { }
 
 	public getCategories(): Observable<Category[]> {
 		return this.http.get<Category[]>(this.rootURL + '/Category').pipe(
+			untilDestroyed(this),
+		);
+	}
+
+	getPagedCategories(limit: number, page: number): Observable<PagedCategory> {
+		return this.http.get<PagedCategory>(`${this.rootURL}/category/GetPagedCategories?limit=${limit}&page=${page}`).pipe(
 			untilDestroyed(this),
 		);
 	}

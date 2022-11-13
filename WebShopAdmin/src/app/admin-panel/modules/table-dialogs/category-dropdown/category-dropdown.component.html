@@ -1,5 +1,5 @@
 <ng-container *ngIf="categories$ | async; let categories">
-    <mat-form-field *ngIf="categoryStore.showCategories">
+    <mat-form-field>
         <mat-select  placeholder="Categories">
             <ng-container *ngFor="let category of categories">
                 <mat-option value="{{category.name}}" (click)="selectCategory.next(category)">{{category.name}}</mat-option>

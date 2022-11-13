@@ -1,24 +1,23 @@
 import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { MatSort } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
-import { EMPTY, Observable } from 'rxjs';
+import { Observable, of, ReplaySubject } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
 import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { environment } from 'src/environments/environment';
-import { Category } from '../../../models/category.model';
 import { RecordDialogService } from '../../table-dialogs/record-dialog/services/record-dialog.service';
 import { ProductTableService } from './services/product-table.service';
 import { CategoryStore } from '../../../stores/category.store';
 import { RecordStore } from '../../../stores/record.store';
 import { Record } from '../../../models/record.model';
 import { FormControl, FormGroup } from '@angular/forms';
-import { first, shareReplay, switchMap, take, tap } from 'rxjs/operators';
-import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/router';
+import { switchMap, tap } from 'rxjs/operators';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ModuleService } from '../../services/module-service.service';
 
 @UntilDestroy()
 @Component({
@@ -26,7 +25,7 @@ import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/
 	templateUrl: './product-table.component.html',
 	styleUrls: ['./product-table.component.scss'],
 	providers: [DialogFactoryService],
-	changeDetection: ChangeDetectionStrategy.Default
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductTableComponent implements OnInit, OnDestroy {
 	displayedColumns: string[] = [
@@ -52,6 +51,11 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	public imageRootPath = environment.baseUrl + '/Images/original/';
 
 	routerEvent$: Observable<any>;
+	activatedRouteEvent$: Observable<any> = this.activatedRoute.paramMap;
+
+	private currentPageIndex = 1;
+
+	private currentTableSize = this.productTableService.initPageLimit;
 
 	constructor(
 		private recordStore: RecordStore,
@@ -59,9 +63,10 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		private toastr: ToastrService,
 		private categoryStore: CategoryStore,
 		private dialogFactoryService: DialogFactoryService,
-		public recordListService: ProductTableService,
+		public productTableService: ProductTableService,
 		private router: Router,
-		private activatedRoute: ActivatedRoute
+		public activatedRoute: ActivatedRoute,
+		private moduleService: ModuleService
 
 	) { }
 	ngOnDestroy(): void {
@@ -69,30 +74,18 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnInit() {
-		this.recordListService.dataSource.sort = this.sort;
-		this.recordListService.dataSource.paginator = this.paginator;
-
-
-		// this.routerEvent$ = this.router.events.pipe(
-		// 	untilDestroyed(this),
-		// 	tap(e => {
-		// 		if (e instanceof ActivationStart && e.snapshot.outlet === "tablesOutlet"){
-		// 			console.log('deactivate');
-		// 			this.outlet.deactivate();
-		// 		}
-		// 	})
-		// );
-
+		this.productTableService.dataSource.sort = this.sort;
+		this.productTableService.dataSource.paginator = this.paginator;
 	}
 
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
-    	this.recordListService.dataSource.filter = filterValue.trim().toLowerCase();
+    	this.productTableService.dataSource.filter = filterValue.trim().toLowerCase();
 	}
 
 	onSearchClear(){
 		this.filterForm.reset();
-		this.recordListService.dataSource.filter = "";
+		this.productTableService.dataSource.filter = "";
 	}
 
 	onDelete(row: any) {
@@ -101,46 +94,36 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 				untilDestroyed(this),
 				switchMap(() => {
 					this.toastr.warning('Deleted successfully');
-					return this.recordListService.refreshMatTable(row.categoryName);
+					return this.productTableService.refreshMatTable(row.categoryName,5,1);
 				})
 			).subscribe();
 		}
 	}
 
-	onCreate() {
-		this.categoryStore.showCategories = true;
-		this.recordDialogService.form.reset();
-		this.recordDialogService.imgSrcReplay.next(this.imageRootPath + 'default-image.png');
-
-		this.dialogService = this.dialogFactoryService.open({
-			headerText: 'Header text',
-			category: {
-				id: 99,
-				name: 'records',
-				route: 'records'
-			},
-			createNew: true,
-			template: this.userDialogTemplate
-		});
-
-		// Change the header of the dialog
-		this.dialogService.setHeaderText('New header');
-
-		// Change the content of the dialog
-		this.dialogService.setTemplate(this.userDialogTemplate);
+	onCreate(paramMap) {
+		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}],  { queryParams: { createNewProduct: true} });
 	}
 
-	onEdit(row: Record) {
-		this.recordDialogService.populateForm(row);
+	public updateTable(paramMap: any, event?: PageEvent){
+		this.currentPageIndex = event.pageIndex+1;
+		this.currentTableSize = event.pageSize;
+		this.productTableService.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1);
+	}
 
-		this.activatedRoute.paramMap.pipe(
-			untilDestroyed(this),
-			tap( paramMap => {
-				if(paramMap.get('product')){
-					this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}]);
-				}
-			})
-		).subscribe();
+	onEdit(row: Record, paramMap: any) {
+		console.log("event: ", event)
+		//this.recordDialogService.populateForm(row);
+		this.moduleService.productData$.next({
+			row: row,
+			currentPageIndex: this.currentPageIndex,
+			currentTableSize: this.currentTableSize
+		})
+		console.log("paramMap.get('product'): ", paramMap.get('product'))
+		console.log("row: ", row)
+		if(paramMap.get('product')){
+			this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}], { queryParams: { createNewProduct: false} });
+		}
+
 
 		// this.dialogService = this.dialogFactoryService.open({
 		// 	headerText: 'Header text',

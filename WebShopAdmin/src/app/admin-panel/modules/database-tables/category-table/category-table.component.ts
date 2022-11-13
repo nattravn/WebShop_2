@@ -80,6 +80,7 @@ export class CategoryTableComponent implements OnInit {
 		this.categoryListService.dataSource.sort = this.sort;
 		this.categoryListService.dataSource.paginator = this.paginator;
 		this.categoryListService.dataSource.filterPredicate = this.filterPredicate;
+		this.categoryListService.refreshMatTable();
 	}
 
 	toggleRow(element: Category) {
@@ -87,9 +88,7 @@ export class CategoryTableComponent implements OnInit {
 		this.cd.detectChanges();
 		this.innerTables.forEach((table, index) => {
 			(table.dataSource as MatTableDataSource<SubCategory>).sort = this.innerSort.toArray()[index];
-		}
-
-		);
+		});
 		//this.innerTables.forEach((table, index) => (table.dataSource as MatTableDataSource<Address>).sort = this.innerSort.toArray()[index]);
 	}
 

@@ -5,10 +5,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AdminPanelModule } from './admin-panel/admin-panel.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthComponent } from './log-in/auth/auth.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
+import { AuthInterceptor } from './guard/auth.interceptor';
 
 @NgModule({
 	declarations: [
@@ -27,7 +28,13 @@ import { ToastrModule } from 'ngx-toastr';
 			positionClass: 'toast-top-right'
 		}),
 	],
-	providers: [],
+	providers: [
+		{
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
+	],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

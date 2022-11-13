@@ -1,35 +1,48 @@
-<form [formGroup]="clothingStore.form" class="normal-form" (submit)="onSubmit()">
-    <mat-grid-list cols="1" rowHeight="800px">
-        <mat-grid-tile>
-            <div class="controls-container">
-                <input hidden formControlName="category" [value]="clothingStore.form.value.category" matInput>
-                <mat-form-field>
-                    <input formControlName="id" [readonly]="true" matInput placeholder="ClothingID">
-                </mat-form-field>
-                <mat-form-field>
-                    <input formControlName="title" matInput placeholder="Title">
-                    <mat-error>This field is mandatory.</mat-error>
-                </mat-form-field>
-                <mat-form-field>
-                    <input formControlName="price" matInput placeholder="Price">
-                    <mat-error>Invalid email address.</mat-error>
-                </mat-form-field>
-                <mat-form-field>
-                    <input formControlName="size" matInput placeholder="Size">
-                </mat-form-field>
-                <mat-form-field>
-                    <input formControlName="description" matInput placeholder="Description">
-                </mat-form-field>
-                <img [src]="clothingStore.imageRootPath" style="width: 250px; height: 200px">
-                <input hidden (change)="onFileSelected($event.target.files)" #fileInput type="file" id="file">
-                <div class="add-bottom-padding">
-                    <button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
-                </div>
-                <div class="button-row">
-                    <button mat-raised-button color="primary" type="submit">Submit</button>
-                    <button mat-raised-button color="warn" type='button' (click)="onClear()">Clear</button>
-                </div>
-            </div>
-        </mat-grid-tile>
-    </mat-grid-list>
+<ng-container *ngIf="{
+	noooothing: populateForm$ | async,
+	formValue: formValue$ | async
+} as source">
+
+<pre>{{source.formValue | json}}</pre>
+<form [formGroup]="form" class="normal-form" (submit)="onSubmit(source.formValue)">
+    <div class="controls-container">
+		<!-- <input hidden formControlName="category" [value]="form.value.category" matInput> -->
+
+		<mat-form-field class="w-100">
+			<input formControlName="id" [readonly]="true" matInput placeholder="ClothingID">
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="title" matInput placeholder="Title">
+			<mat-error>This field is mandatory.</mat-error>
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="price" matInput placeholder="Price">
+			<mat-error>Invalid email address.</mat-error>
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="size" matInput placeholder="Size">
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<input formControlName="description" matInput placeholder="Description">
+		</mat-form-field>
+
+		<div class="d-flex justify-content-center w-100">
+			<img [src]="(imgSrcReplay$ | async) || defaultimageRootPath" (click)="fileInput.click()" style="width: 250px; height: 200px">
+		</div>
+
+		<input hidden (change)="onFileSelected($event.target.files)" #fileInput type="file" id="file">
+
+		<div class="add-bottom-padding">
+			<button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
+		</div>
+
+		<div class="button-row">
+			<button mat-raised-button color="primary" type="submit">Submit</button>
+			<button mat-raised-button color="warn" type='button' (click)="onClear()">Clear</button>
+		</div>
+    </div>
 </form>

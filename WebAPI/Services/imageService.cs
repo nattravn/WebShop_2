@@ -103,5 +103,6 @@ namespace WebAPI.Services
             IFormFile resizedImageFile = new FormFile(stream, 0, stream.ToArray().Length, "name", fileNamewithoutFileType + "_resized.jpg");
             return resizedImageFile;
         }
+
     }
 }

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormGroup, FormControl } from '@angular/forms';
 
 import { Observable, ReplaySubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Clothing } from '../models/clothing.model';
 import { environment } from 'src/environments/environment';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
 	providedIn: 'root'
@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 export class ClothingStore {
 	readonly baseUrl = environment.baseUrl;
 	public imageRootPath = environment.baseUrl + '/Images/original/';
+	public defaultimageRootPath = environment.baseUrl + '/Images/original/default-image.png';
 	list: Clothing[];
 	private clothingsReplay: ReplaySubject<Clothing[]> = new ReplaySubject<Clothing[]>(1);
 	public clothingsReplay$: Observable<Clothing[]> = this.clothingsReplay.asObservable();
@@ -22,37 +23,8 @@ export class ClothingStore {
 
 	public clothingItemReplay$: Observable<Clothing> = this.clothingItemReplay.asObservable();
 
-	form: FormGroup = new FormGroup({
-		id: new FormControl(null),
-		title: new FormControl(''),
-		price: new FormControl(''),
-		size: new FormControl(''),
-		image: new FormControl(null),
-		imagePath: new FormControl('default-image.png'),
-		description: new FormControl(''),
-		category: new FormControl('Clothing'),
-		userId: new FormControl(null),
-		// userName: new FormControl(''),
-		subCategory: new FormControl('')
-	});
+	constructor(private http: HttpClient,  private toastr: ToastrService) { }
 
-	constructor(private http: HttpClient) { }
-
-	initializeFormGroup() {
-		this.form.setValue({
-			id: null,
-			title: '',
-			price: '',
-			size: '',
-			image: null,
-			imagePath: '',
-			description: '',
-			category: 'Clothing',
-			userId: null,
-			//userName: '',
-			subCategory: ''
-		});
-	}
 
 	getClothings(): Observable<Clothing[]> {
 		return this.http.get<Clothing[]>(this.baseUrl + '/Clothings').pipe(tap(items => {
@@ -85,7 +57,7 @@ export class ClothingStore {
 
 	putClothing(modelFormData: Clothing, fileToUpload: File) {
 		const formData: FormData = new FormData();
-
+		console.log("modelFormData: ", modelFormData)
 		formData.append('title', modelFormData.title);
 		formData.append('id', modelFormData.id.toString());
 		formData.append('price', modelFormData.price.toString());
@@ -102,11 +74,9 @@ export class ClothingStore {
 		return this.http.put(
 			this.baseUrl + '/Clothings/' + modelFormData.id,
 			formData
-		);
-	}
-
-	populateForm(clothing) {
-		this.form.setValue(clothing);
+		).pipe(tap(x => {
+			this.toastr.info('updated successfully', `Clothing:  ${modelFormData.title}`);
+		}))
 	}
 
 	deleteClothing(id: number) {

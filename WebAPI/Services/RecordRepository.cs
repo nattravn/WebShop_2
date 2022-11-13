@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
+using WebAPI.Extensions;
+using WebAPI.Models;
 using WebAPI.ResourceParameters;
 
 namespace WebAPI.Services
@@ -124,6 +127,37 @@ namespace WebAPI.Services
         public IEnumerable<Record> GetRecordsFromUserId(string userId)
         {
             return _context.Records.Where(r => r.UserId == userId).ToList();
+        }
+
+        public async Task<GetTableListResponseDto<RecordDto>> GetRecordWithParams(int limit, int page, CancellationToken cancellationToken)
+        {
+            var records = await _context.Records
+                           .AsNoTracking()
+                           .OrderBy(p => p.Id)
+                           .PaginateAsync(page, limit, cancellationToken);
+
+            return new GetTableListResponseDto<RecordDto>
+            {
+                CurrentPage = records.CurrentPage,
+                TotalPages = records.TotalPages,
+                TotalItems = records.TotalItems,
+                Items = records.Items.Select(p => new RecordDto
+                {
+                    Id = p.Id,
+                    Album = p.Album,
+                    Band = p.Band,
+                    CategoryName = p.CategoryName,
+                    Description = p.Description,
+                    Genre = p.Genre,
+                    ImagePath = p.ImagePath,
+                    Price = p.Price.GetValueOrDefault(),
+                    subCategoryId = p.SubCategoryId.GetValueOrDefault(),
+                    CategoryId = p.CategoryId.GetValueOrDefault(),
+                    Title = p.Title,
+                    Year = p.Year,
+                    UserId = p.UserId
+                }).ToList()
+            };
         }
     }
 }
