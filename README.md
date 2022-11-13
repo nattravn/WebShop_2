@@ -8,7 +8,7 @@ Work in progress...
 Azure key vault integration for safe database connection</li>
   <li><em>WebApi</em>: REST api where the handling for the products is managed. As examples of products (Enteties) I have added Reckord, Clothes, Shoes and Others. To structure the products, each item is tagged with a category ID. Hence there is a category-entety and a sub-category-entity.
 <br>
-Azure key vault integration for safe database connection</li>
+Azure key vault integration for safe database connection (production)</li>
 </ul>
 
 <b>Frontend:</b>
