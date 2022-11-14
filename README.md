@@ -3,10 +3,10 @@ Work in progress...
 
 <b>Backend:</b>
 <ul>
-  <li><em>UserApi</em>: REST api with a user database generated via the Identity package from ASP.NET Core.
+  <li><em>UserApi</em>: REST api with a user database generated via the Identity package from ASP.NET Core. For database mapping Entity Framework Core 3.1 is used.
 <br>
 Azure key vault integration for safe database connection</li>
-  <li><em>WebApi</em>: REST api where the handling for the products is managed. As examples of products (Enteties) I have added Reckord, Clothes, Shoes and Others. To structure the products, each item is tagged with a category ID. Hence there is a category-entety and a sub-category-entity.
+  <li><em>WebApi</em>: REST api where the handling for the products is managed. Each new product/category requiers a new controller and database table. To structure the products, each item is tagged with a categoryId and a subCategoryId
 <br>
  Production mode: Azure key vault integration for safe database connection 
  Development mode: connection strings without userId and password for, connections to SQL Server Express
@@ -30,7 +30,7 @@ Azure key vault integration for safe database connection</li>
   <br>
   DB-first:
   <br>
-  Use EF Core Power Tools reverse engineer to generate database enteties
+  In visual studio, create new Entity Data model, select EF Designer from Database, connect to database, select table to be auto generated as Entity models. 
   <br>
   <br>
   For new controllers:
@@ -64,7 +64,7 @@ Azure key vault integration for safe database connection</li>
 
 
 <ul>
-  <li><em>WebShopAdmin</em>: Admin where a logged in administrator can add, delete and update products as well as add new categories. 2 modules, modal-wrapper and  category-table (lazy loading)</li>
+  <li><em>WebShopAdmin</em>: Admin where a logged in administrator can add, delete and update products as well as add new categories and administrate users. 2 modules, modal-wrapper and  category-table (lazy loading)</li>
   <li><em>WebShopSite</em>: The page that presents all products, a user should be able to add products to their shopping cart and place an order</li>
 </ul>
 
