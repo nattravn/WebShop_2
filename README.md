@@ -11,19 +11,28 @@ Azure key vault integration for safe database connection</li>
  Production mode: Azure key vault integration for safe database connection 
  Development mode: connection strings without userId and password for, connections to SQL Server Express
 </li>
-  
-  To create a Use database for the first time in UserApi run:
+  <br>
+  To create a User database for the first time in UserApi run:
+  <br>
   Add-migartion "InitialCreate"
+  <br>
   Update-Database
-  
+  <br>
+  <br>
   Code first:
+  <br>
   Create Context class (with DBSet<Entity>) and database model
+  <br>
   Add-migartion "newDBmigartion"
+  <br>
   Update-Database
-  
-  DB-first
-  Use EF Core Power Tools
-  
+  <br>
+  <br>
+  DB-first:
+  <br>
+  Use EF Core Power Tools reverse engineer to generate database enteties
+  <br>
+  <br>
   For new controllers:
   Right click add new controller select Context class
   
@@ -35,10 +44,9 @@ Azure key vault integration for safe database connection</li>
         Email = "usename@email.com",
         FullName = "User Name",
         Password = "password"
-  
+  }
         and set model.Role = "Admin"; Line 101 in ApplicationUserController.cs
         Admin => RoleId == 1 (managed in AspNetRoles table)
-  }
   ```
   Some endpoints has Role-Based Authorization
   
