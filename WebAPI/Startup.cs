@@ -1,21 +1,38 @@
-﻿using AutoMapper;
-using Azure.Core;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+
+using WebAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
-using System;
+using WebAPI.Services;
+using WebAPI.Entities;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Hosting;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using WebAPI.Constants;
-using WebAPI.Entities;
-using WebAPI.Services;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Core;
+using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using System.Diagnostics;
+using Microsoft.Data.SqlClient;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
@@ -103,7 +120,7 @@ namespace WebAPI
                 string userIdString = userId.Value;
 
                 var formatString = connectionString.ToString();
-                connectionString = string.Format(connectionString.ToString(), userIdString, passwordString);
+                connectionString = string.Format(connectionString.ToString(), userIdString, passwordString );
 
                 //_password = userIdString;
             }

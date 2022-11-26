@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WebAPI.Filter
 {
-    public class CategoryResultFilterAttribute : ResultFilterAttribute
+    public class CategoryResultFilterAttribute: ResultFilterAttribute
     {
         public override async Task OnResultExecutionAsync(
             ResultExecutingContext context,
@@ -26,7 +29,7 @@ namespace WebAPI.Filter
             var _mapper = context.HttpContext.RequestServices.GetService<IMapper>();
             resultFromAction.Value = _mapper.Map<Models.CategoryDto>(resultFromAction.Value);
 
-            await next();
+           await next();
         }
     }
 }

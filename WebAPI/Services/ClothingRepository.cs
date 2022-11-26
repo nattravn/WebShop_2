@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
-using WebAPI.Extensions;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
+using WebAPI.Extensions;
 
 namespace WebAPI.Services
 {
@@ -79,7 +80,7 @@ namespace WebAPI.Services
                 throw new ArgumentException(nameof(clothingToAdd));
             }
 
-            clothingToAdd.Id = _context.Clothings.OrderByDescending(r => r.Id).First().Id + 1;
+            clothingToAdd.Id = _context.Clothings.OrderByDescending(r => r.Id).First().Id +1;
             //Clothing id
             clothingToAdd.CategoryId = 2;
 

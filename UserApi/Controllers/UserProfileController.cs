@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using UserApi.Entities;
 using UserApi.Services;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
@@ -49,7 +53,7 @@ namespace WebAPI.Controllers
         {
             string accessToken = "unassigned";
 
-
+            
             accessToken = Request.Headers[HeaderNames.Authorization];
 
             if (accessToken == null)

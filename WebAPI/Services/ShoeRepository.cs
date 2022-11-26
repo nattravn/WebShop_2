@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
-using WebAPI.Extensions;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
+using WebAPI.Extensions;
 
 namespace WebAPI.Services
 {
@@ -79,7 +80,7 @@ namespace WebAPI.Services
             if (flagToAdd == null)
             {
                 throw new ArgumentException(nameof(flagToAdd));
-            }
+            }   
 
             //flagToAdd.Id = _context.Flag.OrderByDescending(r => r.Id).First().Id +1;
             flagToAdd.CategoryId = 4;
@@ -155,7 +156,7 @@ namespace WebAPI.Services
                     CategoryName = p.CategoryName,
                     Image = p.Image,
                     UserId = p.UserId
-
+                    
                 }).ToList()
             };
         }

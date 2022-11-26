@@ -1,5 +1,13 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -8,18 +16,13 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using UserApi.Entities;
 using UserApi.Models;
 using UserApi.ResourceParameters;
 using UserApi.Services;
 using WebAPI.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UserApi.Controllers
 {
@@ -74,7 +77,7 @@ namespace UserApi.Controllers
                     new Claim(ClaimTypes.NameIdentifier, userId)
 
             });
-
+            
             claimsPrincipal.AddIdentity(claimsIdentity);
             ApplicationUser user = await _userManager.GetUserAsync(claimsPrincipal);
 
@@ -158,7 +161,7 @@ namespace UserApi.Controllers
 
         [HttpPut("{applicationUserId}")]
         public IActionResult UpadteCourseAuthor(
-            string applicationUserId,
+            string applicationUserId, 
             ApplicationUserForCreationDto applicationUser)
         {
             if (!_userRepository.UserExists(applicationUserId))
@@ -230,11 +233,11 @@ namespace UserApi.Controllers
             // add validation
             patchDocument.ApplyTo(applicationUserToPath, ModelState);
 
-            if (!TryValidateModel(applicationUserToPath))
+            if(!TryValidateModel(applicationUserToPath))
             {
-                return ValidationProblem(ModelState);
+               return ValidationProblem(ModelState);
             }
-
+            
             _mapper.Map(applicationUserToPath, applicationUserFromRepo);
 
             _userRepository.updateApplicationUser(applicationUserFromRepo);
@@ -252,18 +255,18 @@ namespace UserApi.Controllers
             return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
 
-        // DELETE: api/AspNetUsers/5
+       // DELETE: api/AspNetUsers/5
         [HttpDelete("{id}")]
         public ActionResult DeleteApplicationUser(string id)
         {
-            if (!_userRepository.UserExists(id))
+            if(!_userRepository.UserExists(id))
             {
                 return NotFound();
             }
 
             var userRepositoryFromRepo = _userRepository.GetUser(id);
 
-            if (userRepositoryFromRepo == null)
+            if(userRepositoryFromRepo == null)
             {
                 return NotFound();
             }

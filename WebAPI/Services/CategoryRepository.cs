@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
-using WebAPI.Extensions;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
+using WebAPI.Extensions;
+using AutoMapper;
 
 namespace WebAPI.Services
 {
@@ -80,7 +80,7 @@ namespace WebAPI.Services
 
         public void addCategory(Category categoryToAdd)
         {
-            if (categoryToAdd == null)
+            if(categoryToAdd == null)
             {
                 throw new ArgumentException(nameof(categoryToAdd));
             }
@@ -154,7 +154,7 @@ namespace WebAPI.Services
                     Id = p.Id,
                     Name = p.Name,
                     Route = p.Route,
-                    SubCategories = _mapper.Map<ICollection<SubCategoryDto>>(p.SubCategories)
+                    SubCategories = _mapper.Map<ICollection<SubCategoryDto>>(p.SubCategories) 
                 }).ToList()
             };
         }

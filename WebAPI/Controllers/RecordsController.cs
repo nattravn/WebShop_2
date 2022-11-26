@@ -1,14 +1,16 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using WebAPI.Models;
-using WebAPI.ResourceParameters;
+using Microsoft.AspNetCore.Mvc;
 using WebAPI.Services;
+using WebAPI.Models;
+using AutoMapper;
+using WebAPI.ResourceParameters;
+using Microsoft.AspNetCore.Razor.Language;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using static Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Hosting;
 
 namespace WebAPI.Controllers
 {
@@ -38,7 +40,7 @@ namespace WebAPI.Controllers
             _imageService = imageService;
             _hostEnvironment = hostingEnvironment;
         }
-
+        
         // GET: api/Records
         [HttpGet()]
         [HttpHead]
@@ -104,9 +106,9 @@ namespace WebAPI.Controllers
                 _imageService.uploadImage(resizedImage, "resized");
                 _imageService.uploadImage(Request.Form.Files[0], "original");
                 recordToCreate.ImagePath = Request.Form.Files[0].FileName;
-            }
+            } 
 
-
+            
 
             var recordEntity = _mapper.Map<Entities.Record>(recordToCreate);
 
@@ -144,7 +146,7 @@ namespace WebAPI.Controllers
 
                 recordToUpdate.ImagePath = Request.Form.Files[0].FileName;
             }
-
+            
             if (!_recordRepository.RecordExists(recordId))
             {
                 return NotFound();

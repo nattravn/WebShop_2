@@ -1,10 +1,14 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Entities;
+using WebAPI.Filter;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 //using WebAPI.Models;
@@ -123,7 +127,7 @@ namespace WebAPI.Controllers
             {
                 var subCategoryFromRepo = _subCategoryRepository.GetSubCategory(categoryId, subCategoryToUpdate.Id);
 
-                if (subCategoryFromRepo == null)
+                if(subCategoryFromRepo == null)
                 {
                     var subCategoryEntity = _mapper.Map<Entities.SubCategory>(subCategoryToUpdate);
                     _subCategoryRepository.AddSubCategory(categoryId, subCategoryEntity);

@@ -28,11 +28,6 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="wwwroot\api\Images\a1539570872_10.jpg" />
     <None Include="wwwroot\api\Images\a2560572702_2.jpg" />
-    <None Include="wwwroot\api\Images\af.png" />
-    <None Include="wwwroot\api\Images\fb.png" />
-    <None Include="wwwroot\api\Images\hqdefault.jpg" />
-    <None Include="wwwroot\api\Images\Namnlös %28återställda%29.bmp" />
-    <None Include="wwwroot\api\Images\nordfront.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,7 +37,6 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Azure.Identity" Version="1.8.0" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.4.0" />
-    <PackageReference Include="CoreCompat.System.Drawing" Version="1.0.0-beta006" />
     <PackageReference Include="Microsoft.AspNet.WebApi.SelfHost" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
