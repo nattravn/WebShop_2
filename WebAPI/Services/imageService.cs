@@ -1,18 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using WebAPI.Entities;
-using WebAPI.Models;
 
 namespace WebAPI.Services
 {
@@ -96,7 +89,7 @@ namespace WebAPI.Services
 
             // Convert to Bitmap to IFormFile
             var stream = new MemoryStream();
-            
+
             destImage.Save(stream, ImageFormat.Jpeg);
 
             var fileNamewithoutFileType = imageFile.FileName.Substring(0, imageFile.FileName.Length - 4);

@@ -2,15 +2,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace WebAPI.Filter
 {
-    public class RecordResultFilterAttribute: ResultFilterAttribute
+    public class RecordResultFilterAttribute : ResultFilterAttribute
     {
         public override async Task OnResultExecutionAsync(
             ResultExecutingContext context,

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -28,10 +27,10 @@ namespace UserApi.Controllers
 
         [HttpGet("({ids})", Name = "GetApplicationUserCollection")]
         public IActionResult GetApplicationUserCollection(
-        [FromRoute] 
+        [FromRoute]
         [ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<String> ids)
-        { 
-            if(ids == null)
+        {
+            if (ids == null)
             {
                 return BadRequest();
             }

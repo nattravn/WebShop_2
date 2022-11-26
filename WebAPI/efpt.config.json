@@ -1,4 +1,5 @@
 ﻿{
+   "CodeGenerationMode": 1,
    "ContextClassName": "RecorddbContext",
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
@@ -7,43 +8,54 @@
    "ModelNamespace": null,
    "OutputContextPath": null,
    "OutputPath": "Entities",
+   "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "WebAPI",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[Category]"
+         "Name": "[dbo].[Category]",
+         "ObjectType": 0
       },
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[Clothing]"
+         "Name": "[dbo].[Clothing]",
+         "ObjectType": 0
       },
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[Other]"
+         "Name": "[dbo].[Other]",
+         "ObjectType": 0
       },
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[Record]"
+         "Name": "[dbo].[Record]",
+         "ObjectType": 0
       },
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[Shoe]"
+         "Name": "[dbo].[Shoe]",
+         "ObjectType": 0
       },
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[SubCategory]"
+         "Name": "[dbo].[SubCategory]",
+         "ObjectType": 0
       }
    ],
+   "UiHint": "DESKTOP-DFCH8N8\\SQLEXPRESS.RecordDB2",
+   "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": false,
    "UseFluentApiOnly": false,
    "UseHandleBars": false,
+   "UseHierarchyId": false,
    "UseInflector": true,
    "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
    "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
    "UseSpatial": false,
-   "UseStoredProcedures": false
+   "UseT4": false
 }

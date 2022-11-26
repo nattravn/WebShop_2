@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using WebAPI.Entities;
-using WebAPI.Models;
 using WebAPI.Services;
 
 namespace WebAPI.Controllers

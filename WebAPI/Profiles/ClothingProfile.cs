@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -13,6 +9,6 @@ namespace WebAPI
             CreateMap<Entities.Clothing, Models.ClothingDto>();
             CreateMap<Models.ClothingForCreationDto, Entities.Clothing>();
         }
-        
+
     }
 }

@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
-using UserApi.Entities;
-using UserApi.Services;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Identity;
-using System;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using WebAPI.Models;
-using Microsoft.Extensions.Azure;
-using WebAPI.Constants;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
-using Azure.Security.KeyVault.Secrets;
-using Azure.Core;
-using Azure.Identity;
+using System.Text;
+using UserApi.Entities;
+using UserApi.Services;
+using WebAPI.Constants;
+using WebAPI.Models;
 
 namespace UserApi
 {
@@ -55,7 +54,8 @@ namespace UserApi
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             }).AddXmlDataContractSerializerFormatters()
-            .ConfigureApiBehaviorOptions(setupAction => {
+            .ConfigureApiBehaviorOptions(setupAction =>
+            {
                 setupAction.InvalidModelStateResponseFactory = context =>
                 {
                     var problemDetails = new ValidationProblemDetails(context.ModelState)
@@ -82,7 +82,7 @@ namespace UserApi
             var connectionString = _configuration["ConnectionStrings:IdentityConnection"];
 
             // AuthenticationContext cant use self made db-context must use this kind:
-           // services.AddDbContext<AuthenticationContext>(option => option.UseSqlServer(connectionString));
+            // services.AddDbContext<AuthenticationContext>(option => option.UseSqlServer(connectionString));
             //services.AddDbContext<UserdbContext>(option => option.UseSqlServer(connectionString));
             ConfigureDBContext(services);
 

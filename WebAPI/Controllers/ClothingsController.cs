@@ -1,9 +1,9 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Services;
@@ -130,7 +130,7 @@ namespace WebAPI.Controllers
 
                 clothingToUpdate.ImagePath = Request.Form.Files[0].FileName;
             }
-            
+
 
             if (!_clothingRepository.ClothingExists(clothingId))
             {

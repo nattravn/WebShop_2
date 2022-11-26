@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,7 +79,7 @@ namespace WebAPI.Services
                 throw new ArgumentException(nameof(recordToAdd));
             }
 
-            recordToAdd.Id = _context.Records.OrderByDescending(r => r.Id).First().Id +1;
+            recordToAdd.Id = _context.Records.OrderByDescending(r => r.Id).First().Id + 1;
             recordToAdd.CategoryId = _context.Records.FirstOrDefault().CategoryId;
             recordToAdd.CategoryName = _context.Records.FirstOrDefault().CategoryName;
 
