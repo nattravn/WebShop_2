@@ -16,6 +16,7 @@ namespace WebAPI.Controllers
         private readonly ValueService _valueService;
         public ValuesController(RecorddbContext context, ValueService valueService)
         {
+            var temp = context.Categories;
             _valueService = valueService;
         }
         // GET api/values
@@ -30,6 +31,7 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
+            Console.WriteLine(id);
             return "value";
         }
 
@@ -37,18 +39,21 @@ namespace WebAPI.Controllers
         [HttpPost]
         public void Post([FromBody] string value)
         {
+            Console.WriteLine(value);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+            Console.WriteLine(id + ' ' + value);
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            Console.WriteLine(id);
         }
     }
 }

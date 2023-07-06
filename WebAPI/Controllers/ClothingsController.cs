@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
             var records = await _clothingRepository.GetClothingsWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
-                                    cancellationToken);
+                                    cancellationToken).ConfigureAwait(true);
 
             return Ok(records);
         }

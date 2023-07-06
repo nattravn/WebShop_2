@@ -183,7 +183,7 @@ namespace WebAPI.Controllers
             var categories = await _categoryRepository.GetCategoriesWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
-                                    cancellationToken);
+                                    cancellationToken).ConfigureAwait(true);
 
             return Ok(categories);
         }

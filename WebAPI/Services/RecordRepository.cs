@@ -77,7 +77,7 @@ namespace WebAPI.Services
         {
             if (recordToAdd == null)
             {
-                throw new ArgumentException(nameof(recordToAdd));
+                throw new ArgumentException("Record is null");
             }
 
             recordToAdd.Id = _context.Records.OrderByDescending(r => r.Id).First().Id +1;

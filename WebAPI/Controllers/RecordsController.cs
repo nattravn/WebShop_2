@@ -10,7 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using static Microsoft.AspNetCore.Http.StatusCodes;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace WebAPI.Controllers
 {
@@ -23,14 +24,14 @@ namespace WebAPI.Controllers
         private readonly IMapper _mapper;
         private readonly ImageService _imageService;
 
-        private readonly IHostingEnvironment _hostEnvironment;
+        private readonly IHostEnvironment _hostEnvironment;
 
         public RecordsController(
             IMapper mapper,
             IRecordRepository recordRepository,
             ICategoryRepository categoryRepository,
             ImageService imageService,
-            IHostingEnvironment hostingEnvironment)
+            IHostEnvironment hostingEnvironment)
         {
             _recordRepository = recordRepository
                 ?? throw new ArgumentNullException(nameof(recordRepository));
@@ -103,8 +104,16 @@ namespace WebAPI.Controllers
             {
                 var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
 
-                _imageService.uploadImage(resizedImage, "resized");
-                _imageService.uploadImage(Request.Form.Files[0], "original");
+                ImageUploadModel imageUploadResized = _imageService.uploadImage(resizedImage, "resized");
+                ImageUploadModel imageUploadOriginal = _imageService.uploadImage(Request.Form.Files[0], "original");
+
+                if (imageUploadResized.Status == 0 || imageUploadOriginal.Status == 0)
+                {
+                    ModelState.AddModelError(
+                        "Description",
+                        imageUploadOriginal.Path);
+                    return BadRequest(ModelState);
+                }
                 recordToCreate.ImagePath = Request.Form.Files[0].FileName;
             } 
 
@@ -141,8 +150,17 @@ namespace WebAPI.Controllers
             if (Request.Form.Files.Count != 0)
             {
                 var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
-                _imageService.uploadImage(resizedImage, "resized");
-                _imageService.uploadImage(Request.Form.Files[0], "original");
+
+                ImageUploadModel imageUploadResized = _imageService.uploadImage(resizedImage, "resized");
+                ImageUploadModel imageUploadOriginal = _imageService.uploadImage(Request.Form.Files[0], "original");
+
+                if (imageUploadResized.Status == 0 || imageUploadOriginal.Status == 0)
+                {
+                    ModelState.AddModelError(
+                        "Description",
+                        imageUploadOriginal.Path);
+                    return BadRequest(ModelState);
+                }
 
                 recordToUpdate.ImagePath = Request.Form.Files[0].FileName;
             }

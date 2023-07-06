@@ -23,9 +23,9 @@ namespace WebAPI.Services
             _userService = userService;
         }
 
-        public Shoe GetShoe(int flagId)
+        public Shoe GetShoe(int shoeId)
         {
-            return _context.Shoes.FirstOrDefault(r => r.Id == flagId);
+            return _context.Shoes.FirstOrDefault(r => r.Id == shoeId);
         }
 
         public IEnumerable<Shoe> GetShoes()
@@ -33,31 +33,31 @@ namespace WebAPI.Services
             return _context.Shoes.ToList<Shoe>();
         }
 
-        public IEnumerable<Shoe> GetShoes(CommonResourceParameters flagsResourceParameters)
+        public IEnumerable<Shoe> GetShoes(CommonResourceParameters shoesResourceParameters)
         {
-            if (flagsResourceParameters == null)
+            if (shoesResourceParameters == null)
             {
-                throw new ArgumentNullException(nameof(flagsResourceParameters));
+                throw new ArgumentNullException(nameof(shoesResourceParameters));
             }
 
-            if (string.IsNullOrWhiteSpace(flagsResourceParameters.Name)
-                 && string.IsNullOrWhiteSpace(flagsResourceParameters.SearchQuery))
+            if (string.IsNullOrWhiteSpace(shoesResourceParameters.Name)
+                 && string.IsNullOrWhiteSpace(shoesResourceParameters.SearchQuery))
             {
                 return GetShoes();
             }
 
             var collection = _context.Shoes as IQueryable<Shoe>;
 
-            if (!string.IsNullOrWhiteSpace(flagsResourceParameters.Name))
+            if (!string.IsNullOrWhiteSpace(shoesResourceParameters.Name))
             {
-                var flagName = flagsResourceParameters.Name.Trim();
-                collection = collection.Where(f => f.Title == flagName);
+                var shoeName = shoesResourceParameters.Name.Trim();
+                collection = collection.Where(f => f.Title == shoeName);
             }
 
-            if (!string.IsNullOrWhiteSpace(flagsResourceParameters.SearchQuery))
+            if (!string.IsNullOrWhiteSpace(shoesResourceParameters.SearchQuery))
             {
 
-                var searchQuery = flagsResourceParameters.SearchQuery.Trim();
+                var searchQuery = shoesResourceParameters.SearchQuery.Trim();
                 collection = collection.Where(f => f.Title.Contains(searchQuery)
                     || f.Title.Contains(searchQuery));
             }
@@ -65,39 +65,39 @@ namespace WebAPI.Services
             return collection.ToList();
         }
 
-        public bool ShoeExists(int flagId)
+        public bool ShoeExists(int shoeId)
         {
-            return _context.Shoes.Any(r => r.Id == flagId);
+            return _context.Shoes.Any(r => r.Id == shoeId);
         }
 
-        public bool ShoeExists(string flagTitle)
+        public bool ShoeExists(string shoeTitle)
         {
-            return _context.Shoes.Any(r => r.Title == flagTitle);
+            return _context.Shoes.Any(r => r.Title == shoeTitle);
         }
 
-        public async void AddShoe(Shoe flagToAdd)
+        public void AddShoe(Shoe shoeToAdd)
         {
-            if (flagToAdd == null)
+            if (shoeToAdd == null)
             {
-                throw new ArgumentException(nameof(flagToAdd));
+                throw new ArgumentException("Shoe is null");
             }   
 
-            //flagToAdd.Id = _context.Flag.OrderByDescending(r => r.Id).First().Id +1;
-            flagToAdd.CategoryId = 4;
-            flagToAdd.CategoryName = "Flag";
-            flagToAdd.UserId = "test";
+            //shoeToAdd.Id = _context.shoe.OrderByDescending(r => r.Id).First().Id +1;
+            shoeToAdd.CategoryId = 4;
+            shoeToAdd.CategoryName = "shoe";
+            shoeToAdd.UserId = "test";
 
-            _context.Shoes.Add(flagToAdd);
+            _context.Shoes.Add(shoeToAdd);
         }
 
-        public void DeleteShoe(Shoe flag)
+        public void DeleteShoe(Shoe shoe)
         {
-            if (flag == null)
+            if (shoe == null)
             {
-                throw new ArgumentNullException(nameof(flag));
+                throw new ArgumentNullException(nameof(shoe));
             }
 
-            _context.Shoes.Remove(flag);
+            _context.Shoes.Remove(shoe);
         }
 
         public bool Save()
@@ -105,7 +105,7 @@ namespace WebAPI.Services
             return (_context.SaveChanges() >= 0);
         }
 
-        public void UpdateShoe(Shoe flag)
+        public void UpdateShoe(Shoe shoe)
         {
             // no code in this implementation
         }

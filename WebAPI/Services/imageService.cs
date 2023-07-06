@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,26 +10,29 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using WebAPI.Entities;
 using WebAPI.Models;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace WebAPI.Services
 {
     public class ImageService
     {
-        private readonly IHostingEnvironment _hostEnvironment;
+        private readonly IHostEnvironment _hostEnvironment;
 
         public ImageService(
-            IHostingEnvironment hostingEnvironment)
+            IHostEnvironment hostingEnvironment)
         {
             _hostEnvironment = hostingEnvironment;
         }
 
-        public string uploadImage(IFormFile imageFile, string folder)
+        public ImageUploadModel uploadImage(IFormFile imageFile, string folder)
         {
+            ImageUploadModel imageUploadModel = new Models.ImageUploadModel();
             try
             {
-                var pathToSave = _hostEnvironment.WebRootPath + "\\api\\Images\\" + folder + "\\";
+                var pathToSave = _hostEnvironment.ContentRootPath + "\\wwwroot\\api\\Images\\" + folder + "\\";
 
                 var fileName = imageFile.FileName.Trim('"');
                 var fullPath = Path.Combine(pathToSave, fileName);
@@ -39,12 +41,19 @@ namespace WebAPI.Services
                 {
                     imageFile.CopyTo(fileStream);
                     fileStream.Flush();
-                    return "\\api\\Images\\" + folder + "\\" + fileName;
+
+                    
+                    imageUploadModel.Path = "\\api\\Images\\" + folder + "\\" + fileName;
+                    imageUploadModel.Status = 1;
+
+                    return imageUploadModel;
                 }
             }
             catch (Exception ex)
             {
-                return "Faild. File length: " + imageFile.Length;
+                imageUploadModel.Path = "Faild. File length: " + imageFile.Length;
+                imageUploadModel.Status = 0;
+                return imageUploadModel;
             }
         }
 
@@ -52,8 +61,8 @@ namespace WebAPI.Services
         {
             Debug.WriteLine("fileName.Length: " + fileName.Length);
             var fileNamewithoutFileType = fileName.Substring(0, fileName.Length - 4);
-            var filePathOriginal = _hostEnvironment.WebRootPath + "\\api\\Images\\original\\" + fileName;
-            var filePathResized = _hostEnvironment.WebRootPath + "\\api\\Images\\resized\\" + fileNamewithoutFileType + "_resized.jpg";
+            var filePathOriginal = _hostEnvironment.ContentRootPath + "\\api\\Images\\original\\" + fileName;
+            var filePathResized = _hostEnvironment.ContentRootPath + "\\api\\Images\\resized\\" + fileNamewithoutFileType + "_resized.jpg";
             Debug.WriteLine("filePathResized: " + filePathResized);
             if ((System.IO.File.Exists(filePathOriginal)))
             {
