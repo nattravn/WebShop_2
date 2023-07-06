@@ -118,7 +118,7 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		}
 		const reader = new FileReader();
 		reader.onload = (e: any) => {
-			this.recordDialogService.imgSrcReplay.next(e.target.result);
+			this.imgSrcReplay.next(e.target.result);
 		};
 		reader.readAsDataURL(file);
 		this.form.get('imagePath').setValue(file.name);
