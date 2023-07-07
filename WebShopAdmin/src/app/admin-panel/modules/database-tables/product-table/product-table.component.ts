@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, TemplateRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 import { Observable, of, ReplaySubject } from 'rxjs';
@@ -15,9 +15,12 @@ import { CategoryStore } from '../../../stores/category.store';
 import { RecordStore } from '../../../stores/record.store';
 import { Record } from '../../../models/record.model';
 import { FormControl, FormGroup } from '@angular/forms';
-import { switchMap, tap } from 'rxjs/operators';
+import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { ModuleService } from '../../services/module-service.service';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { MatTableDataSource } from '@angular/material/table';
+import { Clothing } from 'src/app/admin-panel/models/clothing.model';
 
 @UntilDestroy()
 @Component({
@@ -31,6 +34,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	displayedColumns: string[] = [
 		'id',
 		'title',
+		'band',
 		'price',
 		'categoryName',
 		'imagePath',
@@ -41,8 +45,9 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		search: new FormControl('', []),
 	});
 
-	@ViewChild(MatSort, { static: true }) sort: MatSort;
-	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+	@ViewChild(MatSort) sort: MatSort
+	
+	@ViewChild(MatPaginator) paginator: MatPaginator;
 
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
@@ -56,6 +61,10 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	private currentPageIndex = 1;
 
 	private currentTableSize = this.productTableService.initPageLimit;
+
+	public tableData$ = new Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}>();
+
+	private searchFilter: string;
 
 	constructor(
 		private recordStore: RecordStore,
@@ -73,19 +82,61 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 
 	}
 
+	ngAfterViewInit() {
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		
+		console.log('eventUrl: ', eventUrl);
+		this.refreshMatTable(eventUrl, 5, 1);
+
+
+		// console.log('this.sort: ', this.sort);
+		// this.productTableService.dataSource.sort = this.sort;
+		// this.productTableService.dataSource.paginator = this.paginator;
+	}
+
+	refreshMatTable(productString: string, pageLimit: number = null, page: number = null): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
+		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page).pipe(
+			untilDestroyed(this),
+			switchMap(records => {
+				let dataSource = new MatTableDataSource<Record | Clothing>();
+				
+				dataSource.data = records.items;
+				dataSource.sort = this.sort;
+				//dataSource.paginator = this.paginator;
+				//this.dataSource.data = records.items;
+
+
+				console.log('records.Items: ', records);
+				console.log('page: ', page);
+				return of({items: dataSource, totalItems: records.totalItems});
+			}),
+			shareReplay(1),
+		)
+
+		return this.tableData$;
+	}
 	ngOnInit() {
-		this.productTableService.dataSource.sort = this.sort;
-		this.productTableService.dataSource.paginator = this.paginator;
+		
 	}
 
-	applyFilter(event: Event) {
+	applyFilter(event: Event, dataSource : MatTableDataSource<Record | Clothing>) {
 		const filterValue = (event.target as HTMLInputElement).value;
-    	this.productTableService.dataSource.filter = filterValue.trim().toLowerCase();
+
+		this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
+			switchMap((x: (Record | Clothing)[]) => {
+				dataSource.data = x;
+				dataSource.paginator = this.paginator;
+				return of({items: dataSource, totalItems: x.length});
+			}),
+			shareReplay(1)
+		)
 	}
 
-	onSearchClear(){
+	onSearchClear(dataSource : MatTableDataSource<Record | Clothing> ){
 		this.filterForm.reset();
-		this.productTableService.dataSource.filter = "";
+		dataSource.filter = "";
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		this.refreshMatTable(eventUrl, 5, 1);
 	}
 
 	onDelete(row: any) {
@@ -94,7 +145,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 				untilDestroyed(this),
 				switchMap(() => {
 					this.toastr.warning('Deleted successfully');
-					return this.productTableService.refreshMatTable(row.categoryName,5,1);
+					return this.refreshMatTable(row.categoryName,5,1);
 				})
 			).subscribe();
 		}
@@ -104,10 +155,15 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}],  { queryParams: { createNewProduct: true} });
 	}
 
-	public updateTable(paramMap: any, event?: PageEvent){
+	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent){
+		console.log('event.pageIndex: ', filterForm);
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
-		this.productTableService.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1);
+
+		if(!filterForm.value['search']){
+			this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1);
+		}
+		
 	}
 
 	onEdit(row: Record, paramMap: any) {

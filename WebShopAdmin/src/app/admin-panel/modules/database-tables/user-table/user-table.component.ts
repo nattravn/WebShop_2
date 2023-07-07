@@ -11,6 +11,7 @@ import { UserStore } from '../../../stores/user.store';
 import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
 import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-user-table',
@@ -33,29 +34,30 @@ export class UserTableComponent implements OnInit {
 		private dialogFactoryService: DialogFactoryService,
 		public activatedRoute: ActivatedRoute
 	) {
-		this.refreshMatTable();
+		this.refreshMatTable().subscribe();
 	}
 
 	ngOnInit() { }
 
 	refreshMatTable() {
-		this.userStore.getUsers().subscribe((user: User[]) => {
-
-			this.dataSource.data = user;
-			this.dataSource.sort = this.sort;
-			this.dataSource.paginator = this.paginator;
-			this.dataSource.filterPredicate = (data, filter) => {
-				return this.displayedColumns.some(ele => {
-					return (
-						ele !== 'actions' &&
-						data[ele]
-							.toString()
-							.toLowerCase()
-							.indexOf(filter) !== -1
-					);
-				});
-			};
-		});
+		return this.userStore.getUsers().pipe(
+			map((user: User[]) => {
+				this.dataSource.data = user;
+				this.dataSource.sort = this.sort;
+				this.dataSource.paginator = this.paginator;
+				this.dataSource.filterPredicate = (data, filter) => {
+					return this.displayedColumns.some(ele => {
+						return (
+							ele !== 'actions' &&
+							data[ele]
+								.toString()
+								.toLowerCase()
+								.indexOf(filter) !== -1
+						);
+					});
+				};
+			})
+		)
 	}
 
 	onSearchClear() {

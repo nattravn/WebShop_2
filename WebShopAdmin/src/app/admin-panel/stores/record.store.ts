@@ -133,6 +133,22 @@ export class RecordStore implements OnDestroy {
 		);
 	}
 
+	getRecordsByKeyWord(keyWord :string, property: string){
+		let params: URLSearchParams = new URLSearchParams();
+		params.set('band', keyWord);
+
+		return this.http.get<Record>(this.baseUrl + '/Records/', {
+			params: {
+				band: keyWord,
+			}
+		  }).pipe(
+			tap(item => this.recordItemReplay.next(item)),
+			catchError(error => {
+				return of(null);
+			})
+		);
+	}
+
 	getRecordByUserName(userName: string): Observable<Record[]> {
 		return this.http.get<Record[]>(
 			this.baseUrl + '/Records/username/' + userName

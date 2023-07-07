@@ -1,7 +1,7 @@
 <ng-container *ngIf="{
 	routerEvent: routerEvent$ | async,
 	activatedRouteEvent: activatedRoute.paramMap | async,
-	tableData: productTableService.tableData$ | async
+	tableData: tableData$ | async
 } as source">
 
 	<div class="container float-left">
@@ -12,16 +12,16 @@
 
 			<form form class="d-inline p-2" [formGroup]="filterForm">
 				<mat-form-field >
-					<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event)" #input/>
+					<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event, source.tableData?.items)" #input/>
 				</mat-form-field>
 			</form>
-			<button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear()">
+			<button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear(source.tableData?.items)">
 				<mat-icon>close</mat-icon>
 			</button>
 		</div>
 
 		<div class="mat-elevation-z8">
-			<mat-table [dataSource]="source.tableData?.items" matSort>
+			<mat-table [dataSource]="source.tableData?.items" matSort >
 				<ng-container matColumnDef="id">
 					<mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
 					<mat-cell *matCellDef="let element">{{ element.id }}</mat-cell>
@@ -29,6 +29,10 @@
 				<ng-container matColumnDef="title">
 					<mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
 					<mat-cell *matCellDef="let element">{{ element.title }}</mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="band">
+					<mat-header-cell *matHeaderCellDef mat-sort-header>Band</mat-header-cell>
+					<mat-cell *matCellDef="let element">{{ element.band }}</mat-cell>
 				</ng-container>
 				<ng-container matColumnDef="price">
 					<mat-header-cell *matHeaderCellDef mat-sort-header>Price</mat-header-cell>
@@ -74,7 +78,7 @@
 				[length]="source.tableData?.totalItems"
 				[pageSizeOptions]="[5, 10, 25, 100]"
 				[pageSize]="productTableService.initPageLimit"
-				(page)="updateTable(source.activatedRouteEvent, $event)" showFirstLastButtons>
+				(page)="updateTable(source.activatedRouteEvent, filterForm, $event)" showFirstLastButtons>
 			</mat-paginator>
 		</div>
 	</div>

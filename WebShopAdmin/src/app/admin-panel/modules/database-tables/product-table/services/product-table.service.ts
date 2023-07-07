@@ -45,7 +45,7 @@ export class ProductTableService implements OnDestroy {
 		// });
 
 
-		this.refreshMatTable(eventUrl,5,1);
+		//this.refreshMatTable(eventUrl,5,1);
 	}
 
 	ngOnDestroy(): void { }
