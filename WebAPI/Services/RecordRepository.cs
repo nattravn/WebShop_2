@@ -56,8 +56,12 @@ namespace WebAPI.Services
             {
 
                 var searchQuery = recordsResourceParameters.SearchQuery.Trim();
-                collection = collection.Where(a => a.Band.Contains(searchQuery)
-                    || a.Band.Contains(searchQuery));
+                collection = collection.Where(a => a.Band.Contains(searchQuery) 
+                    || a.Album.Contains(searchQuery)
+                    || a.Title.Contains(searchQuery)
+                    || a.CategoryName.Contains(searchQuery)
+                    || a.Id.ToString().Equals(searchQuery));
+
             }
 
             return collection.ToList();

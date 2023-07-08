@@ -139,7 +139,7 @@ export class RecordStore implements OnDestroy {
 
 		return this.http.get<Record>(this.baseUrl + '/Records/', {
 			params: {
-				band: keyWord,
+				searchQuery: keyWord
 			}
 		  }).pipe(
 			tap(item => this.recordItemReplay.next(item)),

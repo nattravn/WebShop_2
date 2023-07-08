@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -12,6 +12,7 @@ import { DialogFactoryService } from '../../table-dialogs/services/dialog-factor
 import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
 
 @Component({
 	selector: 'app-user-table',
@@ -25,8 +26,12 @@ export class UserTableComponent implements OnInit {
 	searchKey = '';
 	dialog2: DialogService;
 	userDialogTemplate: TemplateRef<any>;
-	@ViewChild(MatSort, { static: true }) sort: MatSort;
-	@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+	@ViewChild(MatSort) sort: MatSort;
+	@ViewChild(MatPaginator) paginator: MatPaginator;
+
+	private currentPageIndex = 1;
+
+	private currentTableSize = 5;
 
 	constructor(
 		private userStore: UserStore,
@@ -34,46 +39,55 @@ export class UserTableComponent implements OnInit {
 		private dialogFactoryService: DialogFactoryService,
 		public activatedRoute: ActivatedRoute
 	) {
-		this.refreshMatTable().subscribe();
+		this.refreshMatTable('endpoint', 5, 1).subscribe();
 	}
 
 	ngOnInit() { }
 
-	refreshMatTable() {
+	refreshMatTable(endpoint: string, pageSize: number, pageIndex: number) {
 		return this.userStore.getUsers().pipe(
 			map((user: User[]) => {
 				this.dataSource.data = user;
 				this.dataSource.sort = this.sort;
 				this.dataSource.paginator = this.paginator;
-				this.dataSource.filterPredicate = (data, filter) => {
-					return this.displayedColumns.some(ele => {
-						return (
-							ele !== 'actions' &&
-							data[ele]
-								.toString()
-								.toLowerCase()
-								.indexOf(filter) !== -1
-						);
-					});
-				};
+				return user;
 			})
 		)
 	}
 
 	onSearchClear() {
 		this.searchKey = '';
-		this.applyFilter();
+		this.applyFilter('');
 	}
 
-	applyFilter() {
-		this.dataSource.filter = this.searchKey.trim().toLowerCase();
+	public updateTable(event?: PageEvent){
+		this.currentPageIndex = event.pageIndex+1;
+		this.currentTableSize = event.pageSize;
+
+		// if(!filterForm.value['search']){
+		// 	this.refreshMatTable('user', event.pageSize, event.pageIndex+1);
+		// }
+		
+	}
+
+	applyFilter(event: Event | string) {
+		if(typeof event === "string"){
+			this.dataSource.filter = event;
+		} else {
+			const filterValue = (event.target as HTMLInputElement).value;
+			this.dataSource.filter = this.searchKey.trim().toLowerCase();
+		}
+			
+		console.log("this.searchKey: ", this.searchKey);
+		console.log("this.searchKey: ", this.searchKey);
+		 
 	}
 
 	onDelete(row: any) {
 		if (confirm('Are you sure to delete this record?')) {
 			this.userStore.deleteUser(row.id).subscribe(res => {
 				this.toastr.warning('Deleted successfully', 'EMP. Register');
-				this.refreshMatTable();
+				this.refreshMatTable('endpoint', 5, 1);
 			});
 		}
 	}

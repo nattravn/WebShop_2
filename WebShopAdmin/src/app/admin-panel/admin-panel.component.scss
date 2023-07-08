@@ -4,6 +4,10 @@
 	width: 100%;
 }
 
+ul {
+  cursor: pointer;
+}
+
 li:focus {
 	outline: 0;
-  }
+}

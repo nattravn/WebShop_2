@@ -60,7 +60,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 
 	private currentPageIndex = 1;
 
-	private currentTableSize = this.productTableService.initPageLimit;
+	private currentTableSize = 5;
 
 	public tableData$ = new Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}>();
 
@@ -124,8 +124,10 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 
 		this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
 			switchMap((x: (Record | Clothing)[]) => {
-				dataSource.data = x;
+
+				dataSource.data = x ? x : [];
 				dataSource.paginator = this.paginator;
+				dataSource.sort = this.sort;
 				return of({items: dataSource, totalItems: x.length});
 			}),
 			shareReplay(1)
@@ -156,7 +158,6 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	}
 
 	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent){
-		console.log('event.pageIndex: ', filterForm);
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 
