@@ -12,7 +12,8 @@ import { DialogFactoryService } from '../../table-dialogs/services/dialog-factor
 import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Observable, of } from 'rxjs';
 
 @Component({
 	selector: 'app-user-table',
@@ -29,9 +30,15 @@ export class UserTableComponent implements OnInit {
 	@ViewChild(MatSort) sort: MatSort;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 
+	public tableData$ = new Observable<{items: MatTableDataSource<User>, totalItems: number}>();
+
 	private currentPageIndex = 1;
 
 	private currentTableSize = 5;
+
+	public filterForm: FormGroup = new FormGroup({
+		search: new FormControl('', []),
+	});
 
 	constructor(
 		private userStore: UserStore,
@@ -44,15 +51,20 @@ export class UserTableComponent implements OnInit {
 
 	ngOnInit() { }
 
-	refreshMatTable(endpoint: string, pageSize: number, pageIndex: number) {
-		return this.userStore.getUsers().pipe(
-			map((user: User[]) => {
-				this.dataSource.data = user;
-				this.dataSource.sort = this.sort;
-				this.dataSource.paginator = this.paginator;
-				return user;
+	refreshMatTable(endpoint: string, pageSize: number, pageIndex: number): Observable<{items: MatTableDataSource<User>, totalItems: number}> {
+		this.tableData$ = this.userStore.getUsers().pipe(
+			map((users: User[]) => {
+				let dataSource = new MatTableDataSource<User>();
+				
+				dataSource.data = users;
+				dataSource.sort = this.sort;
+
+				dataSource.paginator = this.paginator;
+				return {items: dataSource, totalItems: users.length};
 			})
 		)
+
+		return this.tableData$;
 	}
 
 	onSearchClear() {
@@ -60,14 +72,13 @@ export class UserTableComponent implements OnInit {
 		this.applyFilter('');
 	}
 
-	public updateTable(event?: PageEvent){
+	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent){
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 
-		// if(!filterForm.value['search']){
-		// 	this.refreshMatTable('user', event.pageSize, event.pageIndex+1);
-		// }
-		
+		if(!filterForm.value['search']){
+			this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1);
+		}
 	}
 
 	applyFilter(event: Event | string) {
