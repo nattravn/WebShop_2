@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { tap } from 'rxjs/operators';
-import { Observable, from, ReplaySubject } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { Observable, from, ReplaySubject, of, EMPTY } from 'rxjs';
 
 import { User } from '../models/user.model';
 import { RecordStore } from './record.store';
@@ -11,6 +11,8 @@ import { ClothingStore } from './clothing.store';
 import { ShoeStore } from './shoe.store';
 import { UserItem } from '../models/user-item.model';
 import { environment } from '../../../environments/environment';
+import { PagedUsers } from '../models/paged-users.model';
+import { untilDestroyed } from '@ngneat/until-destroy';
 
 class UserForm {
 	email: string;
@@ -105,6 +107,15 @@ export class UserStore {
 		}));
 	}
 
+	getPagedUsers(route: string, limit: number, page: number): Observable<PagedUsers> {
+		return this.http.get<PagedUsers>(`${this.baseUrl}/${route}/GetPagedUsers?limit=${limit}&page=${page}`).pipe(
+			catchError(error => {
+				console.error('Bad promise: ', error);
+				return EMPTY;
+			})
+		);
+	}
+
 	roleMatch(allowedRoles): boolean {
 		let isMatch = false;
 		const payLoad = JSON.parse(window.atob(localStorage.getItem('ACCESS_TOKEN').split('.')[1]));
@@ -187,6 +198,21 @@ export class UserStore {
 				confirmPassword: ''
 			}
 		});
+	}
+
+	getRecordsByKeyWord(keyWord :string, property: string){
+		//let params: URLSearchParams = new URLSearchParams();
+		//params.set('user', keyWord);
+
+		return this.http.get<User>(this.baseUrl + '/applicationUser/', {
+			params: {
+				searchQuery: keyWord
+			}
+		  }).pipe(
+			catchError(error => {
+				return of(null);
+			})
+		);
 	}
 
 	deleteUser(id: number) {

@@ -70,6 +70,8 @@ namespace WebAPI.Controllers
             var records = await _recordRepository.GetRecordWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
+                                    urlQueryParameters.Key,
+                                    urlQueryParameters.Order,
                                     cancellationToken);
 
             return Ok(records);
@@ -218,6 +220,4 @@ namespace WebAPI.Controllers
             return NoContent();
         }
     }
-
-    public record UrlQueryParameters(int Limit = 50, int Page = 1);
 }

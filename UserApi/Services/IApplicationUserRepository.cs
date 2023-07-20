@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UserApi.Entities;
+using UserApi.Models;
 using UserApi.ResourceParameters;
+using WebAPI.Models;
 
 namespace UserApi.Services
 {
@@ -16,6 +19,8 @@ namespace UserApi.Services
         IEnumerable<ApplicationUser> GetUsers(UsersResourceParameters usersResourceParameters);
 
         ApplicationUser GetUser(string id);
+
+        Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(int limit, int page, CancellationToken cancellationToken);
 
         void updateApplicationUser(ApplicationUser userToUpdate);
 

@@ -21,7 +21,7 @@
 		</div>
 
 		<div class="mat-elevation-z8">
-			<mat-table [dataSource]="source.tableData?.items" matSort >
+			<mat-table [dataSource]="source.tableData?.items" matSort (matSortChange)="sortData($event)" >
 				<ng-container matColumnDef="id">
 					<mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
 					<mat-cell *matCellDef="let element">{{ element.id }}</mat-cell>

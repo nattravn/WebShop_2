@@ -10,9 +10,11 @@ import { User } from '../../../models/user.model';
 import { UserStore } from '../../../stores/user.store';
 import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
 import { DialogService } from '../../table-dialogs/services/dialog.service';
-import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs/operators';
-import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { PagedUsers } from 'src/app/admin-panel/models/paged-users.model';
 
 @Component({
 	selector: 'app-user-table',
@@ -22,7 +24,15 @@ import { FormGroup } from '@angular/forms';
 })
 export class UserTableComponent implements OnInit {
 	displayedColumns: string[] = ['userName', 'email', 'actions', 'fullName'];
+
+	public tableData$ = new Observable<{items: MatTableDataSource<User>, totalItems: number}>();
+
+	public filterForm: FormGroup = new FormGroup({
+		search: new FormControl('', []),
+	});
+	
 	dataSource = new MatTableDataSource<User>();
+	
 	searchKey = '';
 	dialog2: DialogService;
 	userDialogTemplate: TemplateRef<any>;
@@ -37,50 +47,58 @@ export class UserTableComponent implements OnInit {
 		private userStore: UserStore,
 		private toastr: ToastrService,
 		private dialogFactoryService: DialogFactoryService,
-		public activatedRoute: ActivatedRoute
+		public activatedRoute: ActivatedRoute,
+		public router: Router
 	) {
-		this.refreshMatTable('endpoint', 5, 1).subscribe();
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		this.refreshMatTable('applicationUser', 5, 1);
 	}
 
 	ngOnInit() { }
 
 	refreshMatTable(endpoint: string, pageSize: number, pageIndex: number) {
-		return this.userStore.getUsers().pipe(
-			map((user: User[]) => {
-				this.dataSource.data = user;
-				this.dataSource.sort = this.sort;
-				this.dataSource.paginator = this.paginator;
-				return user;
-			})
+		this.tableData$ = this.userStore.getPagedUsers(endpoint, pageSize, pageIndex).pipe(
+			switchMap((pagedUsers: PagedUsers) => {
+				let dataSource = new MatTableDataSource<User>();
+				dataSource.data = pagedUsers.items;
+				dataSource.sort = this.sort;
+				//dataSource.paginator = this.paginator;
+				return of({items: dataSource, totalItems: pagedUsers.totalItems});
+			}),
+			shareReplay(1),
 		)
 	}
 
-	onSearchClear() {
-		this.searchKey = '';
-		this.applyFilter('');
+	onSearchClear(dataSource : MatTableDataSource<User> ){
+		this.filterForm.reset();
+		dataSource.filter = "";
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		this.refreshMatTable('ApplicationUser', 5, 1);
 	}
 
-	public updateTable(event?: PageEvent){
+	public updateTable(filterForm: FormGroup, event?: PageEvent){
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 
-		// if(!filterForm.value['search']){
-		// 	this.refreshMatTable('user', event.pageSize, event.pageIndex+1);
-		// }
+		if(!filterForm.value['search']){
+			this.refreshMatTable('ApplicationUser', event.pageSize, event.pageIndex+1);
+		}
 		
 	}
 
-	applyFilter(event: Event | string) {
-		if(typeof event === "string"){
-			this.dataSource.filter = event;
-		} else {
-			const filterValue = (event.target as HTMLInputElement).value;
-			this.dataSource.filter = this.searchKey.trim().toLowerCase();
-		}
-			
-		console.log("this.searchKey: ", this.searchKey);
-		console.log("this.searchKey: ", this.searchKey);
-		 
+	applyFilter(event: Event, dataSource : MatTableDataSource<User>) {
+		const filterValue = (event.target as HTMLInputElement).value;
+
+		this.tableData$ = this.userStore.getRecordsByKeyWord(filterValue, '').pipe(
+			switchMap((x: User[]) => {
+
+				dataSource.data = x ? x : [];
+				dataSource.paginator = this.paginator;
+				dataSource.sort = this.sort;
+				return of({items: dataSource, totalItems: x.length});
+			}),
+			shareReplay(1)
+		)
 	}
 
 	onDelete(row: any) {

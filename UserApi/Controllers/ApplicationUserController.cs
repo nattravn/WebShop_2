@@ -22,7 +22,9 @@ using UserApi.ResourceParameters;
 using UserApi.Services;
 using WebAPI.Models;
 using Microsoft.AspNetCore.Authentication;
+using static Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading;
 
 namespace UserApi.Controllers
 {
@@ -63,6 +65,29 @@ namespace UserApi.Controllers
 
             var test = _mapper.Map<IEnumerable<ApplicationUserDto>>(userEntity);
             return Ok(_mapper.Map<IEnumerable<ApplicationUserDto>>(userEntity));
+        }
+
+        // GET: api/ApplicationUser/GetPagedUsers
+        [HttpGet("GetPagedUsers", Name = "GetUserListAsync")]
+        [ProducesResponseType(typeof(GetTableListResponseDto<ApplicationUserDto>), Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
+        public async Task<IActionResult> GetRecordListAsync(
+            [FromQuery] UrlQueryParameters urlQueryParameters,
+            CancellationToken cancellationToken)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            // https://vmsdurano.com/asp-net-core-5-implement-web-api-pagination-with-hateoas-links/
+            var records = await _userRepository.GetUsersWithParams(
+                                    urlQueryParameters.Limit,
+                                    urlQueryParameters.Page,
+                                    cancellationToken);
+
+            return Ok(records);
         }
 
 
@@ -276,5 +301,7 @@ namespace UserApi.Controllers
 
             return NoContent();
         }
+
+        public record UrlQueryParameters(int Limit = 50, int Page = 1);
     }
 }

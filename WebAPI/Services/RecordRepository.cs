@@ -1,12 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PaginationDemo.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using WebAPI.Entities;
 using WebAPI.Extensions;
+using WebAPI.Filter;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 
@@ -133,12 +137,20 @@ namespace WebAPI.Services
             return _context.Records.Where(r => r.UserId == userId).ToList();
         }
 
-        public async Task<GetTableListResponseDto<RecordDto>> GetRecordWithParams(int limit, int page, CancellationToken cancellationToken)
+        public async Task<GetTableListResponseDto<RecordDto>> GetRecordWithParams(
+            int limit, 
+            int page,
+            string key,
+            string order, 
+            CancellationToken cancellationToken)
         {
+
+
             var records = await _context.Records
-                           .AsNoTracking()
-                           .OrderBy(p => p.Id)
-                           .PaginateAsync(page, limit, cancellationToken);
+                                    .AsNoTracking()
+                                    .OrderByMember(key, order == "desc")
+                                    .PaginateAsync(page, limit, cancellationToken);
+
 
             return new GetTableListResponseDto<RecordDto>
             {

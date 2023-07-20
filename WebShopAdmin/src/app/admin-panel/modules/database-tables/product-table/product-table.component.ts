@@ -66,6 +66,11 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 
 	private searchFilter: string;
 
+	private active = 'band';
+
+	private direction = 'asc';
+
+
 	constructor(
 		private recordStore: RecordStore,
 		private recordDialogService: RecordDialogService,
@@ -86,7 +91,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 		
 		console.log('eventUrl: ', eventUrl);
-		this.refreshMatTable(eventUrl, 5, 1);
+		this.refreshMatTable(eventUrl, 5, 1, this.active,this.direction);
 
 
 		// console.log('this.sort: ', this.sort);
@@ -94,8 +99,22 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		// this.productTableService.dataSource.paginator = this.paginator;
 	}
 
-	refreshMatTable(productString: string, pageLimit: number = null, page: number = null): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
-		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page).pipe(
+	sortData(sort: Sort) {
+		console.log('sort: ', sort);
+		this.active = sort.active;
+		this.direction = sort.direction;
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		this.refreshMatTable(eventUrl, 5, 1, sort.active, sort.direction);
+	}
+
+	refreshMatTable(
+		productString: string, 
+		pageLimit: number = null, 
+		page: number = null,
+		active: string,
+		direction: string
+	): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
+		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction).pipe(
 			untilDestroyed(this),
 			switchMap(records => {
 				let dataSource = new MatTableDataSource<Record | Clothing>();
@@ -138,7 +157,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.filterForm.reset();
 		dataSource.filter = "";
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable(eventUrl, 5, 1);
+		this.refreshMatTable(eventUrl, 5, 1, this.active, this.direction);
 	}
 
 	onDelete(row: any) {
@@ -147,7 +166,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 				untilDestroyed(this),
 				switchMap(() => {
 					this.toastr.warning('Deleted successfully');
-					return this.refreshMatTable(row.categoryName,5,1);
+					return this.refreshMatTable(row.categoryName,5,1,this.active,this.direction);
 				})
 			).subscribe();
 		}
@@ -162,7 +181,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.currentTableSize = event.pageSize;
 
 		if(!filterForm.value['search']){
-			this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1);
+			this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1, this.active, this.direction);
 		}
 		
 	}

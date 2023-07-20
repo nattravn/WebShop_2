@@ -1,21 +1,24 @@
 <ng-container *ngIf="{
-	activatedRouteEvent: activatedRoute.paramMap | async
+	activatedRouteEvent: activatedRoute.paramMap | async,
+	tableData: tableData$ | async
 } as source">
 
 <div class="search-div">
     <button mat-raised-button (click)="onCreate()">
         <mat-icon>add</mat-icon>Create
     </button>
-    <mat-form-field class="search-form-field" floatLabel="never">
-        <input matInput [(ngModel)]="searchKey" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event)">
-        <button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="searchKey" (click)="onSearchClear()">
-            <mat-icon>close</mat-icon>
-        </button>
-    </mat-form-field>
+    <form form class="d-inline p-2" [formGroup]="filterForm">
+        <mat-form-field class="search-form-field" floatLabel="never" [formGroup]="filterForm">
+            <input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event, source.tableData?.items)">
+            <button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear(source.tableData?.items)">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </form>
 </div>
 
 <div class="mat-elevation-z8">
-    <mat-table [dataSource]="dataSource" matSort>
+    <mat-table [dataSource]="source.tableData?.items" matSort>
         <ng-container matColumnDef="email">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.email}} </mat-cell>
@@ -40,10 +43,11 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 
-    <mat-paginator 
+    <mat-paginator
+        [length]="source.tableData?.totalItems"
         [pageSizeOptions]="[5, 10, 25, 100]" 
         [pageSize]="5" 
         showFirstLastButtons
-        (page)="updateTable($event)">
+        (page)="updateTable(filterForm, $event)">
     </mat-paginator>
 </div>

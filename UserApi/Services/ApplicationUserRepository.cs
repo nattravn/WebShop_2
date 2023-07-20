@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UserApi.Entities;
+using UserApi.Models;
 using UserApi.ResourceParameters;
+using WebAPI.Models;
 
 namespace UserApi.Services
 {
@@ -68,6 +72,8 @@ namespace UserApi.Services
             {
                 var searchQuery = usersResourceParameters.SearchQuery.Trim();
                 collection = _context.ApplicationUsers.Where(a => a.UserName.Contains(searchQuery)
+                    || a.FullName.Contains(searchQuery)
+                    || a.Id.Equals(searchQuery)
                     || a.Email.Contains(searchQuery));
             }
 
@@ -128,6 +134,32 @@ namespace UserApi.Services
         public void updateApplicationUser(ApplicationUser userToUpdate)
         {
             // no code in this implementation
+        }
+
+        public async Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(int limit, int page, CancellationToken cancellationToken)
+        {
+
+            var users = await PaginatedList<ApplicationUser>.CreateAsync(_context.ApplicationUsers.AsNoTracking(), page, limit);
+
+
+            //var users1 = await _context.ApplicationUsers
+            // .AsNoTracking()
+            //  .OrderBy(p => p.Id);
+            // .PaginateAsync(page, limit, cancellationToken);
+
+            return new GetTableListResponseDto<ApplicationUserDto>
+            {
+                CurrentPage = users.PageIndex,
+                TotalPages = users.TotalPages,
+                TotalItems = users.TotalItems,
+                Items = users.Select(p => new ApplicationUserDto
+                {
+                    Id = p.Id,
+                    Email = p.Email,
+                    UserName = p.UserName,
+                    FullName = p.FullName
+                }).ToList()
+            };
         }
     }
 }
