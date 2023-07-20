@@ -121,12 +121,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 				
 				dataSource.data = records.items;
 				dataSource.sort = this.sort;
-				//dataSource.paginator = this.paginator;
-				//this.dataSource.data = records.items;
 
-
-				console.log('records.Items: ', records);
-				console.log('page: ', page);
 				return of({items: dataSource, totalItems: records.totalItems});
 			}),
 			shareReplay(1),
@@ -142,12 +137,12 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		const filterValue = (event.target as HTMLInputElement).value;
 
 		this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
-			switchMap((x: (Record | Clothing)[]) => {
+			switchMap((content: (Record | Clothing)[]) => {
 
-				dataSource.data = x ? x : [];
+				dataSource.data = content ? content : [];
 				dataSource.paginator = this.paginator;
 				dataSource.sort = this.sort;
-				return of({items: dataSource, totalItems: x.length});
+				return of({items: dataSource, totalItems: content.length});
 			}),
 			shareReplay(1)
 		)

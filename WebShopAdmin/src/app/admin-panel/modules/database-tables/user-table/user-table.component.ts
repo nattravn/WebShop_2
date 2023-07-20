@@ -39,9 +39,15 @@ export class UserTableComponent implements OnInit {
 	@ViewChild(MatSort) sort: MatSort;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 
+	public tableData$ = new Observable<{items: MatTableDataSource<User>, totalItems: number}>();
+
 	private currentPageIndex = 1;
 
 	private currentTableSize = 5;
+
+	public filterForm: FormGroup = new FormGroup({
+		search: new FormControl('', []),
+	});
 
 	constructor(
 		private userStore: UserStore,
@@ -67,6 +73,8 @@ export class UserTableComponent implements OnInit {
 			}),
 			shareReplay(1),
 		)
+
+		return this.tableData$;
 	}
 
 	onSearchClear(dataSource : MatTableDataSource<User> ){
