@@ -107,8 +107,15 @@ export class UserStore {
 		}));
 	}
 
-	getPagedUsers(route: string, limit: number, page: number): Observable<PagedUsers> {
-		return this.http.get<PagedUsers>(`${this.baseUrl}/${route}/GetPagedUsers?limit=${limit}&page=${page}`).pipe(
+	getPagedUsers(route: string, limit: number, page: number, column: string, direction: string): Observable<PagedUsers> {
+		return this.http.get<PagedUsers>(`${this.baseUrl}/${route}/GetPagedUsers`, {
+			params: {
+				limit: limit.toString(),
+				page: page.toString(),
+				key: column,
+				order: direction
+			}
+		}).pipe(
 			catchError(error => {
 				console.error('Bad promise: ', error);
 				return EMPTY;

@@ -72,6 +72,7 @@ namespace WebAPI.Controllers
                                     urlQueryParameters.Page,
                                     urlQueryParameters.Key,
                                     urlQueryParameters.Order,
+                                    urlQueryParameters.SearchQuery,
                                     cancellationToken);
 
             return Ok(records);

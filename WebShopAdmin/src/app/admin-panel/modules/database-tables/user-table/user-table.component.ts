@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -43,6 +43,10 @@ export class UserTableComponent implements OnInit {
 
 	private currentTableSize = 5;
 
+	private active = 'userName';
+
+	private direction = 'asc';
+
 	constructor(
 		private userStore: UserStore,
 		private toastr: ToastrService,
@@ -51,13 +55,19 @@ export class UserTableComponent implements OnInit {
 		public router: Router
 	) {
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable('applicationUser', 5, 1);
+		this.refreshMatTable('applicationUser', 5, 1, this.active,this.direction);
 	}
 
 	ngOnInit() { }
 
-	refreshMatTable(endpoint: string, pageSize: number, pageIndex: number) {
-		this.tableData$ = this.userStore.getPagedUsers(endpoint, pageSize, pageIndex).pipe(
+	refreshMatTable(
+		endpoint: string, 
+		pageSize: number, 
+		pageIndex: number,
+		active: string,
+		direction: string
+	) {
+		this.tableData$ = this.userStore.getPagedUsers(endpoint, pageSize, pageIndex, active, direction).pipe(
 			switchMap((pagedUsers: PagedUsers) => {
 				let dataSource = new MatTableDataSource<User>();
 				dataSource.data = pagedUsers.items;
@@ -71,19 +81,31 @@ export class UserTableComponent implements OnInit {
 		return this.tableData$;
 	}
 
+	sortData(filterForm: FormGroup, sort: Sort) {
+		console.log('sort: ', sort);
+		this.active = sort.active;
+		this.direction = sort.direction;
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+
+		if(!filterForm.value['search']){
+			this.refreshMatTable('ApplicationUser', 5, 1, sort.active, sort.direction);
+		}
+	}
+
 	onSearchClear(dataSource : MatTableDataSource<User> ){
 		this.filterForm.reset();
 		dataSource.filter = "";
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable('ApplicationUser', 5, 1);
+		this.refreshMatTable('ApplicationUser', 5, 1, this.active, this.direction);
 	}
 
 	public updateTable(filterForm: FormGroup, event?: PageEvent){
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 
+		// Temporary solution. Remove if-state and do backend call here with search param
 		if(!filterForm.value['search']){
-			this.refreshMatTable('ApplicationUser', event.pageSize, event.pageIndex+1);
+			this.refreshMatTable('ApplicationUser', event.pageSize, event.pageIndex+1, this.active, this.direction);
 		}
 		
 	}
@@ -107,7 +129,7 @@ export class UserTableComponent implements OnInit {
 		if (confirm('Are you sure to delete this record?')) {
 			this.userStore.deleteUser(row.id).subscribe(res => {
 				this.toastr.warning('Deleted successfully', 'EMP. Register');
-				this.refreshMatTable('endpoint', 5, 1);
+				this.refreshMatTable('endpoint', 5, 1, this.active,this.direction);
 			});
 		}
 	}

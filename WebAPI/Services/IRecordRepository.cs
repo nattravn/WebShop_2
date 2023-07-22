@@ -16,7 +16,8 @@ namespace WebAPI.Services
             int limit, 
             int page,
             string key,
-            string order, 
+            string order,
+            string searchQuery,
             CancellationToken cancellationToken);
         IEnumerable<Record> GetRecords();
         IEnumerable<Record> GetRecordsFromUserId(string userId);

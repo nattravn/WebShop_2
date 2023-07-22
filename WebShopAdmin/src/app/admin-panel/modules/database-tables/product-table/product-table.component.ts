@@ -91,7 +91,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 		
 		console.log('eventUrl: ', eventUrl);
-		this.refreshMatTable(eventUrl, 5, 1, this.active,this.direction);
+		this.refreshMatTable(eventUrl, 5, 1, this.active,this.direction, '');
 
 
 		// console.log('this.sort: ', this.sort);
@@ -99,12 +99,13 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		// this.productTableService.dataSource.paginator = this.paginator;
 	}
 
-	sortData(sort: Sort) {
+	sortData(filterForm: FormGroup, sort: Sort) {
 		console.log('sort: ', sort);
 		this.active = sort.active;
 		this.direction = sort.direction;
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable(eventUrl, 5, 1, sort.active, sort.direction);
+
+		this.refreshMatTable(eventUrl, 5, 1, sort.active, sort.direction,filterForm.value['search']);
 	}
 
 	refreshMatTable(
@@ -112,15 +113,17 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		pageLimit: number = null, 
 		page: number = null,
 		active: string,
-		direction: string
+		direction: string,
+		searchQuery: string
 	): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
-		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction).pipe(
+		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction,searchQuery).pipe(
 			untilDestroyed(this),
 			switchMap(records => {
 				let dataSource = new MatTableDataSource<Record | Clothing>();
 				
 				dataSource.data = records.items;
 				dataSource.sort = this.sort;
+				//dataSource.paginator = this.paginator;
 
 				return of({items: dataSource, totalItems: records.totalItems});
 			}),
@@ -133,26 +136,30 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		
 	}
 
-	applyFilter(event: Event, dataSource : MatTableDataSource<Record | Clothing>) {
+	applyFilter(event: Event, dataSource : MatTableDataSource<Record | Clothing>, filterForm: FormGroup) {
 		const filterValue = (event.target as HTMLInputElement).value;
 
-		this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
-			switchMap((content: (Record | Clothing)[]) => {
+		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 
-				dataSource.data = content ? content : [];
-				dataSource.paginator = this.paginator;
-				dataSource.sort = this.sort;
-				return of({items: dataSource, totalItems: content.length});
-			}),
-			shareReplay(1)
-		)
+		this.paginator.firstPage();
+		this.refreshMatTable(eventUrl, 5, 1, this.active, this.direction, filterForm.value['search']);
+
+		// this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
+		// 	switchMap((content: (Record | Clothing)[]) => {
+		// 		dataSource.data = content ? content : [];
+		// 		dataSource.paginator = this.paginator;
+		// 		dataSource.sort = this.sort;
+		// 		return of({items: dataSource, totalItems: content.length});
+		// 	}),
+		// 	shareReplay(1)
+		// )
 	}
 
 	onSearchClear(dataSource : MatTableDataSource<Record | Clothing> ){
 		this.filterForm.reset();
 		dataSource.filter = "";
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable(eventUrl, 5, 1, this.active, this.direction);
+		this.refreshMatTable(eventUrl, 5, 1, this.active, this.direction, '');
 	}
 
 	onDelete(row: any) {
@@ -161,7 +168,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 				untilDestroyed(this),
 				switchMap(() => {
 					this.toastr.warning('Deleted successfully');
-					return this.refreshMatTable(row.categoryName,5,1,this.active,this.direction);
+					return this.refreshMatTable(row.categoryName,5,1,this.active,this.direction,'');
 				})
 			).subscribe();
 		}
@@ -175,10 +182,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 
-		if(!filterForm.value['search']){
-			this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1, this.active, this.direction);
-		}
-		
+		this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1, this.active, this.direction,filterForm.value['search']);
 	}
 
 	onEdit(row: Record, paramMap: any) {

@@ -141,13 +141,25 @@ namespace WebAPI.Services
             int limit, 
             int page,
             string key,
-            string order, 
+            string order,
+            string search,
             CancellationToken cancellationToken)
         {
+            var searchQuery = search;
 
+            if (search != null)
+            {
+                searchQuery = search.Trim().ToLower();
+            } 
+            
 
             var records = await _context.Records
                                     .AsNoTracking()
+                                    .WhereIf(searchQuery == null || searchQuery == "", a => a.Band.Contains(searchQuery) 
+                                        || a.Album.Contains(searchQuery)
+                                        || a.Title.Contains(searchQuery)
+                                        || a.CategoryName.Contains(searchQuery)
+                                        || a.Id.ToString().Equals(searchQuery))
                                     .OrderByMember(key, order == "desc")
                                     .PaginateAsync(page, limit, cancellationToken);
 

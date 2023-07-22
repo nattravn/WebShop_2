@@ -117,17 +117,22 @@ export class RecordStore implements OnDestroy {
 		return this.http.delete(this.baseUrl + '/' + row.categoryName + '/' + row.id);
 	}
 
-	getProducts(route: string, limit: number, page: number, active: string, direction: string): Observable<PagedProducts> {
+	getProducts(route: string, limit: number, page: number, active: string, direction: string, keyWord: String): Observable<PagedProducts> {
 		return this.http.get<PagedProducts>(`${this.baseUrl}/${route}/GetPagedProducts/`, {
 				params: {
 					limit: limit.toString(),
 					page: page.toString(),
 					key: active,
-					order: direction
+					order: direction,
+					searchQuery: keyWord ? keyWord.toString() : ""
 				}
 			}).pipe(
 				untilDestroyed(this),
-				tap(items => this.recordsReplay.next(items))
+				tap(items => this.recordsReplay.next(items)),
+				catchError(error => {
+					console.error("Error: ", error)
+					return of(null);
+				})
 		);
 	}
 

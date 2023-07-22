@@ -11,6 +11,5 @@ namespace WebAPI.ResourceParameters
         public int Limit { get; set; }
         public string Key { get; set; }
         public string Order { get; set; }
-        public string SearchQuery { get; set; }
     }
 }

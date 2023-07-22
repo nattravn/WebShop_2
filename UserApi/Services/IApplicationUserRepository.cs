@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using UserApi.Entities;
 using UserApi.Models;
 using UserApi.ResourceParameters;
-using WebAPI.Models;
 
 namespace UserApi.Services
 {
@@ -20,7 +19,13 @@ namespace UserApi.Services
 
         ApplicationUser GetUser(string id);
 
-        Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(int limit, int page, CancellationToken cancellationToken);
+        Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(
+            int limit, 
+            int page,
+            string key,
+            string direction,
+            CancellationToken cancellationToken
+        );
 
         void updateApplicationUser(ApplicationUser userToUpdate);
 

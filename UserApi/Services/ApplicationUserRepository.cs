@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using UserApi.Entities;
+using UserApi.Filter;
 using UserApi.Models;
 using UserApi.ResourceParameters;
-using WebAPI.Models;
+
 
 namespace UserApi.Services
 {
@@ -136,23 +138,41 @@ namespace UserApi.Services
             // no code in this implementation
         }
 
-        public async Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(int limit, int page, CancellationToken cancellationToken)
+        public async Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(
+            int limit, 
+            int page,
+            string key,
+            string order,
+            CancellationToken cancellationToken)
         {
+            //Alternative way to fetch data using PaginatedList class
+            //var users = await PaginatedList<ApplicationUser>.CreateAsync(
+            //    _context.ApplicationUsers.AsNoTracking()
+            //    .OrderByMember(key, order == "desc"), 
+            //    page, 
+            //    limit
+            //);
 
-            var users = await PaginatedList<ApplicationUser>.CreateAsync(_context.ApplicationUsers.AsNoTracking(), page, limit);
+            var columnProperty = typeof(ApplicationUserDto).GetProperty(key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+
+            if (columnProperty == null)
+            {
+                return new GetTableListResponseDto<ApplicationUserDto> { CurrentPage = 0 };
+            }
+
+            var users = await _context.ApplicationUsers
+                                    .AsNoTracking()
+                                    .OrderByMember(key, order == "desc")
+                                    .PaginateAsync(page, limit, cancellationToken);
 
 
-            //var users1 = await _context.ApplicationUsers
-            // .AsNoTracking()
-            //  .OrderBy(p => p.Id);
-            // .PaginateAsync(page, limit, cancellationToken);
 
             return new GetTableListResponseDto<ApplicationUserDto>
             {
-                CurrentPage = users.PageIndex,
+                CurrentPage = users.CurrentPage,
                 TotalPages = users.TotalPages,
                 TotalItems = users.TotalItems,
-                Items = users.Select(p => new ApplicationUserDto
+                Items = users.Items.Select(p => new ApplicationUserDto
                 {
                     Id = p.Id,
                     Email = p.Email,

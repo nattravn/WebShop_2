@@ -18,7 +18,7 @@
 </div>
 
 <div class="mat-elevation-z8">
-    <mat-table [dataSource]="source.tableData?.items" matSort>
+    <mat-table [dataSource]="source.tableData?.items" matSort (matSortChange)="sortData(filterForm, $event)">
         <ng-container matColumnDef="email">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.email}} </mat-cell>

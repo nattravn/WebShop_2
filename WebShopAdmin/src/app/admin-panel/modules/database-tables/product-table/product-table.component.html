@@ -12,7 +12,7 @@
 
 			<form form class="d-inline p-2" [formGroup]="filterForm">
 				<mat-form-field >
-					<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event, source.tableData?.items)" #input/>
+					<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter($event, source.tableData?.items, filterForm)" #input/>
 				</mat-form-field>
 			</form>
 			<button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear(source.tableData?.items)">
@@ -21,7 +21,7 @@
 		</div>
 
 		<div class="mat-elevation-z8">
-			<mat-table [dataSource]="source.tableData?.items" matSort (matSortChange)="sortData($event)" >
+			<mat-table [dataSource]="source.tableData?.items" matSort (matSortChange)="sortData(filterForm, $event)" >
 				<ng-container matColumnDef="id">
 					<mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
 					<mat-cell *matCellDef="let element">{{ element.id }}</mat-cell>

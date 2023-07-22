@@ -51,7 +51,7 @@ export class ProductTableService implements OnDestroy {
 	ngOnDestroy(): void { }
 
 	refreshMatTable(productString: string, pageLimit: number = null, page: number = null): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
-		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,'band', 'asc').pipe(
+		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,'band', 'asc', '').pipe(
 			untilDestroyed(this),
 			switchMap(records => {
 				this.dataSource.data = records.items;
