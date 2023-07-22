@@ -20,11 +20,10 @@ using UserApi.Entities;
 using UserApi.Models;
 using UserApi.ResourceParameters;
 using UserApi.Services;
-using WebAPI.Models;
-using Microsoft.AspNetCore.Authentication;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading;
+using WebAPI.ResourceParameters;
 
 namespace UserApi.Controllers
 {
@@ -85,6 +84,8 @@ namespace UserApi.Controllers
             var records = await _userRepository.GetUsersWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
+                                    urlQueryParameters.Key,
+                                    urlQueryParameters.Order,
                                     cancellationToken);
 
             return Ok(records);
@@ -140,7 +141,8 @@ namespace UserApi.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                Console.WriteLine(ex.Message);
+                throw;
             }
         }
 
@@ -301,7 +303,5 @@ namespace UserApi.Controllers
 
             return NoContent();
         }
-
-        public record UrlQueryParameters(int Limit = 50, int Page = 1);
     }
 }

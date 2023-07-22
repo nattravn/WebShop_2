@@ -77,7 +77,7 @@ namespace WebAPI.Services
         {
             if (clothingToAdd == null)
             {
-                throw new ArgumentException(nameof(clothingToAdd));
+                throw new ArgumentException(null, nameof(clothingToAdd));
             }
 
             clothingToAdd.Id = _context.Clothings.OrderByDescending(r => r.Id).First().Id +1;

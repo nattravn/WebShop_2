@@ -15,10 +15,12 @@ namespace WebAPI.Services
     public class UserService
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger _logger;
         public UserService(
             IHttpClientFactory httpClientFactory,
             ILogger<UserService> logger) {
 
+            _logger = logger;
             _httpClientFactory = httpClientFactory ??
                 throw new ArgumentNullException(nameof(httpClientFactory));
         }

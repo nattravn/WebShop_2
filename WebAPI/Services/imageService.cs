@@ -51,6 +51,7 @@ namespace WebAPI.Services
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 imageUploadModel.Path = "Faild. File length: " + imageFile.Length;
                 imageUploadModel.Status = 0;
                 return imageUploadModel;
@@ -84,7 +85,7 @@ namespace WebAPI.Services
             int resizedHeight = (int)Math.Floor(image.Height * 0.5);
 
             var destRect = new Rectangle(0, 0, resizedWidth, resizedHeight);
-            var destImage = new Bitmap(resizedWidth, resizedHeight);
+            using var destImage = new Bitmap(resizedWidth, resizedHeight);
 
             destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
