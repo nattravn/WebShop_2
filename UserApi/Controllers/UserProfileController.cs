@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using UserApi.Entities;
 using UserApi.Services;
-using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {

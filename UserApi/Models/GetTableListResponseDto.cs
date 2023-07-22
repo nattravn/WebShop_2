@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebAPI.Models
+namespace UserApi.Models
 {
     public class GetTableListResponseDto<T>
     {

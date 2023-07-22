@@ -15,13 +15,13 @@ using System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using WebAPI.Models;
 using Microsoft.Extensions.Azure;
 using WebAPI.Constants;
 using System.Collections.Generic;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Core;
 using Azure.Identity;
+using UserApi.Models;
 
 namespace UserApi
 {
