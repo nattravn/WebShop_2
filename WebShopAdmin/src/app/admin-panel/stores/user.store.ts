@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, Validators, UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { catchError, tap } from 'rxjs/operators';
@@ -37,12 +37,12 @@ export class UserStore {
 	private userReplay: ReplaySubject<User> = new ReplaySubject<User>(1);
 	public userReplay$: Observable<User> = this.userReplay.asObservable();
 
-	form: FormGroup = new FormGroup({
-		email: new FormControl(''),
-		userName: new FormControl(''),
-		fullName: new FormControl(''),
-		password: new FormControl(''),
-		confirmPassword: new FormControl('')
+	form: UntypedFormGroup = new UntypedFormGroup({
+		email: new UntypedFormControl(''),
+		userName: new UntypedFormControl(''),
+		fullName: new UntypedFormControl(''),
+		password: new UntypedFormControl(''),
+		confirmPassword: new UntypedFormControl('')
 	});
 
 	readonly baseUrl = environment.userApiUrl;
@@ -59,7 +59,7 @@ export class UserStore {
 	});
 
 	constructor(
-		private fb: FormBuilder,
+		private fb: UntypedFormBuilder,
 		private http: HttpClient,
 		private shoeStore: ShoeStore,
 		private recordStore: RecordStore,
@@ -67,7 +67,7 @@ export class UserStore {
 		// this.getUserProfile().subscribe((resUser: User) => { });
 	}
 
-	comparePasswords(fb: FormGroup) {
+	comparePasswords(fb: UntypedFormGroup) {
 		const confirmPswrdCtrl = fb.get('confirmPassword');
 		// passwordMismatch
 		// confirmPswrdCtrl.errors={passwordMismatch:true}

@@ -1,21 +1,21 @@
 import { Injectable, OnInit } from '@angular/core';
-import { FormGroup, FormControl, FormArray, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, UntypedFormArray, UntypedFormBuilder } from '@angular/forms';
 
 import { Category } from '../../../../models/category.model';
 
 @Injectable()
 export class CategoryDialogService {
 
-	public form: FormGroup = this._formBuilder.group({
-		id: new FormControl(null),
-		route: new FormControl(''),
-		name: new FormControl(''),
+	public form: UntypedFormGroup = this._formBuilder.group({
+		id: new UntypedFormControl(null),
+		route: new UntypedFormControl(''),
+		name: new UntypedFormControl(''),
 		subCategories: this._formBuilder.array([]),
 	});
 
-	constructor(private _formBuilder: FormBuilder) { }
+	constructor(private _formBuilder: UntypedFormBuilder) { }
 	public get subCategoryArray() {
-		return this.form.get('subCategories') as FormArray;
+		return this.form.get('subCategories') as UntypedFormArray;
 	}
 
 	addItem(item) {

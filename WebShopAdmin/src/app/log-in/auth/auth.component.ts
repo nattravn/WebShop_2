@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ToastrService } from 'ngx-toastr';
@@ -16,13 +16,13 @@ import { AuthService } from './services/auth.service';
 })
 export class AuthComponent implements OnInit, OnDestroy {
 
-	authForm: FormGroup;
+	authForm: UntypedFormGroup;
 	isSubmitted  =  false;
 
 	constructor(
 		private authService: AuthService,
 		private router: Router,
-		private formBuilder: FormBuilder,
+		private formBuilder: UntypedFormBuilder,
 		private toastr: ToastrService
 	) { }
 	ngOnDestroy(): void {}

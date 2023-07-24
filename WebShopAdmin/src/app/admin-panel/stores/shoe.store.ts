@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 
 import { Observable, ReplaySubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -24,17 +24,17 @@ export class ShoeStore {
 	private shoeItemReplay: ReplaySubject<Shoe> = new ReplaySubject<Shoe>(1);
 	public shoeItemReplay$: Observable<Shoe> = this.shoeItemReplay.asObservable();
 
-	form: FormGroup = new FormGroup({
-		id: new FormControl(null),
-		title: new FormControl(''),
-		price: new FormControl(''),
-		image: new FormControl(null),
+	form: UntypedFormGroup = new UntypedFormGroup({
+		id: new UntypedFormControl(null),
+		title: new UntypedFormControl(''),
+		price: new UntypedFormControl(''),
+		image: new UntypedFormControl(null),
 		//userName: new FormControl(''),
-		imagePath: new FormControl('default-image.png'),
-		description: new FormControl(''),
-		category: new FormControl('Shoe'),
-		subCategory: new FormControl(''),
-		userId: new FormControl(null)
+		imagePath: new UntypedFormControl('default-image.png'),
+		description: new UntypedFormControl(''),
+		category: new UntypedFormControl('Shoe'),
+		subCategory: new UntypedFormControl(''),
+		userId: new UntypedFormControl(null)
 	});
 
 	constructor(private http: HttpClient) { }

@@ -12,7 +12,7 @@ import { DialogFactoryService } from '../../table-dialogs/services/dialog-factor
 import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { PagedUsers } from 'src/app/admin-panel/models/paged-users.model';
 
@@ -27,8 +27,8 @@ export class UserTableComponent implements OnInit {
 
 	public tableData$ = new Observable<{items: MatTableDataSource<User>, totalItems: number}>();
 
-	public filterForm: FormGroup = new FormGroup({
-		search: new FormControl('', []),
+	public filterForm: UntypedFormGroup = new UntypedFormGroup({
+		search: new UntypedFormControl('', []),
 	});
 	
 	dataSource = new MatTableDataSource<User>();
@@ -81,7 +81,7 @@ export class UserTableComponent implements OnInit {
 		return this.tableData$;
 	}
 
-	sortData(filterForm: FormGroup, sort: Sort) {
+	sortData(filterForm: UntypedFormGroup, sort: Sort) {
 		console.log('sort: ', sort);
 		this.active = sort.active;
 		this.direction = sort.direction;
@@ -99,7 +99,7 @@ export class UserTableComponent implements OnInit {
 		this.refreshMatTable('ApplicationUser', 5, 1, this.active, this.direction);
 	}
 
-	public updateTable(filterForm: FormGroup, event?: PageEvent){
+	public updateTable(filterForm: UntypedFormGroup, event?: PageEvent){
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 

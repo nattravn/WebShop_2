@@ -14,7 +14,7 @@ import { ProductTableService } from './services/product-table.service';
 import { CategoryStore } from '../../../stores/category.store';
 import { RecordStore } from '../../../stores/record.store';
 import { Record } from '../../../models/record.model';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { ModuleService } from '../../services/module-service.service';
@@ -41,8 +41,8 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		'actions'
 	];
 
-	public filterForm: FormGroup = new FormGroup({
-		search: new FormControl('', []),
+	public filterForm: UntypedFormGroup = new UntypedFormGroup({
+		search: new UntypedFormControl('', []),
 	});
 
 	@ViewChild(MatSort) sort: MatSort
@@ -106,7 +106,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		// this.productTableService.dataSource.paginator = this.paginator;
 	}
 
-	sortData(filterForm: FormGroup, sort: Sort) {
+	sortData(filterForm: UntypedFormGroup, sort: Sort) {
 		console.log('sort: ', sort);
 		this.active = sort.active;
 		this.direction = sort.direction;
@@ -143,7 +143,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		
 	}
 
-	applyFilter(event: Event, dataSource : MatTableDataSource<Record | Clothing>, filterForm: FormGroup) {
+	applyFilter(event: Event, dataSource : MatTableDataSource<Record | Clothing>, filterForm: UntypedFormGroup) {
 		const filterValue = (event.target as HTMLInputElement).value;
 
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
@@ -185,7 +185,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}],  { queryParams: { createNewProduct: true} });
 	}
 
-	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent){
+	public updateTable(paramMap: any, filterForm: UntypedFormGroup, event?: PageEvent){
 		this.currentPageIndex = event.pageIndex+1;
 		this.currentTableSize = event.pageSize;
 

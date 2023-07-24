@@ -12,7 +12,7 @@ import { RecordDialogService } from './services/record-dialog.service';
 import { ProductTableService } from '../../database-tables/product-table/services/product-table.service';
 import { ModuleService } from '../../services/module-service.service';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Category } from 'src/app/admin-panel/models/category.model';
 import { Record } from 'src/app/admin-panel/models/record.model';
 import { ActivatedRoute } from '@angular/router';
@@ -40,26 +40,26 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 	public categories$ = new Observable<Category[]>();
 	public category$ = new Observable<Category>();
 
-	public form: FormGroup = new FormGroup({
-		id: new FormControl(0),
-		band: new FormControl('', Validators.required),
-		album: new FormControl('', Validators.required),
-		year: new FormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
-		genre: new FormControl(''),
-		description: new FormControl('', Validators.required),
-		imagePath: new FormControl('default-image.png'),
-		title: new FormControl('',[
+	public form: UntypedFormGroup = new UntypedFormGroup({
+		id: new UntypedFormControl(0),
+		band: new UntypedFormControl('', Validators.required),
+		album: new UntypedFormControl('', Validators.required),
+		year: new UntypedFormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
+		genre: new UntypedFormControl(''),
+		description: new UntypedFormControl('', Validators.required),
+		imagePath: new UntypedFormControl('default-image.png'),
+		title: new UntypedFormControl('',[
             Validators.required,
             Validators.minLength(6),
             Validators.maxLength(20)
         ]),
-		price: new FormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
-		categoryId: new FormControl(null),
-		subCategoryId: new FormControl(null),
-		userId: new FormControl(null),
-		categoryName: new FormControl(''),
-		currentPageIndex: new FormControl(1),
-		currentTableSize: new FormControl(1),
+		price: new UntypedFormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
+		categoryId: new UntypedFormControl(null),
+		subCategoryId: new UntypedFormControl(null),
+		userId: new UntypedFormControl(null),
+		categoryName: new UntypedFormControl(''),
+		currentPageIndex: new UntypedFormControl(1),
+		currentTableSize: new UntypedFormControl(1),
 	});
 
 	constructor(

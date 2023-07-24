@@ -130,7 +130,6 @@
       }
     }
   },
-  "defaultProject": "WebShopAdmin",
   "cli": {
     "analytics": false
   }

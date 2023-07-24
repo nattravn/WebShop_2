@@ -11,7 +11,7 @@ import { ModuleService } from '../../services/module-service.service';
 import { catchError, filter, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { ProductTableService } from '../../database-tables/product-table/services/product-table.service';
 import { ActivatedRoute } from '@angular/router';
@@ -34,20 +34,20 @@ export class ClothingDialogComponent implements OnInit {
 	public imgSrcReplay = new ReplaySubject<string>(1);
 	public imgSrcReplay$ = this.imgSrcReplay.asObservable();
 
-	public form: FormGroup = new FormGroup({
-		id: new FormControl(null),
-		title: new FormControl(''),
-		price: new FormControl(''),
-		size: new FormControl(''),
-		imagePath: new FormControl('default-image.png'),
-		description: new FormControl(''),
-		category: new FormControl('Clothing'),
-		categoryId: new FormControl(null),
-		userId: new FormControl(null),
+	public form: UntypedFormGroup = new UntypedFormGroup({
+		id: new UntypedFormControl(null),
+		title: new UntypedFormControl(''),
+		price: new UntypedFormControl(''),
+		size: new UntypedFormControl(''),
+		imagePath: new UntypedFormControl('default-image.png'),
+		description: new UntypedFormControl(''),
+		category: new UntypedFormControl('Clothing'),
+		categoryId: new UntypedFormControl(null),
+		userId: new UntypedFormControl(null),
 		// userName: new FormControl(''),
-		subCategoryId: new FormControl(''),
-		currentPageIndex: new FormControl(1),
-		currentTableSize: new FormControl(1)
+		subCategoryId: new UntypedFormControl(''),
+		currentPageIndex: new UntypedFormControl(1),
+		currentTableSize: new UntypedFormControl(1)
 	});
 
 	constructor(
