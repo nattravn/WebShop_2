@@ -88,9 +88,16 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	}
 
 	ngAfterViewInit() {
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		let eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 		
 		console.log('eventUrl: ', eventUrl);
+
+		if(eventUrl.includes('tablesOutlet')){
+			eventUrl = eventUrl.slice(eventUrl.indexOf(':') + 1);
+			eventUrl = eventUrl.substring(0, eventUrl.indexOf(')'));
+		}
+
+		// if modal is open, filter eventUrl
 		this.refreshMatTable(eventUrl, 5, 1, this.active,this.direction, '');
 
 

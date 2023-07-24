@@ -13,4 +13,5 @@ export class Record {
 	subCategoryId: number;
 	userId: number;
 	categoryName: string;
+	addDate: Date;
 }

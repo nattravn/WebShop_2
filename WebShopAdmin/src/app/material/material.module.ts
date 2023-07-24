@@ -8,6 +8,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
 		MatGridListModule,
 		MatFormFieldModule,
 		MatInputModule,
+		MatDatepickerModule,
 		MatSelectModule,
 		MatCheckboxModule,
 		MatNativeDateModule,
@@ -48,6 +50,7 @@ import { MatIconModule } from '@angular/material/icon';
 		MatPaginatorModule,
 		MatSortModule,
 		MatDialogModule,
+		MatDatepickerModule
 	],
 	declarations: []
 })

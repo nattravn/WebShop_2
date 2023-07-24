@@ -37,18 +37,23 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 
 	public defaultimageRootPath = environment.baseUrl + '/Images/original/default-image.png';
 
+	public categories$ = new Observable<Category[]>();
 	public category$ = new Observable<Category>();
 
 	public form: FormGroup = new FormGroup({
 		id: new FormControl(0),
-		band: new FormControl(''),
-		album: new FormControl(''),
-		year: new FormControl(''),
+		band: new FormControl('', Validators.required),
+		album: new FormControl('', Validators.required),
+		year: new FormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
 		genre: new FormControl(''),
 		description: new FormControl('', Validators.required),
 		imagePath: new FormControl('default-image.png'),
-		title: new FormControl(''),
-		price: new FormControl(''),
+		title: new FormControl('',[
+            Validators.required,
+            Validators.minLength(6),
+            Validators.maxLength(20)
+        ]),
+		price: new FormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
 		categoryId: new FormControl(null),
 		subCategoryId: new FormControl(null),
 		userId: new FormControl(null),
@@ -78,7 +83,17 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 				)
 			}),
 			shareReplay(1),
-		)
+		);
+
+		this.category$ = this.categoryStore.getCategory(1).pipe(
+			untilDestroyed(this),
+			tap(x => { console.log('x: ', x); }),
+			shareReplay(1)
+		);
+
+		console.log('this.categories$: ', this.categories$);
+
+		
 	}
 	/**
 	 * On destroy
@@ -142,7 +157,12 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 
 		this.imgSrcReplay.next(this.imageRootPath + record.imagePath);
 
-		this.category$ = this.categoryStore.getCategory(record.categoryId).pipe(untilDestroyed(this), shareReplay(1));
+		this.category$ = this.categoryStore.getCategory(record.categoryId).pipe(
+			untilDestroyed(this), 
+			shareReplay(1)
+		);
+
+		console.log('this.category$: ', this.category$);
 	}
 
 	onClear() {

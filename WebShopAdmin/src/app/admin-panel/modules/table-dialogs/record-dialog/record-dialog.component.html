@@ -15,7 +15,16 @@ source.formValue.invalid: <pre>{{source.formValue.invalid | json}}</pre>
 
 		<mat-form-field class="w-100">
 			<input formControlName="title" matInput placeholder="Title">
-			<mat-error>This field is mandatory.</mat-error>
+			<mat-error>
+				<div *ngIf="form.controls['title']?.errors?.minlength">
+					title length must be greater than 4 letters.
+				</div>
+				<div *ngIf="form.controls['title']?.errors?.required">
+					title is required.
+				</div>
+
+			</mat-error>
+			
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
@@ -30,7 +39,10 @@ source.formValue.invalid: <pre>{{source.formValue.invalid | json}}</pre>
 
 		<mat-form-field class="w-100">
 			<input formControlName="year" matInput placeholder="Year">
-			<mat-error>This field is mandatory.</mat-error>
+			<mat-error>
+				<div *ngIf="form.controls['year'].errors?.pattern" class="text-danger">Number Only</div>
+				<div *ngIf="form.controls['year'].errors?.required" class="text-danger">This field is mandatory.</div>
+			</mat-error>
 		</mat-form-field>
 
 		<mat-select formControlName="genre" placeholder="Genre" *ngIf="category$ | async; let category">
@@ -39,9 +51,20 @@ source.formValue.invalid: <pre>{{source.formValue.invalid | json}}</pre>
 			</mat-option>
 		</mat-select>
 
+		<mat-form-field>
+			<mat-label>Choose a date</mat-label>
+			<input matInput [matDatepicker]="picker">
+			<mat-hint>MM/DD/YYYY</mat-hint>
+			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+			<mat-datepicker #picker></mat-datepicker>
+		</mat-form-field>
+
 		<mat-form-field class="w-100">
 			<input formControlName="price" matInput placeholder="Price">
-			<mat-error>Invalid email address.</mat-error>
+			<mat-error>Number Only
+				<div *ngIf="form.controls['price'].errors?.pattern" class="text-danger">Number Only</div>
+				<div *ngIf="form.controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
+			</mat-error>
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
@@ -49,7 +72,7 @@ source.formValue.invalid: <pre>{{source.formValue.invalid | json}}</pre>
 		</mat-form-field>
 
 		<div class="d-flex justify-content-center w-100">
-			<img [src]="(imgSrcReplay$ | async) || defaultimageRootPath" (click)="fileInput.click()" style="width: 250px; height: 200px">
+			<img [src]="(imgSrcReplay$ | async) || defaultimageRootPath" (click)="fileInput.click()" style="max-width: 250px; max-height: 200px; background-size: cover;">
 		</div>
 
 		<label>Select file to upload</label>
