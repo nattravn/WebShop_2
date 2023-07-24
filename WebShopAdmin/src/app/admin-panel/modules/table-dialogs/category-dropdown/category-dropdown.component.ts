@@ -10,6 +10,7 @@ import { Category } from '../../../models/category.model';
 import { CategoryEnum } from '../../../enums/category.enum';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 
 @Component({
@@ -23,6 +24,10 @@ export class CategoryDropdownComponent implements OnInit {
 	@Output() selectCategory: EventEmitter<Category> = new EventEmitter<Category>();
 
 	public categories$ = new Observable<Category[]>();
+
+	public subCategoryForm: UntypedFormGroup = new UntypedFormGroup({
+		subCategory: new UntypedFormControl(''),
+	});
 
 	constructor(
 		public recordService: RecordStore,

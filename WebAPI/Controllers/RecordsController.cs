@@ -118,6 +118,7 @@ namespace WebAPI.Controllers
                     return BadRequest(ModelState);
                 }
                 recordToCreate.ImagePath = Request.Form.Files[0].FileName;
+                recordToCreate.LastUpdatedTime = DateTime.Now;
             } 
 
             
@@ -166,6 +167,7 @@ namespace WebAPI.Controllers
                 }
 
                 recordToUpdate.ImagePath = Request.Form.Files[0].FileName;
+                
             }
             
             if (!_recordRepository.RecordExists(recordId))
@@ -179,6 +181,7 @@ namespace WebAPI.Controllers
             {
                 var recordToAdd = _mapper.Map<Entities.Record>(recordToUpdate);
                 recordToAdd.Id = recordId;
+                recordToAdd.LastUpdatedTime = DateTime.Now;
 
                 _recordRepository.AddRecord(recordToAdd);
 
@@ -191,6 +194,7 @@ namespace WebAPI.Controllers
                     recordToReturn);
             }
 
+            recordToUpdate.LastUpdatedTime = DateTime.Now;
             // map the entity to a RecordForUpdateDto
             // apply the updated field values to that dto
             // map the RecordForUpdateDto back to an entity

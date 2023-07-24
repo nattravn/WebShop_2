@@ -51,5 +51,5 @@ public partial class Record
     public string CategoryName { get; set; }
 
     [Column(TypeName = "datetime")]
-    public DateTime? AddDate { get; set; }
+    public DateTime? LastUpdatedTime { get; set; }
 }

@@ -15,6 +15,7 @@ import { ShoeItemComponent } from './shoes/shoe-item/shoe-item.component';
 import { RecordItemComponent } from './records/record-item/record-item.component';
 import { ShoeDetailsComponent } from './shoes/shoe-details/shoe-details.component';
 import { ClothingDetailsComponent } from './clothings/clothing-details/clothing-details.component';
+import { CustomDatePipe } from '../pipe/custom.datepipe';
 
 
 @NgModule({
@@ -32,11 +33,12 @@ import { ClothingDetailsComponent } from './clothings/clothing-details/clothing-
         ClothingsComponent,
         ClothingItemComponent,
         ProductFilterPipe,
+        CustomDatePipe,
         ShoesComponent,
         ShoeItemComponent,
         ShoeDetailsComponent,
         OthersComponent,
-        ClothingDetailsComponent
+        ClothingDetailsComponent,
     ]
 })
 export class ProductsModule { }

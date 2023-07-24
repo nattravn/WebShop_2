@@ -110,6 +110,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		console.log('sort: ', sort);
 		this.active = sort.active;
 		this.direction = sort.direction;
+		this.paginator.firstPage();
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 
 		this.refreshMatTable(eventUrl, 5, 1, sort.active, sort.direction,filterForm.value['search']);

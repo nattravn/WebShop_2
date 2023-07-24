@@ -12,13 +12,14 @@ import { CategoryDropdownComponent } from './category-dropdown/category-dropdown
 import { ClothingDialogComponent } from './clothing-dialog/clothing-dialog.component';
 import { ShoeDialogFormComponent } from './shoe-dialog/shoe-dialog-form.component';
 import { CategoryDialogComponent } from './category-dialog/category-dialog.component';
+import { CustomDatePipe } from '../../pipe/custom.datepipe';
 
 @NgModule({
 	imports: [
 		CommonModule,
 		MaterialModule,
 		ReactiveFormsModule,
-		ModalWrapperRoutingModule,
+		ModalWrapperRoutingModule
 	],
 	declarations: [
 		ModalWrapperComponent,
@@ -28,6 +29,7 @@ import { CategoryDialogComponent } from './category-dialog/category-dialog.compo
 		ClothingDialogComponent,
 		ShoeDialogFormComponent,
 		CategoryDialogComponent,
+		CustomDatePipe,
 	],
 	providers: [
 		{ provide: MAT_DIALOG_DATA, useValue: {} },

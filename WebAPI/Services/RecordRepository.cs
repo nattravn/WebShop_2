@@ -183,7 +183,8 @@ namespace WebAPI.Services
                     CategoryId = p.CategoryId.GetValueOrDefault(),
                     Title = p.Title,
                     Year = p.Year,
-                    UserId = p.UserId
+                    UserId = p.UserId,
+                    LastUpdatedTime = p.LastUpdatedTime
                 }).ToList()
             };
         }

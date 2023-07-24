@@ -16,13 +16,17 @@ import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms
 import { Category } from 'src/app/admin-panel/models/category.model';
 import { Record } from 'src/app/admin-panel/models/record.model';
 import { ActivatedRoute } from '@angular/router';
+import { CustomDatePipe } from 'src/app/admin-panel/pipe/custom.datepipe';
 
 @UntilDestroy()
 @Component({
 	selector: 'app-record-dialog',
 	templateUrl: './record-dialog.component.html',
 	styleUrls: ['./record-dialog.component.css'],
-	changeDetection: ChangeDetectionStrategy.OnPush
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	providers: [
+        CustomDatePipe
+    ],
 })
 export class RecordDialogComponent implements OnInit, OnDestroy {
 
@@ -51,7 +55,7 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		title: new UntypedFormControl('',[
             Validators.required,
             Validators.minLength(6),
-            Validators.maxLength(20)
+            Validators.maxLength(100)
         ]),
 		price: new UntypedFormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
 		categoryId: new UntypedFormControl(null),
@@ -60,6 +64,7 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		categoryName: new UntypedFormControl(''),
 		currentPageIndex: new UntypedFormControl(1),
 		currentTableSize: new UntypedFormControl(1),
+		lastUpdateTime: new UntypedFormControl(''),
 	});
 
 	constructor(
@@ -69,7 +74,8 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		public productTableService: ProductTableService,
 		private userStore: UserStore,
 		private activatedRoute: ActivatedRoute,
-		private moduleService: ModuleService) { }
+		private moduleService: ModuleService,
+		private customDatePipe: CustomDatePipe) { }
 	ngOnInit(): void {
 
 		//this.paramMapProduct$ = this.activatedRoute.queryParams;
@@ -93,14 +99,17 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 
 		console.log('this.categories$: ', this.categories$);
 
-		
+
 	}
 	/**
 	 * On destroy
 	 */
 	ngOnDestroy(): void {}
 	public onSubmit(form: any) {
-		console.log("form: ", form)
+
+		if (this.form.invalid) {
+		return;
+		}
 		form.categoryName = 'Record';
 		// Form data becomes null in observable so it needs to be cloned
 		this.userStore.getUserProfile().pipe(
@@ -141,6 +150,7 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 	}
 
 	populateForm(record: Record, currentPageIndex: number, currentTableSize: number) {
+		console.log('record: ', record);
 		this.form.get('id').setValue(record.id);
 		this.form.get('band').setValue(record.album);
 		this.form.get('album').setValue(record.band);
@@ -155,10 +165,13 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		this.form.get('currentPageIndex').setValue(currentPageIndex);
 		this.form.get('currentTableSize').setValue(currentTableSize);
 
+	
+		this.form.get('lastUpdateTime').setValue( this.customDatePipe.transform(record.lastUpdatedTime));
+
 		this.imgSrcReplay.next(this.imageRootPath + record.imagePath);
 
 		this.category$ = this.categoryStore.getCategory(record.categoryId).pipe(
-			untilDestroyed(this), 
+			untilDestroyed(this),
 			shareReplay(1)
 		);
 
