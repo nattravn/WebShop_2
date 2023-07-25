@@ -3,32 +3,28 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 
 import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
 import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
-import { AdminCategoryEnum } from '../../enums/AdminCategory.enum';
-import { Category } from '../../models/category.model';
-import { RecordDialogComponent } from './record-dialog/record-dialog.component';
-import { DialogFactoryService } from './services/dialog-factory.service';
-import { DialogService } from './services/dialog.service';
+import { AdminCategoryEnum } from '../../../enums/AdminCategory.enum';
+import { Category } from '../../../models/category.model';
+import { DialogFactoryService } from '../services/dialog-factory.service';
+import { DialogService } from '../services/dialog.service';
 import { TemplateRef } from '@angular/core';
 import { take, tap } from 'rxjs/operators';
 import { ActivatedRoute, ActivationStart, Router, RouterOutlet } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 
 @UntilDestroy()
-/**
- * A common component rendered as a Material dialog
- */
+
 @Component({
-	selector: 'app-dialog',
-	styleUrls: ['./modal-wrapper.component.css'],
-	templateUrl: './modal-wrapper.component.html',
-	changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-product-dialogs',
+  templateUrl: './product-dialogs.component.html',
+  styleUrls: ['./product-dialogs.component.scss']
 })
-export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChecked {
+export class ProductDialogsComponent implements OnInit {
 
 	public categoryEnum = AdminCategoryEnum;
 
-	public categoryChange: Category = new Category();
+	public categoryChange$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
 	//public dialogRef: MatDialogRef<RecordDialogComponent>
 
@@ -42,7 +38,7 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
-	@ViewChild('firstDialogTemplate') firstDialogTemplate: TemplateRef<any>;
+	@ViewChild('firstDialogTemplate') firstDialogTemplate: TemplateRef<ProductDialogsComponent>;
 
 	routerEvent$: Observable<any>;
 
@@ -66,16 +62,21 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 	}
 
 	ngOnInit(): void {
-
+		console.log("ngOnInit BaseModalComponent", this.data);
 		this.paramMapProduct$ = this.activatedRoute.queryParams;
 
+		this.categoryChange$.next(this.data.category.name);
+
 		this.activatedRoute.paramMap.subscribe(params => {
-			this.categoryChange.name=params.get('product');
+			console.log('params.get(product):', params.get('product'));
+			//this.categoryChange.name=params.get('product');
+			this.categoryChange$.next(this.data.category.name);
 		});
 
-		setTimeout(() => {
-			this.openDialog();
-		},);
+		// Fired when route is changed
+		// setTimeout(() => {
+		// 	this.openDialog();
+		// },);
 	}
 
 	public onDeactivate(event) {
@@ -84,11 +85,11 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 	}
 
 	public selectedCataegory(event: Category){
-		this.categoryChange = event;
+		this.categoryChange$.next(event.name);
 	}
 
 	openDialog(){
-
+		console.log("open dialog");
 		this.dialogService = this.dialogFactoryService.open({
 			headerText: 'Header text',
 			category: {
@@ -124,10 +125,5 @@ export class ModalWrapperComponent implements OnInit, OnDestroy, AfterContentChe
 		// 	})
 		// ).subscribe();
 		this.closedOnDestroy = true;
-	  }
+	}
 }
-
-
-
-
-

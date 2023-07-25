@@ -8,7 +8,6 @@ import { first, switchMap, tap } from 'rxjs/operators';
 import { Category } from '../../../models/category.model';
 import { DialogComponent } from '../dialog/dialog.component';
 
-type DialogRef = MatDialogRef<DialogComponent>;
 
 @UntilDestroy()
 @Directive()
@@ -18,7 +17,7 @@ export class DialogService implements OnInit {
 	public categoryReplay$ = new ReplaySubject<Category>(1);
 
 	constructor(
-		private dialogRef: DialogRef,
+		private dialogRef: MatDialogRef<DialogComponent>,
 		private activatedRoute: ActivatedRoute,
 		private router: Router
 	) { }

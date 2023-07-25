@@ -24,7 +24,7 @@ export class DialogComponent {
 
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
-
+	dialogService: DialogService;
 
 	paramMapProduct$: Observable<any>;
 
@@ -34,16 +34,31 @@ export class DialogComponent {
 	 * @param dialogRef - A reference to the dialog opened.
 	 */
 	constructor(
-		//public dialogRef: MatDialogRef<DialogComponent>,
+		public dialogRef: MatDialogRef<DialogComponent>,
 		public categoryStore: CategoryStore,
 		@Inject(MAT_DIALOG_DATA)
 		public data: DialogData,
 		public router: Router,
-
-		private activatedRoute: ActivatedRoute
+		public activatedRoute: ActivatedRoute
 	) {
 		this.categoryChange.name="records";
 		this.categoryStore.getCategories().subscribe();
+		console.log('data.template: ', data.category.name);
+		console.log('this.activatedRoute: ', this.activatedRoute);
+
+		this.activatedRoute.data.subscribe(data => {
+			console.log('data: ', data)
+		})
+
+		this.activatedRoute.params.subscribe(params => {
+			console.log('params: ', params)
+		})
+
+		this.activatedRoute.paramMap.subscribe(paramMap => {
+			console.log('paramMap: ', paramMap)
+		})
+		
+
 	}
 
 	public onDeactivate(event) {
@@ -56,7 +71,7 @@ export class DialogComponent {
 	}
 
 	onClose() {
-		//this.dialogRef.close();
+		this.dialogRef.close();
 
 		//this.dialogService.close();
 

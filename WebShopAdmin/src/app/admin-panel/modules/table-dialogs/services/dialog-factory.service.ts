@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import {Location} from '@angular/common';
 
 import { first, switchMap, tap } from 'rxjs/operators';
 
@@ -19,7 +20,8 @@ export class DialogFactoryService<T = undefined> implements OnDestroy{
 	constructor(
 		private dialog: MatDialog,
 		private router: Router,
-		private activatedRoute: ActivatedRoute
+		private activatedRoute: ActivatedRoute,
+		private _location: Location
 	) { }
 	ngOnDestroy(): void {}
 
@@ -40,8 +42,9 @@ export class DialogFactoryService<T = undefined> implements OnDestroy{
 			untilDestroyed(this),
 			switchMap(() => this.activatedRoute.paramMap.pipe(
 				tap( paramMap => {
-					console.log('afterClosed')
-					this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
+					console.log('afterClosed', paramMap)
+					//this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
+					this._location.back();
 				})
 			))
 		).subscribe(() => {

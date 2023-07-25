@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ModalWrapperComponent } from './modal-wrapper.component';
-import { RecordDialogComponent } from './record-dialog/record-dialog.component';
+import { BaseModalComponent } from './base-modal.component';
 
 const routes: Routes = [
 	{
 		path: '',
-		component: ModalWrapperComponent
+		component: BaseModalComponent
 	},
 ];
 
@@ -17,4 +16,4 @@ const routes: Routes = [
 	},
 )
 
-export class ModalWrapperRoutingModule {}
+export class BaseModalRoutingModule {}

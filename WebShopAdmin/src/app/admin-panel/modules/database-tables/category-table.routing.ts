@@ -19,7 +19,7 @@ const routes: Routes = [
 						path: ':product',   //flytta till separata modal routes, inte child routes
 						outlet: 'tablesOutlet',
 						pathMatch: 'full',
-						loadChildren: () => import('../table-dialogs/modal-wrapper.module').then(m => m.ModalWrapperModule)
+						loadChildren: () => import('../table-dialogs/base-modal.module').then(m => m.BaseModalModule)
 					},
 				],
 
@@ -32,7 +32,7 @@ const routes: Routes = [
 						path: '',   //flytta till separata modal routes, inte child routes
 						outlet: 'tablesOutlet',
 						pathMatch: 'full',
-						loadChildren: () => import('../table-dialogs/modal-wrapper.module').then(m => m.ModalWrapperModule)
+						loadChildren: () => import('../table-dialogs/base-modal.module').then(m => m.BaseModalModule)
 					},
 				],
 
@@ -42,9 +42,9 @@ const routes: Routes = [
 				component: UserTableComponent,
 				children: [
 					{
-						path: ':'+AdminCategoryEnum.User+'/modal',
+						path: ':'+AdminCategoryEnum.User,
 						outlet: 'tablesOutlet',
-						loadChildren: () => import('../table-dialogs/modal-wrapper.module').then(m => m.ModalWrapperModule)
+						loadChildren: () => import('../table-dialogs/base-modal.module').then(m => m.BaseModalModule)
 					}
 				]
 			},
@@ -55,7 +55,7 @@ const routes: Routes = [
 					{
 						path: 'modal',
 						outlet: 'tablesOutlet',
-						loadChildren: () => import('../table-dialogs/modal-wrapper.module').then(m => m.ModalWrapperModule)
+						loadChildren: () => import('../table-dialogs/base-modal.module').then(m => m.BaseModalModule)
 					}
 				]
 			}

@@ -9,7 +9,6 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { CategoryTableRoutes } from './category-table.routing';
 import { DatabaseTableContainerComponent } from './category-table-container.component';
 import { RecordStore } from '../../stores/record.store';
-import { RecordDialogService } from '../table-dialogs/record-dialog/services/record-dialog.service';
 import { CategoryStore } from '../../stores/category.store';
 import { DialogFactoryService } from '../table-dialogs/services/dialog-factory.service';
 import { ProductTableService } from './product-table/services/product-table.service';
@@ -19,6 +18,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'src/app/guard/auth.interceptor';
 import { CategoryTableComponent } from './category-table/category-table.component';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { RecordDialogService } from '../table-dialogs/products-dialog/record-dialog/services/record-dialog.service';
 
 
 

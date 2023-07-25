@@ -3,5 +3,6 @@ export enum AdminCategoryEnum {
 	Record = 'records',
 	Clothing = 'clothings',
 	Category = 'category',
-	User = 'user'
+	User = 'user',
+	Products = 'products'
 }

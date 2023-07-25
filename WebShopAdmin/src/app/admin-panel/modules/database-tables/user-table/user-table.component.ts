@@ -10,11 +10,12 @@ import { User } from '../../../models/user.model';
 import { UserStore } from '../../../stores/user.store';
 import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
 import { DialogService } from '../../table-dialogs/services/dialog.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { PagedUsers } from 'src/app/admin-panel/models/paged-users.model';
+import { UserDialogComponent } from '../../table-dialogs/user-dialog/user-dialog.component';
 
 @Component({
 	selector: 'app-user-table',
@@ -35,7 +36,7 @@ export class UserTableComponent implements OnInit {
 	
 	searchKey = '';
 	dialog2: DialogService;
-	userDialogTemplate: TemplateRef<any>;
+	@ViewChild('userDialogTemplate') userDialogTemplate: TemplateRef<UserDialogComponent>;
 	@ViewChild(MatSort) sort: MatSort;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -169,18 +170,22 @@ export class UserTableComponent implements OnInit {
 		//     });
 	}
 
-	onCreate() {
+	onCreate(paramMap: ParamMap) {
 		this.userStore.formModel.reset();
 
-		this.dialog2 = this.dialogFactoryService.open({
-			headerText: 'Header text',
-			category: {
-				id: 99,
-				name: 'User',
-				route: 'user'
-			},
-			createNew: true,
-			template: this.userDialogTemplate
-		});
+		console.log('userDialogTemplate: ', this.userDialogTemplate);
+
+		this.router.navigate(['adminpanel/tables/users/user', {outlets: {tablesOutlet: 'users'}}],  { queryParams: { createNewProduct: true} }).then(() => {
+			this.dialogFactoryService.open({
+				headerText: 'Header text user',
+				category: {
+					id: 99,
+					name: 'users',
+					route: 'user'
+				},
+				createNew: true,
+				template: this.userDialogTemplate
+			});
+		})
 	}
 }

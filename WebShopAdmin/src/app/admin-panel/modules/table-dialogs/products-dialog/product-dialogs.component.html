@@ -1,15 +1,14 @@
-<ng-template #firstDialogTemplate>
-	<ng-container *ngIf="{paramMapProduct: paramMapProduct$ | async } as source">
-		<mat-toolbar>
-			<span class="fill-remaining-space"></span>
-				<button class="btn-dialog-close" mat-stroked-button (click)="onClose()" tabIndex="-1"><mat-icon>clear</mat-icon></button>
-			<span class="fill-remaining-space"></span>
-		</mat-toolbar>
+<!-- <ng-template #firstDialogTemplate> -->
+	<ng-container *ngIf="{
+		paramMapProduct: paramMapProduct$ | async, 
+		category: categoryChange$ | async
+	} as source">
 
 		<pre>{{source.paramMapProduct.createNewProduct | json}}</pre>
+		
 		<app-category-dropdown (selectCategory)="selectedCataegory($event)" *ngIf="source.paramMapProduct.createNewProduct"></app-category-dropdown>
 
-		<div [ngSwitch]="categoryChange?.name | lowercase">
+		<div [ngSwitch]="source.category | lowercase">
 			<app-record-dialog *ngSwitchCase=categoryEnum.Record></app-record-dialog>
 			<app-clothing-dialog *ngSwitchCase=categoryEnum.Clothing></app-clothing-dialog>
 			<app-shoe *ngSwitchCase=categoryEnum.Shoe></app-shoe>
@@ -17,5 +16,4 @@
 			<div *ngSwitchDefault>Default</div>
 		</div>
 	</ng-container>
-</ng-template>
-
+<!-- </ng-template> -->

@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
-import { ClothingStore } from '../../../stores/clothing.store';
+import { ClothingStore } from '../../../../stores/clothing.store';
 import { ToastrService } from 'ngx-toastr';
 
-import { UserStore } from '../../../stores/user.store';
+import { UserStore } from '../../../../stores/user.store';
 import { environment } from 'src/environments/environment';
 import { RecordDialogService } from '../record-dialog/services/record-dialog.service';
-import { ModuleService } from '../../services/module-service.service';
+import { ModuleService } from '../../../services/module-service.service';
 import { catchError, filter, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
-import { ProductTableService } from '../../database-tables/product-table/services/product-table.service';
+import { ProductTableService } from '../../../database-tables/product-table/services/product-table.service';
 import { ActivatedRoute } from '@angular/router';
 
 @UntilDestroy()

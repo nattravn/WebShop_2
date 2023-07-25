@@ -3,33 +3,39 @@ import { CommonModule } from '@angular/common';
 //import { ProductDialogsComponent } from './product-dialogs.component';
 import { MaterialModule } from 'src/app/material/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ModalWrapperRoutingModule } from './modal-wrapper.routing';
-import { ModalWrapperComponent } from './modal-wrapper.component';
+import { BaseModalRoutingModule } from './base-modal.routing';
+import { BaseModalComponent } from './base-modal.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { RecordDialogComponent } from './record-dialog/record-dialog.component';
+
 import { DialogComponent } from './dialog/dialog.component';
-import { CategoryDropdownComponent } from './category-dropdown/category-dropdown.component';
-import { ClothingDialogComponent } from './clothing-dialog/clothing-dialog.component';
-import { ShoeDialogFormComponent } from './shoe-dialog/shoe-dialog-form.component';
+import { CategoryDropdownComponent } from './products-dialog/category-dropdown/category-dropdown.component';
+
 import { CategoryDialogComponent } from './category-dialog/category-dialog.component';
 import { CustomDatePipe } from '../../pipe/custom.datepipe';
+import { RecordDialogComponent } from './products-dialog/record-dialog/record-dialog.component';
+import { ClothingDialogComponent } from './products-dialog/clothing-dialog/clothing-dialog.component';
+import { ShoeDialogFormComponent } from './products-dialog/shoe-dialog/shoe-dialog-form.component';
+import { ProductDialogsComponent } from './products-dialog/product-dialogs.component';
+import { UserDialogComponent } from './user-dialog/user-dialog.component';
 
 @NgModule({
 	imports: [
 		CommonModule,
 		MaterialModule,
 		ReactiveFormsModule,
-		ModalWrapperRoutingModule
+		BaseModalRoutingModule
 	],
 	declarations: [
-		ModalWrapperComponent,
-		RecordDialogComponent,
 		DialogComponent,
+		BaseModalComponent,
+		RecordDialogComponent,
 		CategoryDropdownComponent,
 		ClothingDialogComponent,
 		ShoeDialogFormComponent,
 		CategoryDialogComponent,
 		CustomDatePipe,
+		ProductDialogsComponent,
+		UserDialogComponent
 	],
 	providers: [
 		{ provide: MAT_DIALOG_DATA, useValue: {} },
@@ -37,4 +43,4 @@ import { CustomDatePipe } from '../../pipe/custom.datepipe';
 	],
 
 })
-export class ModalWrapperModule { }
+export class BaseModalModule { }

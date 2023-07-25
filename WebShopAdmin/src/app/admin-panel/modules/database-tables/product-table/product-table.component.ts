@@ -9,18 +9,18 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
 import { DialogService } from '../../table-dialogs/services/dialog.service';
 import { environment } from 'src/environments/environment';
-import { RecordDialogService } from '../../table-dialogs/record-dialog/services/record-dialog.service';
 import { ProductTableService } from './services/product-table.service';
 import { CategoryStore } from '../../../stores/category.store';
 import { RecordStore } from '../../../stores/record.store';
 import { Record } from '../../../models/record.model';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterOutlet } from '@angular/router';
 import { ModuleService } from '../../services/module-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatTableDataSource } from '@angular/material/table';
 import { Clothing } from 'src/app/admin-panel/models/clothing.model';
+import { RecordDialogService } from '../../table-dialogs/products-dialog/record-dialog/services/record-dialog.service';
 
 @UntilDestroy()
 @Component({
@@ -182,8 +182,21 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	onCreate(paramMap) {
-		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}],  { queryParams: { createNewProduct: true} });
+	onCreate(paramMap: ParamMap) {
+		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}],  { queryParams: { createNewProduct: true} }).then(() => {
+			this.dialogFactoryService.open({
+				headerText: 'Header text record',
+				category: {
+					id: 99,
+					name: paramMap.get('product'),
+					route: 'products'
+				},
+				createNew: true,
+				template: this.userDialogTemplate
+			});
+		})
+
+		
 	}
 
 	public updateTable(paramMap: any, filterForm: UntypedFormGroup, event?: PageEvent){
