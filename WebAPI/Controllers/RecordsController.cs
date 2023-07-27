@@ -203,7 +203,9 @@ namespace WebAPI.Controllers
             _recordRepository.UpdateRecord(recordFromRepo);
 
             _recordRepository.Save();
-            return NoContent();
+            return CreatedAtRoute("GetRecord",
+                new { recordId = recordFromRepo.Id },
+                recordFromRepo);
         }
 
         // DELETE: api/Record/5

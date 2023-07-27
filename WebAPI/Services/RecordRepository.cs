@@ -134,7 +134,7 @@ namespace WebAPI.Services
 
         public IEnumerable<Record> GetRecordsFromUserId(string userId)
         {
-            return _context.Records.Where(r => r.UserId == userId).ToList();
+            return _context.Records.Where(r => r.CreatorUserId == userId).ToList();
         }
 
         public async Task<GetTableListResponseDto<RecordDto>> GetRecordWithParams(
@@ -182,8 +182,9 @@ namespace WebAPI.Services
                     subCategoryId = p.SubCategoryId.GetValueOrDefault(),
                     CategoryId = p.CategoryId.GetValueOrDefault(),
                     Title = p.Title,
-                    Year = p.Year,
-                    UserId = p.UserId,
+                    ReleaseDate = p.ReleaseDate,
+                    EditorUserId = p.EditorUserId,
+                    CreatorUserId = p.CreatorUserId,
                     LastUpdatedTime = p.LastUpdatedTime
                 }).ToList()
             };

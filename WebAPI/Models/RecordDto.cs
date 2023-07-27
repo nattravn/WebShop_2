@@ -8,11 +8,12 @@ namespace WebAPI.Models
     public class RecordDto
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
+        public string EditorUserId { get; set; }
+        public string CreatorUserId { get; set; }
         public string Title { get; set; }
         public string Band { get; set; }
         public string Album { get; set; }
-        public string Year { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public string Genre { get; set; }
         //public byte[] Image { get; set; }
         public string ImagePath { get; set; }

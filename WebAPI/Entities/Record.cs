@@ -26,8 +26,8 @@ public partial class Record
     [StringLength(100)]
     public string Album { get; set; }
 
-    [StringLength(100)]
-    public string Year { get; set; }
+    [Column(TypeName = "date")]
+    public DateTime? ReleaseDate { get; set; }
 
     [StringLength(250)]
     public string Genre { get; set; }
@@ -44,7 +44,8 @@ public partial class Record
     [StringLength(250)]
     public string Description { get; set; }
 
-    public string UserId { get; set; }
+    [StringLength(450)]
+    public string EditorUserId { get; set; }
 
     public int? SubCategoryId { get; set; }
 
@@ -52,4 +53,8 @@ public partial class Record
 
     [Column(TypeName = "datetime")]
     public DateTime? LastUpdatedTime { get; set; }
+
+    [Column("CreatorUserID")]
+    [StringLength(450)]
+    public string CreatorUserId { get; set; }
 }
