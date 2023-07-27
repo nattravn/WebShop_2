@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { filter, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -17,6 +17,8 @@ import { Category } from 'src/app/admin-panel/models/category.model';
 import { Record } from 'src/app/admin-panel/models/record.model';
 import { ActivatedRoute } from '@angular/router';
 import { CustomDatePipe } from 'src/app/admin-panel/pipe/custom.datepipe';
+import { ProductUpdate } from 'src/app/admin-panel/models/product-update.model';
+import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
 
 @UntilDestroy()
 @Component({
@@ -44,11 +46,13 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 	public categories$ = new Observable<Category[]>();
 	public category$ = new Observable<Category>();
 
+	public lastEditor$ = new Observable<Category>();
+
 	public form: UntypedFormGroup = new UntypedFormGroup({
 		id: new UntypedFormControl(0),
 		band: new UntypedFormControl('', Validators.required),
 		album: new UntypedFormControl('', Validators.required),
-		year: new UntypedFormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
+		releaseDate: new UntypedFormControl('', [Validators.required]),
 		genre: new UntypedFormControl(''),
 		description: new UntypedFormControl('', Validators.required),
 		imagePath: new UntypedFormControl('default-image.png'),
@@ -60,11 +64,13 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		price: new UntypedFormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
 		categoryId: new UntypedFormControl(null),
 		subCategoryId: new UntypedFormControl(null),
-		userId: new UntypedFormControl(null),
+		editorUserId: new UntypedFormControl(null),
 		categoryName: new UntypedFormControl(''),
-		currentPageIndex: new UntypedFormControl(1),
-		currentTableSize: new UntypedFormControl(1),
+		currentPage: new UntypedFormControl(1),
+		totalPages: new UntypedFormControl(1),
 		lastUpdateTime: new UntypedFormControl(''),
+		order: new UntypedFormControl(''),
+		sortKey: new UntypedFormControl(''),
 	});
 
 	constructor(
@@ -75,27 +81,30 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		private userStore: UserStore,
 		private activatedRoute: ActivatedRoute,
 		private moduleService: ModuleService,
-		private customDatePipe: CustomDatePipe) { }
+		private customDatePipe: CustomDatePipe,
+		@Inject(MAT_DIALOG_DATA)
+		public data: DialogData,
+		) { }
 	ngOnInit(): void {
 
 		//this.paramMapProduct$ = this.activatedRoute.queryParams;
 
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
+			filter(queryParams => !this.data.createNew),
 			switchMap(productData => {
-				return this.activatedRoute.queryParams.pipe(
-					filter(queryParams => !JSON.parse(queryParams.createNewProduct)),
-					tap((x: any) => this.populateForm(productData.row, productData.currentPageIndex, productData.currentTableSize)),
-				)
+				this.populateForm(productData);
+				return of(null);
 			}),
 			shareReplay(1),
-		);
+		)
 
 		this.category$ = this.categoryStore.getCategory(1).pipe(
 			untilDestroyed(this),
-			tap(x => { console.log('x: ', x); }),
 			shareReplay(1)
 		);
+
+
 
 		console.log('this.categories$: ', this.categories$);
 
@@ -105,35 +114,57 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 	 * On destroy
 	 */
 	ngOnDestroy(): void {}
-	public onSubmit(form: any) {
+
+
+
+	public onSubmit(form: Record & ProductUpdate<Record>) {
 
 		if (this.form.invalid) {
-		return;
+			return;
 		}
 		form.categoryName = 'Record';
+
+		
 		// Form data becomes null in observable so it needs to be cloned
-		this.userStore.getUserProfile().pipe(
+		this.populateForm$ = this.userStore.getUserProfile().pipe(
 			untilDestroyed(this),
 			switchMap(user => {
 				//Set forms userId to in logged user
+				console.log('user: ', user)
+				form.editorUserId = user.userId;
 
-				form.userId = user.userId;
+				const newRecord = new Record(this.form.value);
 
+				console.log('newRecord: ', newRecord);
 				//Create or update
 				if (!form.id) {
-					return this.recordStore.postRecord(form, this.fileToUpload);
+					return this.recordStore.postRecord(newRecord, this.fileToUpload);
 				} else {
-					return this.recordStore.putRecord(form, this.fileToUpload);
+					return this.recordStore.putRecord(newRecord, this.fileToUpload);
 				}
+			}),
+			tap(updatedRecord => {
+				let productUpdate = new ProductUpdate<Record>();
+
+				productUpdate = {...form, row: updatedRecord}
+
+				this.populateForm(productUpdate);
+
+				return of(null);
 			}),
 			switchMap(x => {
 				return this.productTableService.refreshMatTable(
 					'records',
-					form.currentTableSize,
-					form.currentPageIndex
-				);
-			})
-		).subscribe();
+					form.totalPages,
+					form.currentPage,
+					form.sortKey,
+					form.order,
+					'',
+					null
+				)
+			}),
+			shareReplay(1),
+		);
 	}
 
 	showPreview(file: File) {
@@ -149,31 +180,30 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		this.fileToUpload = file;
 	}
 
-	populateForm(record: Record, currentPageIndex: number, currentTableSize: number) {
-		console.log('record: ', record);
-		this.form.get('id').setValue(record.id);
-		this.form.get('band').setValue(record.album);
-		this.form.get('album').setValue(record.band);
-		this.form.get('year').setValue(record.year);
-		this.form.get('genre').setValue(record.genre);
-		this.form.get('description').setValue(record.description);
-		this.form.get('title').setValue(record.title);
-		this.form.get('price').setValue(record.price);
-		this.form.get('categoryId').setValue(record.categoryId);
-		this.form.get('subCategoryId').setValue(record.subCategoryId);
-		this.form.get('imagePath').setValue(record.imagePath);
-		this.form.get('currentPageIndex').setValue(currentPageIndex);
-		this.form.get('currentTableSize').setValue(currentTableSize);
+	populateForm(productUpdate: ProductUpdate<Record>) {
+		console.log('productUpdate: ', productUpdate);
+		this.form.get('id').setValue(productUpdate.row.id);
+		this.form.get('band').setValue(productUpdate.row.band);
+		this.form.get('album').setValue(productUpdate.row.album);
+		this.form.get('releaseDate').setValue(productUpdate.row.releaseDate);
+		this.form.get('genre').setValue(productUpdate.row.genre);
+		this.form.get('description').setValue(productUpdate.row.description);
+		this.form.get('title').setValue(productUpdate.row.title);
+		this.form.get('price').setValue(productUpdate.row.price);
+		this.form.get('categoryId').setValue(productUpdate.row.categoryId);
+		this.form.get('subCategoryId').setValue(productUpdate.row.subCategoryId);
+		this.form.get('imagePath').setValue(productUpdate.row.imagePath);
+		this.form.get('currentPage').setValue(productUpdate.currentPage);
+		this.form.get('totalPages').setValue(productUpdate.totalPages);
+		this.form.get('order').setValue(productUpdate.order);
+		this.form.get('sortKey').setValue(productUpdate.sortKey);
+		this.form.get('editorUserId').setValue(productUpdate.row.editorUserId);
 
-	
-		this.form.get('lastUpdateTime').setValue( this.customDatePipe.transform(record.lastUpdatedTime));
 
-		this.imgSrcReplay.next(this.imageRootPath + record.imagePath);
+		this.form.get('lastUpdateTime').setValue( this.customDatePipe.transform(productUpdate.row.lastUpdatedTime));
 
-		this.category$ = this.categoryStore.getCategory(record.categoryId).pipe(
-			untilDestroyed(this),
-			shareReplay(1)
-		);
+		this.imgSrcReplay.next(this.imageRootPath + productUpdate.row.imagePath);
+
 
 		console.log('this.category$: ', this.category$);
 	}

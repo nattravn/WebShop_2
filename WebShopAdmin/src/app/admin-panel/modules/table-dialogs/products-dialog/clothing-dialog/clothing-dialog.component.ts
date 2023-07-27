@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ClothingStore } from '../../../../stores/clothing.store';
 import { ToastrService } from 'ngx-toastr';
@@ -15,6 +15,9 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { ProductTableService } from '../../../database-tables/product-table/services/product-table.service';
 import { ActivatedRoute } from '@angular/router';
+import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
+import { ProductUpdate } from 'src/app/admin-panel/models/product-update.model';
+import { Clothing } from 'src/app/admin-panel/models/clothing.model';
 
 @UntilDestroy()
 @Component({
@@ -59,37 +62,38 @@ export class ClothingDialogComponent implements OnInit {
 		public moduleService: ModuleService,
 		public productTableService: ProductTableService,
 		private activatedRoute: ActivatedRoute,
+		@Inject(MAT_DIALOG_DATA)
+		public data: DialogData,
 	) { }
 
 	ngOnInit() {
 
+		console.log('data: ', this.data.createNew);
 
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
+			filter(queryParams => !this.data.createNew),
 			switchMap(productData => {
-				return this.activatedRoute.queryParams.pipe(
-					filter(queryParams => !JSON.parse(queryParams.createNewProduct)),
-					tap((x: any) => this.populateForm(productData.row, productData.currentPageIndex, productData.currentTableSize)),
-				)
+				this.populateForm(productData);
+				return of(null);
 			}),
 			shareReplay(1),
 		)
 	}
 
-	populateForm(clothing: any, currentPageIndex: number, currentTableSize: number) {
+	populateForm(clothing: ProductUpdate<Clothing>) {
 		console.log("clothing: ", clothing)
-		this.form.get('id').setValue(clothing.id);
-		this.form.get('description').setValue(clothing.description);
-		this.form.get('title').setValue(clothing.title);
-		this.form.get('price').setValue(clothing.price);
-		this.form.get('category').setValue(clothing.category);
-		this.form.get('categoryId').setValue(clothing.categoryId);
-		this.form.get('subCategoryId').setValue(clothing.subCategoryId);
-		this.form.get('imagePath').setValue(clothing.imagePath);
-		this.form.get('currentPageIndex').setValue(currentPageIndex);
-		this.form.get('currentTableSize').setValue(currentTableSize);
+		this.form.get('id').setValue(clothing.row.id);
+		this.form.get('description').setValue(clothing.row.description);
+		this.form.get('title').setValue(clothing.row.title);
+		this.form.get('price').setValue(clothing.row.price);
+		this.form.get('categoryId').setValue(clothing.row.categoryId);
+		this.form.get('subCategoryId').setValue(clothing.row.subCategoryId);
+		this.form.get('imagePath').setValue(clothing.row.imagePath);
+		this.form.get('currentPageIndex').setValue(clothing.currentPage);
+		this.form.get('currentTableSize').setValue(clothing.totalPages);
 
-		this.imgSrcReplay.next(this.imageRootPath + clothing.imagePath);
+		this.imgSrcReplay.next(this.imageRootPath + clothing.row.imagePath);
 
 		//this.category$ = this.categoryStore.getCategory(record.categoryId).pipe(untilDestroyed(this), shareReplay(1));
 	}
@@ -135,7 +139,7 @@ export class ClothingDialogComponent implements OnInit {
 		this.initializeFormGroup();
 	}
 
-	onSubmit(form: any) {
+	onSubmit(form: Clothing & ProductUpdate<Clothing>) {
 		//this.clothingStore.form.value.userName = this.userStore.currentUser.userName;
 
 		// if (!this.form.value.id) {
@@ -155,7 +159,7 @@ export class ClothingDialogComponent implements OnInit {
 			untilDestroyed(this),
 			switchMap(user => {
 				//Set forms userId to in logged user
-				form.userId = user.userId;
+				form.editorUserId = user.userId;
 
 				//Create or update
 				if (!this.form.get('id').value) {
@@ -167,8 +171,12 @@ export class ClothingDialogComponent implements OnInit {
 			switchMap(x => {
 				return this.productTableService.refreshMatTable(
 					'clothings',
-					form.currentTableSize,
-					form.currentPageIndex
+					form.totalPages,
+					form.currentPage,
+					'band',
+					'asc',
+					'',
+					null
 				);
 			}),
 			catchError(	error => {

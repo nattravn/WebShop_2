@@ -12,6 +12,7 @@ import { CategoryDropdownComponent } from './products-dialog/category-dropdown/c
 
 import { CategoryDialogComponent } from './category-dialog/category-dialog.component';
 import { CustomDatePipe } from '../../pipe/custom.datepipe';
+import { UserDetailsPipe } from '../../pipe/user-details.pipe';
 import { RecordDialogComponent } from './products-dialog/record-dialog/record-dialog.component';
 import { ClothingDialogComponent } from './products-dialog/clothing-dialog/clothing-dialog.component';
 import { ShoeDialogFormComponent } from './products-dialog/shoe-dialog/shoe-dialog-form.component';
@@ -34,6 +35,7 @@ import { UserDialogComponent } from './user-dialog/user-dialog.component';
 		ShoeDialogFormComponent,
 		CategoryDialogComponent,
 		CustomDatePipe,
+		UserDetailsPipe,
 		ProductDialogsComponent,
 		UserDialogComponent
 	],

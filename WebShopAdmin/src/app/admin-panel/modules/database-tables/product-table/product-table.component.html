@@ -1,7 +1,7 @@
 <ng-container *ngIf="{
 	routerEvent: routerEvent$ | async,
 	activatedRouteEvent: activatedRoute.paramMap | async,
-	tableData: tableData$ | async
+	tableData: productTableService.tableData$ | async
 } as source">
 
 	<div class="container float-left">

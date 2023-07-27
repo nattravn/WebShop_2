@@ -10,6 +10,7 @@ import { Record } from '../../../../models/record.model';
 import { filter, finalize, map, shareReplay, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { Clothing } from 'src/app/admin-panel/models/clothing.model';
+import { MatSort } from '@angular/material/sort';
 
 @UntilDestroy()
 @Injectable()
@@ -21,6 +22,14 @@ export class ProductTableService implements OnDestroy {
 	private eventUrl = '';
 
 	public initPageLimit = 5;
+
+	public sortKey = 'band';
+
+	public order = 'asc'; 
+
+	public currentPageIndex = 1;
+
+	public currentTableSize = 5;
 
 	constructor(
 		private recordStore: RecordStore,
@@ -50,12 +59,24 @@ export class ProductTableService implements OnDestroy {
 
 	ngOnDestroy(): void { }
 
-	refreshMatTable(productString: string, pageLimit: number = null, page: number = null): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
-		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,'band', 'asc', '').pipe(
+	refreshMatTable(
+		productString: string, 
+		pageLimit: number = null, 
+		page: number = null,
+		key: string,
+		order: string,
+		searchQuery: string,
+		sort: MatSort | null
+	): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
+		this.tableData$ = this.recordStore.getProducts(productString, pageLimit, page,key, order, searchQuery).pipe(
 			untilDestroyed(this),
 			switchMap(records => {
 				this.dataSource.data = records.items;
-
+				this.sortKey = key;
+				this.order = order;
+				if(sort){
+					this.dataSource.sort = sort;
+				}
 
 				console.log('records.Items: ', records);
 				return of({items: this.dataSource, totalItems: records.totalItems});

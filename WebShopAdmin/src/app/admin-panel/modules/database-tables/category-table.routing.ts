@@ -16,9 +16,7 @@ const routes: Routes = [
 				component: ProductTableComponent,
 				children: [
 					{
-						path: ':product',   //flytta till separata modal routes, inte child routes
-						outlet: 'tablesOutlet',
-						pathMatch: 'full',
+						path: 'modal',   //flytta till separata modal routes, inte child routes
 						loadChildren: () => import('../table-dialogs/base-modal.module').then(m => m.BaseModalModule)
 					},
 				],

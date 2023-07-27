@@ -16,11 +16,10 @@ import { DialogService } from '../services/dialog.service';
 	templateUrl: './dialog.component.html',
 	styleUrls: ['./dialog.component.scss']
 })
-export class DialogComponent {
+export class DialogComponent implements OnInit{
 
 	public categoryEnum = AdminCategoryEnum;
 
-	public categoryChange: Category = new Category();
 
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
@@ -40,10 +39,10 @@ export class DialogComponent {
 		public data: DialogData,
 		public router: Router,
 		public activatedRoute: ActivatedRoute
-	) {
-		this.categoryChange.name="records";
-		this.categoryStore.getCategories().subscribe();
-		console.log('data.template: ', data.category.name);
+	) { }
+
+	ngOnInit(): void {
+		console.log('data.template: ', this.data.category.name);
 		console.log('this.activatedRoute: ', this.activatedRoute);
 
 		this.activatedRoute.data.subscribe(data => {
@@ -57,8 +56,6 @@ export class DialogComponent {
 		this.activatedRoute.paramMap.subscribe(paramMap => {
 			console.log('paramMap: ', paramMap)
 		})
-		
-
 	}
 
 	public onDeactivate(event) {
@@ -73,6 +70,8 @@ export class DialogComponent {
 	onClose() {
 		this.dialogRef.close();
 
+		console.log("this.activatedRoute: ", this.activatedRoute.snapshot)
+
 		//this.dialogService.close();
 
 		// this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(
@@ -83,9 +82,5 @@ export class DialogComponent {
 
 		// 	})
 		// )
-	}
-
-	public selectedCataegory(event: Category){
-		this.categoryChange = event;
 	}
 }

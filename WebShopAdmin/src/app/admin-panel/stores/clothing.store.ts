@@ -48,7 +48,7 @@ export class ClothingStore {
 		formData.append('image', fileToUpload, fileToUpload.name);
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('category', modelFormData.categoryId.toString());
-		formData.append('userId', modelFormData.userId.toString());
+		formData.append('userId', modelFormData.editorUserId.toString());
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
 		formData.append('userName', modelFormData.userName);
 
@@ -68,7 +68,7 @@ export class ClothingStore {
 		}
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('category', modelFormData.categoryId.toString());
-		formData.append('userId', modelFormData.userId.toString());
+		formData.append('userId', modelFormData.editorUserId.toString());
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
 
 		return this.http.put(

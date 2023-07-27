@@ -3,10 +3,8 @@
 		paramMapProduct: paramMapProduct$ | async, 
 		category: categoryChange$ | async
 	} as source">
-
-		<pre>{{source.paramMapProduct.createNewProduct | json}}</pre>
 		
-		<app-category-dropdown (selectCategory)="selectedCataegory($event)" *ngIf="source.paramMapProduct.createNewProduct"></app-category-dropdown>
+		<app-category-dropdown [selectedCategory]="source.category | lowercase" (selectCategory)="selectedCataegory($event)" *ngIf="data.createNew"></app-category-dropdown>
 
 		<div [ngSwitch]="source.category | lowercase">
 			<app-record-dialog *ngSwitchCase=categoryEnum.Record></app-record-dialog>

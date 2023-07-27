@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectionStrategy, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, AfterContentChecked, Input, AfterViewInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
@@ -20,7 +20,7 @@ import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
   templateUrl: './product-dialogs.component.html',
   styleUrls: ['./product-dialogs.component.scss']
 })
-export class ProductDialogsComponent implements OnInit {
+export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	public categoryEnum = AdminCategoryEnum;
 
@@ -56,22 +56,28 @@ export class ProductDialogsComponent implements OnInit {
 		private activatedRoute: ActivatedRoute,
 		private dialogFactoryService: DialogFactoryService,
 	) { }
+	ngAfterViewInit(): void {
+		this.categoryChange$.next(this.data.category.name);
+		this.cdr.detectChanges();
+	}
 
 	ngAfterContentChecked(): void {
 		//this.cdr.detectChanges();
+		
 	}
+
 
 	ngOnInit(): void {
 		console.log("ngOnInit BaseModalComponent", this.data);
 		this.paramMapProduct$ = this.activatedRoute.queryParams;
 
-		this.categoryChange$.next(this.data.category.name);
+		
 
-		this.activatedRoute.paramMap.subscribe(params => {
-			console.log('params.get(product):', params.get('product'));
-			//this.categoryChange.name=params.get('product');
-			this.categoryChange$.next(this.data.category.name);
-		});
+		// this.activatedRoute.paramMap.subscribe(params => {
+		// 	console.log('params.get(product):', params.get('product'));
+		// 	//this.categoryChange.name=params.get('product');
+		// 	this.categoryChange$.next(this.data.category.name);
+		// });
 
 		// Fired when route is changed
 		// setTimeout(() => {
@@ -86,6 +92,11 @@ export class ProductDialogsComponent implements OnInit {
 
 	public selectedCataegory(event: Category){
 		this.categoryChange$.next(event.name);
+		this.router.navigate(['adminpanel/tables/products/'+event.route], { queryParams: { createNewProduct: false} });
+		this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+			// The queryParams will be undefined in next activeRouter snapshot :(
+			this.router.navigate(['adminpanel/tables/products', event.route], { queryParams: { createNewProduct: false}})
+		);
 	}
 
 	openDialog(){

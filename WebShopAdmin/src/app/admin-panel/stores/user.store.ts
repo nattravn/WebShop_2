@@ -101,6 +101,11 @@ export class UserStore {
 		return this.http.get<User>(this.baseUrl+'/UserProfile', {headers : tokenHeader});
 	}
 
+	getUserProfileById(userId : string): Observable<User> {
+		var tokenHeader = new HttpHeaders({'Authorization':'Bearer ' + localStorage.getItem('ACCESS_TOKEN')});
+		return this.http.get<User>(this.baseUrl+'/ApplicationUser/' + userId, {headers : tokenHeader});
+	}
+
 	getUsers(): Observable<User[]> {
 		return this.http.get<User[]>(this.baseUrl + '/ApplicationUser').pipe(tap(items => {
 			this.usersReplay.next(items);

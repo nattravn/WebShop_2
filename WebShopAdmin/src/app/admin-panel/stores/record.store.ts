@@ -8,7 +8,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { Record } from '../models/record.model';
 import { environment } from 'src/environments/environment';
-import { PagedProducts } from '../models/paged-records.model';
+import { ProductTable } from '../models/product-table.model';
 
 @UntilDestroy()
 @Injectable({
@@ -20,8 +20,8 @@ export class RecordStore implements OnDestroy {
 	filter: string;
 	readonly baseUrl = environment.baseUrl;
 	public imageRootPath = this.baseUrl + '/Images/original/default-image.png';
-	private recordsReplay: ReplaySubject<PagedProducts> = new ReplaySubject<PagedProducts>(1);
-	public recordsReplay$: Observable<PagedProducts> = this.recordsReplay.asObservable();
+	private recordsReplay: ReplaySubject<ProductTable> = new ReplaySubject<ProductTable>(1);
+	public recordsReplay$: Observable<ProductTable> = this.recordsReplay.asObservable();
 
 	private recordItemReplay: ReplaySubject<Record> = new ReplaySubject<Record>(1);
 	public recordItemReplay$: Observable<Record> = this.recordItemReplay.asObservable();
@@ -56,12 +56,12 @@ export class RecordStore implements OnDestroy {
 	//     });
 	// }
 
-	postRecord(modelFormData: Record, fileToUpload: File): Observable<Object> {
+	postRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
 		const formData: FormData = new FormData();
 
 		formData.append('band', modelFormData.band);
 		formData.append('album', modelFormData.album);
-		formData.append('year', modelFormData.year);
+		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
 		formData.append('genre', modelFormData.genre);
 
 		if(fileToUpload){
@@ -74,18 +74,19 @@ export class RecordStore implements OnDestroy {
 		formData.append('description', modelFormData.description);
 		formData.append('categoryId', '0');
 		formData.append('subCategoryId', '0');
+		formData.append('editorUserId', modelFormData.editorUserId);
 
-		return this.http.post(this.baseUrl + '/Records', formData).pipe(tap(() => {
+		return this.http.post<Record>(this.baseUrl + '/Records', formData).pipe(tap(() => {
 			this.toastr.success('inserted successfully', 'EMP. Register');
 		}));
 	}
 
-	putRecord(modelFormData: any, fileToUpload: File): Observable<Object> {
+	putRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
 		const formData: FormData = new FormData();
 		formData.append('band', modelFormData.band);
 		formData.append('id', JSON.stringify(modelFormData.id));
 		formData.append('album', modelFormData.album);
-		formData.append('year', modelFormData.year);
+		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
 		formData.append('genre', modelFormData.genre);
 		if (fileToUpload != null) {
 			formData.append('image', fileToUpload, fileToUpload.name);
@@ -98,17 +99,16 @@ export class RecordStore implements OnDestroy {
 		formData.append('price', modelFormData.price);
 		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
 		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
+		formData.append('editorUserId', modelFormData.editorUserId);
 
 		var body = {
 			band: modelFormData.band,
 			id: modelFormData.id,
 			album: modelFormData.album,
-			year: modelFormData.year
+			year: modelFormData.releaseDate
 		};
 
-
-
-		return this.http.put(this.baseUrl + '/Records/' + modelFormData.id, formData).pipe(tap(item => {
+		return this.http.put<Record>(this.baseUrl + '/Records/' + modelFormData.id, formData).pipe(tap(item => {
 			this.toastr.info('updated successfully', 'EMP. Register');
 		}));
 	}
@@ -117,8 +117,8 @@ export class RecordStore implements OnDestroy {
 		return this.http.delete(this.baseUrl + '/' + row.categoryName + '/' + row.id);
 	}
 
-	getProducts(route: string, limit: number, page: number, active: string, direction: string, keyWord: String): Observable<PagedProducts> {
-		return this.http.get<PagedProducts>(`${this.baseUrl}/${route}/GetPagedProducts/`, {
+	getProducts(route: string, limit: number, page: number, active: string, direction: string, keyWord: String): Observable<ProductTable> {
+		return this.http.get<ProductTable>(`${this.baseUrl}/${route}/GetPagedProducts/`, {
 				params: {
 					limit: limit.toString(),
 					page: page.toString(),

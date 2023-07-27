@@ -7,8 +7,15 @@ export class Clothing {
     image: File;
     imagePath: string;
     categoryId: number;
-    userId: number;
+    editorUserId: string;
     userName: string;
     subCategoryId: number;
     categoryName: string;
+	releaseDate: Date;
+
+
+	public constructor(init?: Partial<Clothing>) {
+		init.releaseDate = new Date(init.releaseDate);
+        Object.assign(this, init);
+    }
 }

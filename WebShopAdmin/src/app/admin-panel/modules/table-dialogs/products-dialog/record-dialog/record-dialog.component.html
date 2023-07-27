@@ -3,7 +3,6 @@
 	formValue: formValue$ | async,
 	category: category$ | async
 } as source">
-<pre>{{source.noooothing | json}}</pre>
 source.formValue.value: <pre>{{source.formValue | json}}</pre>
 source.formValue.genre: <pre>{{source.formValue.genre | json}}</pre>
 source.formValue.lastDateTime: <pre>{{form.get('lastUpdateTime').value | customDate}}</pre>
@@ -14,6 +13,11 @@ source.formValue.lastDateTime: <pre>{{form.get('lastUpdateTime').value | customD
 		<mat-form-field class="w-100">
 			<mat-label>RecordID</mat-label>
 			<input formControlName="id" [readonly]="true" matInput placeholder="RecordID">
+		</mat-form-field>
+
+		<mat-form-field class="w-100">
+			<mat-label>Last editor</mat-label>
+			<input [readonly]="true" value="{{(source.formValue?.editorUserId | userDetails | async)?.userName}}" matInput placeholder="RecordID">
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
@@ -40,22 +44,24 @@ source.formValue.lastDateTime: <pre>{{form.get('lastUpdateTime').value | customD
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
+			<mat-label>Band</mat-label>
 			<input formControlName="band" matInput placeholder="Band">
 			<mat-error>This field is mandatory.</mat-error>
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
+			<mat-label>Album</mat-label>
 			<input formControlName="album" matInput placeholder="Album">
 			<mat-error>This field is mandatory.</mat-error>
 		</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<input formControlName="year" matInput placeholder="Year">
+		<!-- <mat-form-field class="w-100">
+			<input formControlName="releaseDate" matInput placeholder="Year">
 			<mat-error>
 				<div *ngIf="form.controls['year'].errors?.pattern" class="text-danger">Number Only</div>
 				<div *ngIf="form.controls['year'].errors?.required" class="text-danger">This field is mandatory.</div>
 			</mat-error>
-		</mat-form-field>
+		</mat-form-field> -->
 
 		<mat-form-field class="w-100">
 			<mat-select matInput formControlName="genre" placeholder="Genre" [value]="source.formValue.genre">
@@ -67,7 +73,7 @@ source.formValue.lastDateTime: <pre>{{form.get('lastUpdateTime').value | customD
 		
 		<mat-form-field appearance="fill">
 			<mat-label>Choose a date</mat-label>
-			<input matInput [matDatepicker]="picker">
+			<input formControlName="releaseDate" matInput [matDatepicker]="picker">
 			<mat-hint>MM/DD/YYYY</mat-hint>
 			<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
 			<mat-datepicker #picker></mat-datepicker>

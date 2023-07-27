@@ -38,18 +38,19 @@ export class AdminPanelComponent implements OnInit {
 	categoryRoute(category) {
 		console.log('change route');
 
-		// Ta det i två svep, först reseta outlet sen navigera ny route går inte att göra det isamma
+		// Ta det i två svep, först reseta outlet sen navigera ny route, går inte att göra det i samma
 		// setTimeout(()=>{
 		// 	this.router.navigate(['adminpanel/tables/products/'+category.route, { outlets: { tablesOutlet: null }}], {replaceUrl:true});
 		// });
 		// https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
 		this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
-		this.router.navigate(['adminpanel/tables/products/'+category.route]));
+			this.router.navigate(['adminpanel/tables/products', category.route])
+		);
 
 		//this.router.navigate(['adminpanel/tables/products/'+category.route+'/', repla }]);
 		//this.router.navigate([ { outlets: { secondary: null } }]);
 
-		this.recordTableService.refreshMatTable(category.route,5,1)
+		//this.recordTableService.refreshMatTable(category.route,5,1,'band','asc','',null)
 	}
 
 	logout() {

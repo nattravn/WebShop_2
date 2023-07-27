@@ -58,10 +58,6 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	routerEvent$: Observable<any>;
 	activatedRouteEvent$: Observable<any> = this.activatedRoute.paramMap;
 
-	private currentPageIndex = 1;
-
-	private currentTableSize = 5;
-
 	public tableData$ = new Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}>();
 
 	private searchFilter: string;
@@ -98,7 +94,7 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		}
 
 		// if modal is open, filter eventUrl
-		this.refreshMatTable(eventUrl, 5, 1, this.active,this.direction, '');
+		this.refreshMatTable(this.activatedRoute.snapshot.paramMap.get('product'), 5, 1, this.active,this.direction, '');
 
 
 		// console.log('this.sort: ', this.sort);
@@ -110,10 +106,10 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		console.log('sort: ', sort);
 		this.active = sort.active;
 		this.direction = sort.direction;
-		this.paginator.firstPage();
+		//this.paginator.firstPage();
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 
-		this.refreshMatTable(eventUrl, 5, 1, sort.active, sort.direction,filterForm.value['search']);
+		this.refreshMatTable(this.activatedRoute.snapshot.paramMap.get('product'), 5, this.productTableService.currentPageIndex, sort.active, sort.direction,filterForm.value['search']);
 	}
 
 	refreshMatTable(
@@ -124,21 +120,27 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		direction: string,
 		searchQuery: string
 	): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
-		this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction,searchQuery).pipe(
+
+		return this.productTableService.refreshMatTable(productString,pageLimit,page,active,direction,searchQuery,this.sort).pipe(
 			untilDestroyed(this),
-			switchMap(records => {
-				let dataSource = new MatTableDataSource<Record | Clothing>();
-				
-				dataSource.data = records.items;
-				dataSource.sort = this.sort;
-				//dataSource.paginator = this.paginator;
-
-				return of({items: dataSource, totalItems: records.totalItems});
-			}),
 			shareReplay(1),
-		)
+		);
 
-		return this.tableData$;
+		// this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction,searchQuery).pipe(
+		// 	untilDestroyed(this),
+		// 	switchMap(records => {
+		// 		let dataSource = new MatTableDataSource<Record | Clothing>();
+				
+		// 		dataSource.data = records.items;
+		// 		dataSource.sort = this.sort;
+		// 		//dataSource.paginator = this.paginator;
+
+		// 		return of({items: dataSource, totalItems: records.totalItems});
+		// 	}),
+		// 	shareReplay(1),
+		// )
+
+		// return this.tableData$;
 	}
 	ngOnInit() {
 		
@@ -147,10 +149,9 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	applyFilter(event: Event, dataSource : MatTableDataSource<Record | Clothing>, filterForm: UntypedFormGroup) {
 		const filterValue = (event.target as HTMLInputElement).value;
 
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-
+		//const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 		this.paginator.firstPage();
-		this.refreshMatTable(eventUrl, 5, 1, this.active, this.direction, filterForm.value['search']);
+		this.refreshMatTable(this.activatedRoute.snapshot.paramMap.get('product'), 5, 1, this.active, this.direction, filterForm.value['search']);
 
 		// this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
 		// 	switchMap((content: (Record | Clothing)[]) => {
@@ -167,7 +168,9 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 		this.filterForm.reset();
 		dataSource.filter = "";
 		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable(eventUrl, 5, 1, this.active, this.direction, '');
+
+
+		this.refreshMatTable(this.activatedRoute.snapshot.paramMap.get('product'), 5, 1, this.active, this.direction, '');
 	}
 
 	onDelete(row: any) {
@@ -176,14 +179,14 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 				untilDestroyed(this),
 				switchMap(() => {
 					this.toastr.warning('Deleted successfully');
-					return this.refreshMatTable(row.categoryName,5,1,this.active,this.direction,'');
+					return this.productTableService.refreshMatTable(row.categoryName,5,1,this.active,this.direction,'',this.sort);
 				})
 			).subscribe();
 		}
 	}
 
 	onCreate(paramMap: ParamMap) {
-		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}],  { queryParams: { createNewProduct: true} }).then(() => {
+		this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')+'/modal'],  { queryParams: { createNewProduct: true} }).then(() => {
 			this.dialogFactoryService.open({
 				headerText: 'Header text record',
 				category: {
@@ -200,24 +203,54 @@ export class ProductTableComponent implements OnInit, OnDestroy {
 	}
 
 	public updateTable(paramMap: any, filterForm: UntypedFormGroup, event?: PageEvent){
-		this.currentPageIndex = event.pageIndex+1;
-		this.currentTableSize = event.pageSize;
+		this.productTableService.currentPageIndex = event.pageIndex+1;
+		this.productTableService.currentTableSize = event.pageSize;
 
 		this.refreshMatTable(paramMap.get('product'), event.pageSize, event.pageIndex+1, this.active, this.direction,filterForm.value['search']);
 	}
 
-	onEdit(row: Record, paramMap: any) {
-		console.log("event: ", event)
+	onEdit(row: any, paramMap: any) {
+		
+		console.log("paramMap: ", paramMap.products)
+
+
+		switch (paramMap.products) {
+			case 'records':
+				row = new Record(row);
+				break;
+			case 'clothing':
+				row = new Clothing(row);
+				break;
+			default:
+				row = new Record(row);
+				break;
+		}
+		console.log("row: ", row);
+		console.log("row: ", typeof row)
+		console.log("row: ", row instanceof Clothing)
 		//this.recordDialogService.populateForm(row);
 		this.moduleService.productData$.next({
 			row: row,
-			currentPageIndex: this.currentPageIndex,
-			currentTableSize: this.currentTableSize
+			currentPage: this.productTableService.currentPageIndex,
+			totalPages: this.productTableService.currentTableSize,
+			order: this.productTableService.order,
+			sortKey: this.productTableService.sortKey
 		})
 		console.log("paramMap.get('product'): ", paramMap.get('product'))
 		console.log("row: ", row)
 		if(paramMap.get('product')){
-			this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}], { queryParams: { createNewProduct: false} });
+			this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product')+'/modal'],  { queryParams: { createNewProduct: false} }).then(() => {
+				this.dialogFactoryService.open({
+					headerText: 'Header text record',
+					category: {
+						id: 99,
+						name: paramMap.get('product'),
+						route: 'products'
+					},
+					createNew: false,
+					template: this.userDialogTemplate
+				});
+			})
 		}
 
 
