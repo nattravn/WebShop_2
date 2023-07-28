@@ -8,7 +8,6 @@ import { MaterialModule } from '../material/material.module';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CdkTableModule } from '@angular/cdk/table';
 
-
 import { ProductTableService } from './modules/database-tables/product-table/services/product-table.service';
 import { CategoryTableService } from './modules/database-tables/category-table/services/category-table.service';
 import { CategoryDialogService } from './modules/table-dialogs/category-dialog/services/category-dialog.service';
@@ -23,30 +22,25 @@ import { CategoryTablesModule } from './modules/database-tables/category-table.m
 import { RecordDialogService } from './modules/table-dialogs/products-dialog/record-dialog/services/record-dialog.service';
 
 @NgModule({
-	declarations: [
-		AdminPanelComponent,
-		CategoryNamePipe,
-	],
+  declarations: [AdminPanelComponent, CategoryNamePipe],
 
-	imports: [
-		AdminRoutingModule,
-		CommonModule,
-		ReactiveFormsModule,
-		MaterialModule,
-		FormsModule,
-		CdkTableModule,
-		MatExpansionModule,
-	],
+  imports: [
+    AdminRoutingModule,
+    CommonModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    FormsModule,
+    CdkTableModule,
+    MatExpansionModule,
+  ],
 
-	providers: [
-		CategoryStore,
-		RecordDialogService,
-		ProductTableService,
-		CategoryTableService,
-		CategoryDialogService,
-		BaseModalComponent
-	],
-
+  providers: [
+    CategoryStore,
+    RecordDialogService,
+    ProductTableService,
+    CategoryTableService,
+    CategoryDialogService,
+    BaseModalComponent,
+  ],
 })
-
 export class AdminPanelModule { }

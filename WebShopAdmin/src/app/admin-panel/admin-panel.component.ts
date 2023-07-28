@@ -17,6 +17,7 @@ import { ProductTableService } from './modules/database-tables/product-table/ser
 export class AdminPanelComponent implements OnInit {
 
 	public AdminCategoryEnum = AdminCategoryEnum;
+	
 	public categories$ = new Observable<Category[]>();
 
 	constructor(

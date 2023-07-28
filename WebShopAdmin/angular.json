@@ -27,18 +27,20 @@
               "src/assets"
             ],
             "styles": [
-			  "./node_modules/bootstrap/scss/bootstrap.scss",
-			  "./node_modules/font-awesome/css/font-awesome.css",
-			  "src/styles.scss",
-			  "src/theme.scss",
-			  "node_modules/ngx-toastr/toastr.css"
+              "./node_modules/bootstrap/scss/bootstrap.scss",
+              "./node_modules/font-awesome/css/font-awesome.css",
+              "src/styles.scss",
+              "src/theme.scss",
+              "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
-				"./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-			],
-			"stylePreprocessorOptions": {
-				"includePaths": ["node_modules/"]
-			},
+              "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "node_modules/"
+              ]
+            },
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -106,12 +108,12 @@
               "src/assets"
             ],
             "styles": [
-				"src/theme.scss",
-              	"src/styles.scss"
+              "src/theme.scss",
+              "src/styles.scss"
             ],
             "scripts": [
-				"./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-			]
+              "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
           }
         },
         "e2e": {
@@ -125,11 +127,23 @@
               "devServerTarget": "WebShopAdmin:serve:production"
             }
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

@@ -1,8 +1,4 @@
 {
-    "editor.detectIndentation": false,
-    "editor.insertSpaces": false,
-	"editor.tabSize": 4,
-	"files.watcherExclude": {
-        "**/**/*": true
-    }
+	"editor.tabSize": 2,
+	"eslint.nodePath": "C:\\Program Files\\nodejs"
 }

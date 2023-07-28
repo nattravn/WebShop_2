@@ -1,0 +1,68 @@
+{
+	"root": true,
+	"ignorePatterns": [
+		"projects/**/*"
+	],
+	"overrides": [
+		{
+			"files": [
+				"*.ts"
+			],
+			"parserOptions": {
+				"project": [
+					"tsconfig.json",
+					"e2e/tsconfig.json"
+				],
+				"createDefaultProgram": true,
+				"tsconfigRootDir": "WebShopAdmin"
+			},
+			"plugins": ["import"],
+			"extends": [
+				"plugin:@angular-eslint/recommended",
+				// AirBnB Styleguide rules
+				"airbnb-typescript/base",
+				// Settings for Prettier
+				"prettier"
+			],
+			"rules": {
+				"@angular-eslint/directive-selector": [
+					"error",
+					{
+						"type": "attribute",
+						"prefix": "app",
+						"style": "camelCase"
+					}
+				],
+				"@angular-eslint/component-selector": [
+					"error",
+					{
+						"type": "element",
+						"prefix": "app",
+						"style": "kebab-case"
+					}
+				],
+				"prefer-template": [
+					"error"
+				],
+				"space-in-parens": [
+					"error",
+					"never"
+				],
+				"array-bracket-spacing": [
+					"error",
+					"never"
+				],
+				"space-infix-ops": "error"
+			}
+		},
+		{
+			"files": [
+				"*.html"
+			],
+			"extends": [
+				"plugin:@angular-eslint/template/recommended"
+			],
+			"rules": {}
+		}
+	]
+}

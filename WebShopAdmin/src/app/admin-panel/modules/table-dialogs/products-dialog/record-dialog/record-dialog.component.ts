@@ -41,7 +41,7 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 
 	public imageRootPath = environment.baseUrl + '/Images/original/';
 
-	public defaultimageRootPath = environment.baseUrl + '/Images/original/default-image.png';
+	public defaultimageRootPath = `${environment.baseUrl}/Images/original/default-image.png`;
 
 	public categories$ = new Observable<Category[]>();
 	public category$ = new Observable<Category>();

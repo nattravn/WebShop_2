@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+	selector: "app-root",
+	templateUrl: "./app.component.html",
+	styleUrls: ["./app.component.scss"],
 })
 
 /**
@@ -17,5 +17,5 @@ import { Component } from '@angular/core';
  * https://www.youtube.com/watch?v=AHqIrJ_PlPY
  */
 export class AppComponent {
-  title = 'WebShopAdmin';
+	title = "WebShopAdmin";
 }
