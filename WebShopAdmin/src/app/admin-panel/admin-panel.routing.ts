@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { AdminPanelComponent } from "./admin-panel.component";
-import { AuthGuard } from '../guard/auth.guard';
+import { AuthGuard } from "../guard/auth.guard";
 
 const routes: Routes = [
 	{
@@ -11,9 +11,7 @@ const routes: Routes = [
 			{
 				path: "tables",
 				loadChildren: () =>
-					import("./modules/database-tables/category-table.module").then(
-						(m) => m.CategoryTablesModule
-					),
+					import("./modules/database-tables/category-table.module").then((m) => m.CategoryTablesModule),
 			},
 		],
 		data: { permittedRoles: ["Admin"] },
@@ -25,4 +23,4 @@ const routes: Routes = [
 	imports: [RouterModule.forChild(routes)],
 	exports: [RouterModule],
 })
-export class AdminRoutingModule { }
+export class AdminRoutingModule {}

@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"baseUrl": "./",
 		"outDir": "./dist/out-tsc",
-		"noUnusedLocals": false,
+		"noUnusedLocals": true,
 		"sourceMap": true,
 		"declaration": false,
 		"downlevelIteration": true,

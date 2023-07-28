@@ -8,15 +8,22 @@
 			"files": [
 				"*.ts"
 			],
+			"parser": "@typescript-eslint/parser",
 			"parserOptions": {
 				"project": [
 					"tsconfig.json",
 					"e2e/tsconfig.json"
 				],
+				"sourceType": "module",
 				"createDefaultProgram": true,
 				"tsconfigRootDir": "WebShopAdmin"
 			},
-			"plugins": ["import"],
+			"plugins": [
+				"eslint-plugin-import",
+				"@angular-eslint/eslint-plugin",
+				"@typescript-eslint",
+				"prettier"
+			],
 			"extends": [
 				"plugin:@angular-eslint/recommended",
 				// AirBnB Styleguide rules
@@ -25,33 +32,26 @@
 				"prettier"
 			],
 			"rules": {
-				"@angular-eslint/directive-selector": [
+				"prettier/prettier": [
 					"error",
 					{
-						"type": "attribute",
-						"prefix": "app",
-						"style": "camelCase"
+						"endOfLine": "auto",
+						"useTabs": true,
+						"tabWidth": 2,
+						"singleQuote:": false,
+						"semi": true,
+						"printWidth": 120,
+						"trailingComma": "all", // other options `es5` or `all`
+						"bracketSpacing": true,
+						"arrowParens": "always", // other option "always"
+						"htmlWhitespaceSensitivity": "ignore"
 					}
 				],
-				"@angular-eslint/component-selector": [
-					"error",
-					{
-						"type": "element",
-						"prefix": "app",
-						"style": "kebab-case"
-					}
-				],
-				"prefer-template": [
-					"error"
-				],
-				"space-in-parens": [
-					"error",
-					"never"
-				],
-				"array-bracket-spacing": [
-					"error",
-					"never"
-				],
+				"@angular-eslint/directive-selector": ["error", { "type": "attribute", "prefix": "app", "style": "camelCase"}],
+				"@angular-eslint/component-selector": ["error", { "type": "element", "prefix": "app", "style": "kebab-case"}],
+				"prefer-template": ["error"],
+				"space-in-parens": ["error","never"],
+				"array-bracket-spacing": ["error","never"],
 				"space-infix-ops": "error"
 			}
 		},
