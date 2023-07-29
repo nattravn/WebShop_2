@@ -1,4 +1,5 @@
 {
 	"editor.tabSize": 2,
-	"eslint.nodePath": "C:\\Program Files\\nodejs"
+	"eslint.nodePath": "C:\\Program Files\\nodejs",
+	"importSorter.importStringConfiguration.quoteMark": "double"
 }

@@ -1,7 +1,7 @@
 {
 	"compileOnSave": false,
 	"compilerOptions": {
-		"baseUrl": "./",
+		"baseUrl": "./", // This must be specified if "paths" is.
 		"outDir": "./dist/out-tsc",
 		"noUnusedLocals": true,
 		"sourceMap": true,
@@ -17,7 +17,8 @@
 			"dom"
 		],
 		"paths": {
-			"@admin/*": ["src/app/admin-panel"]
+			"@admin/*": ["src/app/admin-panel/*"],
+			"@environments/*": ["src/environments/*"],
 		}
 	},
 		"angularCompilerOptions": {
