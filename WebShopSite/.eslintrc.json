@@ -16,7 +16,7 @@
 				],
 				"sourceType": "module",
 				"createDefaultProgram": true,
-				"tsconfigRootDir": "WebShopAdmin"
+				"tsconfigRootDir": "WebShopSite"
 			},
 			"plugins": [
 				"eslint-plugin-import",
@@ -35,20 +35,18 @@
 				"prettier/prettier": [
 					"error",
 					{
-						"printWidth": 120,
+						"endOfLine": "auto",
+						"useTabs": true,
 						"tabWidth": 2,
-						"semi": true,
 						"singleQuote:": false,
+						"semi": true,
+						"printWidth": 120,
 						"trailingComma": "all", // other options `es5` or `all`
 						"bracketSpacing": true,
 						"arrowParens": "always", // other option "always"
-						"htmlWhitespaceSensitivity": "ignore",
-						"endOfLine": "auto",
-						"useTabs": true,
-						"bracketSameLine": true
+						"htmlWhitespaceSensitivity": "ignore"
 					}
 				],
-				// https://github.com/lubkoKuzenko/angular-clean-code
 				"@angular-eslint/directive-selector": ["error", { "type": "attribute", "prefix": "app", "style": "camelCase"}],
 				"@angular-eslint/component-selector": ["error", { "type": "element", "prefix": "app", "style": "kebab-case"}],
 				"prefer-template": ["error"],

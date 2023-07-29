@@ -1,120 +1,104 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, OnDestroy } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 
-import { ToastrService } from 'ngx-toastr';
-import { tap, catchError } from 'rxjs/operators';
-import { Observable, Subject, throwError, ReplaySubject, of } from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ToastrService } from "ngx-toastr";
+import { tap, catchError } from "rxjs/operators";
+import { Observable, Subject, throwError, ReplaySubject, of } from "rxjs";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
-import { Record } from '../models/record.model';
-import { environment } from 'src/environments/environment';
-import { ProductTable } from '../models/product-table.model';
+import { Record } from "../models/record.model";
+import { environment } from "src/environments/environment";
+import { ProductTable } from "../models/product-table.model";
 
 @UntilDestroy()
 @Injectable({
-	providedIn: 'root'
+	providedIn: "root",
 })
 export class RecordStore implements OnDestroy {
 	activeRoute: Subject<boolean> = new Subject<boolean>();
-	list: Record[];
-	filter: string;
-	readonly baseUrl = environment.baseUrl;
-	public imageRootPath = this.baseUrl + '/Images/original/default-image.png';
-	private recordsReplay: ReplaySubject<ProductTable> = new ReplaySubject<ProductTable>(1);
-	public recordsReplay$: Observable<ProductTable> = this.recordsReplay.asObservable();
 
-	private recordItemReplay: ReplaySubject<Record> = new ReplaySubject<Record>(1);
-	public recordItemReplay$: Observable<Record> = this.recordItemReplay.asObservable();
+	list: Record[];
+
+	filter: string;
+
+	readonly baseUrl = environment.baseUrl;
+
+	public imageRootPath = `${this.baseUrl}/Images/original/default-image.png`;
+
+	private recordsReplay: ReplaySubject<ProductTable> = new ReplaySubject<ProductTable>(1);
 
 	private filterReplay: ReplaySubject<string> = new ReplaySubject<string>(1);
-	public filterReplay$: Observable<string> = this.filterReplay.asObservable();
 
-	constructor(private http: HttpClient, private toastr: ToastrService) {
+	private recordItemReplay: ReplaySubject<Record> = new ReplaySubject<Record>(1);
 
-		this.filterReplay.next('');
+	constructor(
+		private http: HttpClient,
+		private toastr: ToastrService,
+	) {
+		this.filterReplay.next("");
 		this.refreshList();
 	}
+
 	ngOnDestroy(): void {
 		throw new Error("Method not implemented.");
 	}
 
-	// initializeFormGroup() {
-	//     this.form.setValue({
-	//         id: null,
-	//         album: '',
-	//         band: '',
-	//         title: '',
-	//         year: '',
-	//         genre: '',
-	//         price: '',
-	//         imagePath: '',
-	//         description: '',
-	//         categoryId: '',
-	//         subCategoryId: '',
-	//         userId: null,
-	//         categoryName: 'Record'
-	//     });
-	// }
-
 	postRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
 		const formData: FormData = new FormData();
 
-		formData.append('band', modelFormData.band);
-		formData.append('album', modelFormData.album);
-		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
-		formData.append('genre', modelFormData.genre);
+		formData.append("band", modelFormData.band);
+		formData.append("album", modelFormData.album);
+		formData.append("releaseDate", modelFormData.releaseDate.toDateString());
+		formData.append("genre", modelFormData.genre);
 
-		if(fileToUpload){
-			formData.append('image', fileToUpload, fileToUpload.name);
+		if (fileToUpload) {
+			formData.append("image", fileToUpload, fileToUpload.name);
 		}
 
-		formData.append('imagePath', modelFormData.imagePath);
-		formData.append('title', modelFormData.title);
-		formData.append('price', modelFormData.price);
-		formData.append('description', modelFormData.description);
-		formData.append('categoryId', '0');
-		formData.append('subCategoryId', '0');
-		formData.append('editorUserId', modelFormData.editorUserId);
+		formData.append("imagePath", modelFormData.imagePath);
+		formData.append("title", modelFormData.title);
+		formData.append("price", modelFormData.price);
+		formData.append("description", modelFormData.description);
+		formData.append("categoryId", "0");
+		formData.append("subCategoryId", "0");
+		formData.append("editorUserId", modelFormData.editorUserId);
 
-		return this.http.post<Record>(this.baseUrl + '/Records', formData).pipe(tap(() => {
-			this.toastr.success('inserted successfully', 'EMP. Register');
-		}));
+		return this.http.post<Record>(`${this.baseUrl}/Records`, formData).pipe(
+			tap(() => {
+				this.toastr.success("inserted successfully", "EMP. Register");
+			}),
+		);
 	}
 
 	putRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
 		const formData: FormData = new FormData();
-		formData.append('band', modelFormData.band);
-		formData.append('id', JSON.stringify(modelFormData.id));
-		formData.append('album', modelFormData.album);
-		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
-		formData.append('genre', modelFormData.genre);
+		formData.append("band", modelFormData.band);
+		formData.append("id", JSON.stringify(modelFormData.id));
+		formData.append("album", modelFormData.album);
+		formData.append("releaseDate", modelFormData.releaseDate.toDateString());
+		formData.append("genre", modelFormData.genre);
 		if (fileToUpload != null) {
-			formData.append('image', fileToUpload, fileToUpload.name);
+			formData.append("image", fileToUpload, fileToUpload.name);
 		}
 
-		formData.append('imagePath', modelFormData.imagePath);
+		formData.append("imagePath", modelFormData.imagePath);
 
-		formData.append('description', modelFormData.description);
-		formData.append('title', modelFormData.title);
-		formData.append('price', modelFormData.price);
-		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
-		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
-		formData.append('editorUserId', modelFormData.editorUserId);
+		formData.append("description", modelFormData.description);
+		formData.append("title", modelFormData.title);
+		formData.append("price", modelFormData.price);
+		formData.append("categoryId", JSON.stringify(modelFormData.categoryId));
+		formData.append("subCategoryId", JSON.stringify(modelFormData.subCategoryId));
+		formData.append("editorUserId", modelFormData.editorUserId);
 
-		var body = {
-			band: modelFormData.band,
-			id: modelFormData.id,
-			album: modelFormData.album,
-			year: modelFormData.releaseDate
-		};
-
-		return this.http.put<Record>(this.baseUrl + '/Records/' + modelFormData.id, formData).pipe(tap(item => {
-			this.toastr.info('updated successfully', 'EMP. Register');
-		}));
+		return this.http.put<Record>(`${this.baseUrl}/Records/${modelFormData.id}`, formData).pipe(
+			tap(() => {
+				this.toastr.info("updated successfully", "EMP. Register");
+			}),
+		);
 	}
 
 	deleteRecord(row: any) {
-		return this.http.delete(this.baseUrl + '/' + row.categoryName + '/' + row.id);
+		return this.http.delete(`${this.baseUrl}/${row.categoryName}/${row.id}`);
 	}
 
 	getProducts(
@@ -132,55 +116,58 @@ export class RecordStore implements OnDestroy {
 					page: page.toString(),
 					key: active,
 					order: direction,
-					searchQuery: keyWord ? keyWord.toString() : ""
-				}
-			}).pipe(
+					searchQuery: keyWord ? keyWord.toString() : "",
+				},
+			})
+			.pipe(
 				untilDestroyed(this),
-				tap(items => this.recordsReplay.next(items)),
-				catchError(error => {
-					console.error("Error: ", error)
+				tap((items) => this.recordsReplay.next(items)),
+				catchError((error) => {
+					console.error("Error: ", error);
 					return of(null);
-				})
-		);
+				}),
+			);
 	}
 
 	getRecord(id: number): Observable<Record> {
-		return this.http.get<Record>(this.baseUrl + '/Records/' + id).pipe(
-			tap(item => this.recordItemReplay.next(item)),
-			catchError(error => {
+		return this.http.get<Record>(`${this.baseUrl}/Records/${id}`).pipe(
+			tap((item) => this.recordItemReplay.next(item)),
+			catchError((error) => {
+				console.error("Error: ", error);
 				return of(null);
-			})
+			}),
 		);
 	}
 
-	getRecordsByKeyWord(keyWord :string, property: string){
-		let params: URLSearchParams = new URLSearchParams();
-		params.set('band', keyWord);
+	getRecordsByKeyWord(keyWord: string) {
+		const params: URLSearchParams = new URLSearchParams();
+		params.set("band", keyWord);
 
-		return this.http.get<Record>(this.baseUrl + '/Records/', {
+		return this.http
+			.get<Record>(`${this.baseUrl}/Records/`, {
 				params: {
-					searchQuery: keyWord
-				}
-		  }).pipe(
-			tap(item => this.recordItemReplay.next(item)),
-			catchError(error => {
-				return of(null);
+					searchQuery: keyWord,
+				},
 			})
-		);
+			.pipe(
+				tap((item) => this.recordItemReplay.next(item)),
+				catchError((error) => {
+					console.error("Error: ", error);
+					return of(null);
+				}),
+			);
 	}
 
 	getRecordByUserName(userName: string): Observable<Record[]> {
-		return this.http.get<Record[]>(
-			this.baseUrl + '/Records/username/' + userName
-		);
+		return this.http.get<Record[]>(`${this.baseUrl}/Records/username/${userName}`);
 	}
 
 	refreshList(): Observable<Record[]> {
-		return this.http.get<Record[]>(this.baseUrl + '/Records');
+		return this.http.get<Record[]>(`${this.baseUrl}/Records`);
 	}
 
 	errorHandler(error) {
-		let errorMessage = '';
+		let errorMessage = "";
 		if (error.error instanceof ErrorEvent) {
 			// Get client-side error
 			errorMessage = error.error.message;

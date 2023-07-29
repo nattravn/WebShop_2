@@ -45,10 +45,10 @@ export class AdminPanelComponent implements OnInit {
 			.navigateByUrl("/", { skipLocationChange: true })
 			.then(() => this.router.navigate(["adminpanel/tables/products", category.route]));
 
-		//this.router.navigate(['adminpanel/tables/products/'+category.route+'/', repla }]);
-		//this.router.navigate([ { outlets: { secondary: null } }]);
+		// this.router.navigate(['adminpanel/tables/products/'+category.route+'/', repla }]);
+		// this.router.navigate([ { outlets: { secondary: null } }]);
 
-		//this.recordTableService.refreshMatTable(category.route,5,1,'band','asc','',null)
+		// this.recordTableService.refreshMatTable(category.route,5,1,'band','asc','',null)
 	}
 
 	logout() {
