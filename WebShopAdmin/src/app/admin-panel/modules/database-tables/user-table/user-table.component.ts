@@ -1,48 +1,54 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatDialogConfig } from '@angular/material/dialog';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { PagedUsers } from 'src/app/admin-panel/models/paged-users.model';
 
 import { ToastrService } from 'ngx-toastr';
-
-import { User } from '../../../models/user.model';
-import { UserStore } from '../../../stores/user.store';
-import { DialogFactoryService } from '../../table-dialogs/services/dialog-factory.service';
-import { DialogService } from '../../table-dialogs/services/dialog.service';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { map, shareReplay, switchMap } from 'rxjs/operators';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { PagedUsers } from 'src/app/admin-panel/models/paged-users.model';
-import { UserDialogComponent } from '../../table-dialogs/user-dialog/user-dialog.component';
+import { shareReplay, switchMap } from 'rxjs/operators';
 
+import { User } from '@admin-panel/models/user.model';
+import { UserStore } from '@admin-panel/stores/user.store';
+import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
+import { UserDialogComponent } from '@table-dialogs/user-dialog/user-dialog.component';
+
+export interface IFilterForm {
+	search: FormControl<string>;
+}
 @Component({
 	selector: 'app-user-table',
 	templateUrl: './user-table.component.html',
 	styleUrls: ['./user-table.component.css'],
-	providers: [DialogFactoryService]
+	providers: [DialogFactoryService],
 })
 export class UserTableComponent implements OnInit {
-	displayedColumns: string[] = ['userName', 'email', 'actions', 'fullName'];
-
-	public tableData$ = new Observable<{items: MatTableDataSource<User>, totalItems: number}>();
-
-	public filterForm: UntypedFormGroup = new UntypedFormGroup({
-		search: new UntypedFormControl('', []),
-	});
-	
-	dataSource = new MatTableDataSource<User>();
-	
-	searchKey = '';
-	dialog2: DialogService;
+	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild('userDialogTemplate') userDialogTemplate: TemplateRef<UserDialogComponent>;
+	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(MatSort) sort: MatSort;
+	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(MatPaginator) paginator: MatPaginator;
+	public displayedColumns: string[] = ['userName', 'email', 'actions', 'fullName'];
 
-	private currentPageIndex = 1;
+	public tableData$ = new Observable<{
+		items: MatTableDataSource<User>;
+		totalItems: number;
+	}>();
 
-	private currentTableSize = 5;
+	public filterForm = new FormGroup<IFilterForm>({
+		search: new FormControl('', []),
+	});
+
+	public dataSource = new MatTableDataSource<User>();
+
+	public searchKey = '';
+
+	// private currentPageIndex = 1;
+
+	// private currentTableSize = 5;
 
 	private active = 'userName';
 
@@ -53,104 +59,71 @@ export class UserTableComponent implements OnInit {
 		private toastr: ToastrService,
 		private dialogFactoryService: DialogFactoryService,
 		public activatedRoute: ActivatedRoute,
-		public router: Router
-	) {
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-		this.refreshMatTable('applicationUser', 5, 1, this.active,this.direction);
+		public router: Router,
+	) {}
+	ngOnInit(): void {
+		this.refreshMatTable('applicationUser', 5, 1, this.active, this.direction);
 	}
 
-	ngOnInit() { }
-
-	refreshMatTable(
-		endpoint: string, 
-		pageSize: number, 
-		pageIndex: number,
-		active: string,
-		direction: string
-	) {
-		this.tableData$ = this.userStore.getPagedUsers(endpoint, pageSize, pageIndex, active, direction).pipe(
-			switchMap((pagedUsers: PagedUsers) => {
-				let dataSource = new MatTableDataSource<User>();
-				dataSource.data = pagedUsers.items;
-				dataSource.sort = this.sort;
-				//dataSource.paginator = this.paginator;
-				return of({items: dataSource, totalItems: pagedUsers.totalItems});
-			}),
-			shareReplay(1),
-		)
-
-		return this.tableData$;
-	}
-
-	sortData(filterForm: UntypedFormGroup, sort: Sort) {
-		console.log('sort: ', sort);
+	public sortData(filterForm: FormGroup, sort: Sort) {
 		this.active = sort.active;
 		this.direction = sort.direction;
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 
-		if(!filterForm.value['search']){
+		if (!filterForm.value['search']) {
 			this.refreshMatTable('ApplicationUser', 5, 1, sort.active, sort.direction);
 		}
 	}
 
-	onSearchClear(dataSource : MatTableDataSource<User> ){
+	public onSearchClear(dataSource: MatTableDataSource<User>) {
 		this.filterForm.reset();
-		dataSource.filter = "";
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+		dataSource.filter = '';
 		this.refreshMatTable('ApplicationUser', 5, 1, this.active, this.direction);
 	}
 
-	public updateTable(filterForm: UntypedFormGroup, event?: PageEvent){
-		this.currentPageIndex = event.pageIndex+1;
-		this.currentTableSize = event.pageSize;
+	public updateTable(filterForm: FormGroup, event?: PageEvent) {
+		// this.currentPageIndex = event.pageIndex + 1;
+		// this.currentTableSize = event.pageSize;
 
 		// Temporary solution. Remove if-state and do backend call here with search param
-		if(!filterForm.value['search']){
-			this.refreshMatTable('ApplicationUser', event.pageSize, event.pageIndex+1, this.active, this.direction);
+		if (!filterForm.get('search').value) {
+			this.refreshMatTable('ApplicationUser', event.pageSize, event.pageIndex + 1, this.active, this.direction);
 		}
-		
 	}
 
-	applyFilter(event: Event, dataSource : MatTableDataSource<User>) {
+	public applyFilter(event: Event, dataSource: MatTableDataSource<User>) {
 		const filterValue = (event.target as HTMLInputElement).value;
 
-		this.tableData$ = this.userStore.getRecordsByKeyWord(filterValue, '').pipe(
+		this.tableData$ = this.userStore.getUsersByKeyWord(filterValue, '').pipe(
 			switchMap((x: User[]) => {
-
 				dataSource.data = x ? x : [];
 				dataSource.paginator = this.paginator;
 				dataSource.sort = this.sort;
-				return of({items: dataSource, totalItems: x.length});
+				return of({ items: dataSource, totalItems: x.length });
 			}),
-			shareReplay(1)
-		)
+			shareReplay(1),
+		);
 	}
 
-	onDelete(row: any) {
+	public onDelete(row: any) {
 		if (confirm('Are you sure to delete this record?')) {
-			this.userStore.deleteUser(row.id).subscribe(res => {
+			this.userStore.deleteUser(row.id).subscribe(() => {
 				this.toastr.warning('Deleted successfully', 'EMP. Register');
-				this.refreshMatTable('endpoint', 5, 1, this.active,this.direction);
+				this.refreshMatTable('endpoint', 5, 1, this.active, this.direction);
 			});
 		}
 	}
 
-	onEdit(row: any, paramMap: any) {
-
+	public onEdit(row: any, paramMap: any) {
 		// this.recordDialogService.populateForm(row);
-
 		// if(paramMap.get('product')){
 		// 	this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}]);
 		// }
-
 		// console.log('row: ', row);
 		// const dialogConfig = new MatDialogConfig();
 		// dialogConfig.disableClose = false;
 		// dialogConfig.autoFocus = true;
 		// dialogConfig.width = '60%';
-
 		// this.userStore.populateMenuForm(row);
-
 		// this.dialog2 = this.dialogFactoryService.open({
 		// 	headerText: 'Header text',
 		// 	category: {
@@ -170,22 +143,41 @@ export class UserTableComponent implements OnInit {
 		//     });
 	}
 
-	onCreate(paramMap: ParamMap) {
-		this.userStore.formModel.reset();
+	public onCreate(paramMap: ParamMap) {
+		this.userStore.userForm.reset();
 
 		console.log('userDialogTemplate: ', this.userDialogTemplate);
 
-		this.router.navigate(['adminpanel/tables/users/user', {outlets: {tablesOutlet: 'users'}}],  { queryParams: { createNewProduct: true} }).then(() => {
-			this.dialogFactoryService.open({
-				headerText: 'Header text user',
-				category: {
-					id: 99,
-					name: 'users',
-					route: 'user'
-				},
-				createNew: true,
-				template: this.userDialogTemplate
+		this.router
+			.navigate(['adminpanel/tables/users/user', { outlets: { tablesOutlet: 'users' } }], {
+				queryParams: { createNewProduct: true },
+			})
+			.then(() => {
+				this.dialogFactoryService.open({
+					headerText: 'Header text user',
+					category: {
+						id: 99,
+						name: 'users',
+						route: 'user',
+					},
+					createNew: true,
+					template: this.userDialogTemplate,
+				});
 			});
-		})
+	}
+
+	private refreshMatTable(endpoint: string, pageSize: number, pageIndex: number, active: string, direction: string) {
+		this.tableData$ = this.userStore.getPagedUsers(endpoint, pageSize, pageIndex, active, direction).pipe(
+			switchMap((pagedUsers: PagedUsers) => {
+				const dataSource = new MatTableDataSource<User>();
+				dataSource.data = pagedUsers.items;
+				dataSource.sort = this.sort;
+				// dataSource.paginator = this.paginator;
+				return of({ items: dataSource, totalItems: pagedUsers.totalItems });
+			}),
+			shareReplay(1),
+		);
+
+		return this.tableData$;
 	}
 }

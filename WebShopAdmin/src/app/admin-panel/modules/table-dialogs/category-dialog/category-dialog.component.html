@@ -1,23 +1,22 @@
-
 <form [formGroup]="categoryDialogService.form" (submit)="onSubmit()">
 	<div class="controls-container">
 		<mat-form-field class="w-100">
-			<input formControlName="id" [readonly]="true" matInput placeholder="CategoryId">
+			<input formControlName="id" [readonly]="true" matInput placeholder="CategoryId" />
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
-			<input formControlName="route" matInput placeholder="Route">
+			<input formControlName="route" matInput placeholder="Route" />
 			<mat-error>This field is mandatory.</mat-error>
 		</mat-form-field>
 
 		<mat-form-field class="w-100">
-			<input formControlName="name" matInput placeholder="name">
+			<input formControlName="name" matInput placeholder="name" />
 			<mat-error>Invalid email address.</mat-error>
 		</mat-form-field>
 
 		<h3>Subcatgories</h3>
-		<ng-container [formGroup]="arrayItem" *ngFor="let arrayItem of categoryDialogService.subCategoryArray.controls; let i = index">
-			<h4>SubCategory {{i}}</h4>
+		<ng-container [formGroup]="arrayItem" *ngFor="let arrayItem of categoryDialogService.subCategoryArray; let i = index">
+			<h4>SubCategory {{ i }}</h4>
 			<mat-form-field class="w-100">
 				<mat-label>ID</mat-label>
 				<input matInput formControlName="id" [readonly]="true" />
@@ -37,13 +36,12 @@
 		</ng-container>
 
 		<div class="button-row">
-			<button mat-raised-button color="primary" type='button' (click)="addSubCategory()">Add SubCategory</button>
-			<button mat-raised-button color="warn" type='button' (click)="removeSubCategory()">Remove SubCategory</button>
+			<button mat-raised-button color="primary" type="button" (click)="addSubCategory()">Add SubCategory</button>
+			<button mat-raised-button color="warn" type="button" (click)="removeSubCategory()">Remove SubCategory</button>
 		</div>
 		<div class="button-row">
-			<button mat-raised-button color="primary" type="submit"
-				[disabled]="categoryDialogService.form.invalid">Submit</button>
-			<button mat-raised-button color="warn" type='button' (click)="onClear()">Clear</button>
+			<button mat-raised-button color="primary" type="submit" [disabled]="categoryDialogService.form.invalid">Submit</button>
+			<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
 		</div>
 	</div>
 </form>

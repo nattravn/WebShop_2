@@ -1,77 +1,91 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { filter, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-
-import { RecordStore } from 'src/app/admin-panel/stores/record.store';
-import { UserStore } from 'src/app/admin-panel/stores/user.store';
-import { environment } from 'src/environments/environment';
-import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
-import { RecordDialogService } from './services/record-dialog.service';
-import { ProductTableService } from '../../../database-tables/product-table/services/product-table.service';
-import { ModuleService } from '../../../services/module-service.service';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Category } from 'src/app/admin-panel/models/category.model';
-import { Record } from 'src/app/admin-panel/models/record.model';
-import { ActivatedRoute } from '@angular/router';
-import { CustomDatePipe } from 'src/app/admin-panel/pipe/custom.datepipe';
-import { ProductUpdate } from 'src/app/admin-panel/models/product-update.model';
-import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
+import { filter, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 
+import { Category } from '@admin-panel/models/category.model';
+import { DialogData } from '@admin-panel/models/dialog-data.model';
+import { ProductUpdate } from '@admin-panel/models/product-update.model';
+import { Record } from '@admin-panel/models/record.model';
+import { ModuleService } from '@admin-panel/modules/services/module-service.service';
+import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
+import { CategoryStore } from '@admin-panel/stores/category.store';
+import { RecordStore } from '@admin-panel/stores/record.store';
+import { UserStore } from '@admin-panel/stores/user.store';
+import { ProductTableService } from '@database-tables/product-table/services/product-table.service';
+import { environment } from '@environments/environment';
+
+import { RecordDialogService } from './services/record-dialog.service';
+
+export interface IRecordForm {
+	id: FormControl<number>;
+	band: FormControl<string>;
+	album: FormControl<string>;
+	releaseDate: FormControl<Date>;
+	genre: FormControl<string>;
+	description: FormControl<string>;
+	imagePath: FormControl<string>;
+	title: FormControl<string>;
+	price: FormControl<string>;
+	categoryId: FormControl<number>;
+	subCategoryId: FormControl<number>;
+	editorUserId: FormControl<string>;
+	categoryName: FormControl<string>;
+	currentPage: FormControl<number>;
+	totalPages: FormControl<number>;
+	lastUpdateTime: FormControl<string>;
+	order: FormControl<string>;
+	sortKey: FormControl<string>;
+}
 @UntilDestroy()
 @Component({
 	selector: 'app-record-dialog',
 	templateUrl: './record-dialog.component.html',
 	styleUrls: ['./record-dialog.component.css'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	providers: [
-        CustomDatePipe
-    ],
+	providers: [CustomDatePipe],
 })
-export class RecordDialogComponent implements OnInit, OnDestroy {
-
-	fileToUpload: File = null;
-
+export class RecordDialogComponent implements OnInit {
 	public populateForm$ = new Observable<any>();
 
 	public imgSrcReplay = new ReplaySubject<string>(1);
 	public imgSrcReplay$ = this.imgSrcReplay.asObservable();
 
-	public imageRootPath = environment.baseUrl + '/Images/original/';
+	public imageRootPath = `${environment.baseUrl}/Images/original/`;
 
 	public defaultimageRootPath = `${environment.baseUrl}/Images/original/default-image.png`;
 
 	public categories$ = new Observable<Category[]>();
+
 	public category$ = new Observable<Category>();
 
 	public lastEditor$ = new Observable<Category>();
 
-	public form: UntypedFormGroup = new UntypedFormGroup({
-		id: new UntypedFormControl(0),
-		band: new UntypedFormControl('', Validators.required),
-		album: new UntypedFormControl('', Validators.required),
-		releaseDate: new UntypedFormControl('', [Validators.required]),
-		genre: new UntypedFormControl(''),
-		description: new UntypedFormControl('', Validators.required),
-		imagePath: new UntypedFormControl('default-image.png'),
-		title: new UntypedFormControl('',[
-            Validators.required,
-            Validators.minLength(6),
-            Validators.maxLength(100)
-        ]),
-		price: new UntypedFormControl('', [Validators.required, Validators.pattern("^[0-9]*$")]),
-		categoryId: new UntypedFormControl(null),
-		subCategoryId: new UntypedFormControl(null),
-		editorUserId: new UntypedFormControl(null),
-		categoryName: new UntypedFormControl(''),
-		currentPage: new UntypedFormControl(1),
-		totalPages: new UntypedFormControl(1),
-		lastUpdateTime: new UntypedFormControl(''),
-		order: new UntypedFormControl(''),
-		sortKey: new UntypedFormControl(''),
+	public form = new FormGroup<IRecordForm>({
+		id: new FormControl(0),
+		band: new FormControl('', Validators.required),
+		album: new FormControl('', Validators.required),
+		releaseDate: new FormControl(new Date(), [Validators.required]),
+		genre: new FormControl(''),
+		description: new FormControl('', Validators.required),
+		imagePath: new FormControl('default-image.png'),
+		title: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
+		price: new FormControl('', [Validators.required, Validators.pattern('^[0-9]*$')]),
+		categoryId: new FormControl(null),
+		subCategoryId: new FormControl(null),
+		editorUserId: new FormControl(null),
+		categoryName: new FormControl(''),
+		currentPage: new FormControl(1),
+		totalPages: new FormControl(1),
+		lastUpdateTime: new FormControl(''),
+		order: new FormControl(''),
+		sortKey: new FormControl(''),
 	});
+
+	private fileToUpload: File = null;
 
 	constructor(
 		public recordStore: RecordStore,
@@ -79,95 +93,73 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		public recordDialogService: RecordDialogService,
 		public productTableService: ProductTableService,
 		private userStore: UserStore,
-		private activatedRoute: ActivatedRoute,
 		private moduleService: ModuleService,
 		private customDatePipe: CustomDatePipe,
 		@Inject(MAT_DIALOG_DATA)
 		public data: DialogData,
-		) { }
+	) {}
+
 	ngOnInit(): void {
-
-		//this.paramMapProduct$ = this.activatedRoute.queryParams;
-
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
-			filter(queryParams => !this.data.createNew),
-			switchMap(productData => {
+			filter((queryParams) => !this.data.createNew),
+			switchMap((productData) => {
 				this.populateForm(productData);
 				return of(null);
 			}),
 			shareReplay(1),
-		)
-
-		this.category$ = this.categoryStore.getCategory(1).pipe(
-			untilDestroyed(this),
-			shareReplay(1)
 		);
 
-
-
-		console.log('this.categories$: ', this.categories$);
-
-
+		this.category$ = this.categoryStore.getCategory(1).pipe(untilDestroyed(this), shareReplay(1));
 	}
-	/**
-	 * On destroy
-	 */
-	ngOnDestroy(): void {}
-
-
 
 	public onSubmit(form: Record & ProductUpdate<Record>) {
-
 		if (this.form.invalid) {
 			return;
 		}
 		form.categoryName = 'Record';
 
-		
 		// Form data becomes null in observable so it needs to be cloned
 		this.populateForm$ = this.userStore.getUserProfile().pipe(
 			untilDestroyed(this),
-			switchMap(user => {
-				//Set forms userId to in logged user
-				console.log('user: ', user)
+			switchMap((user) => {
+				// Set forms userId to in logged user
 				form.editorUserId = user.userId;
 
 				const newRecord = new Record(this.form.value);
 
-				console.log('newRecord: ', newRecord);
-				//Create or update
+				// Create or update
 				if (!form.id) {
 					return this.recordStore.postRecord(newRecord, this.fileToUpload);
 				} else {
 					return this.recordStore.putRecord(newRecord, this.fileToUpload);
 				}
 			}),
-			tap(updatedRecord => {
+			tap((updatedRecord) => {
 				let productUpdate = new ProductUpdate<Record>();
 
-				productUpdate = {...form, row: updatedRecord}
+				productUpdate = { ...form, row: updatedRecord };
 
 				this.populateForm(productUpdate);
 
 				return of(null);
 			}),
-			switchMap(x => {
-				return this.productTableService.refreshMatTable(
+			switchMap((x) =>
+				this.productTableService.refreshMatTable(
 					'records',
 					form.totalPages,
 					form.currentPage,
 					form.sortKey,
 					form.order,
 					'',
-					null
-				)
-			}),
+					null,
+				),
+			),
 			shareReplay(1),
 		);
 	}
 
-	showPreview(file: File) {
+	public showPreview(file: File) {
 		if (!file) {
 			return;
 		}
@@ -180,8 +172,12 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		this.fileToUpload = file;
 	}
 
-	populateForm(productUpdate: ProductUpdate<Record>) {
-		console.log('productUpdate: ', productUpdate);
+	public onClear() {
+		this.form.reset();
+		this.imgSrcReplay.next(this.defaultimageRootPath);
+	}
+
+	private populateForm(productUpdate: ProductUpdate<Record>) {
 		this.form.get('id').setValue(productUpdate.row.id);
 		this.form.get('band').setValue(productUpdate.row.band);
 		this.form.get('album').setValue(productUpdate.row.album);
@@ -199,27 +195,15 @@ export class RecordDialogComponent implements OnInit, OnDestroy {
 		this.form.get('sortKey').setValue(productUpdate.sortKey);
 		this.form.get('editorUserId').setValue(productUpdate.row.editorUserId);
 
-
-		this.form.get('lastUpdateTime').setValue( this.customDatePipe.transform(productUpdate.row.lastUpdatedTime));
+		this.form.get('lastUpdateTime').setValue(this.customDatePipe.transform(productUpdate.row.lastUpdatedTime));
 
 		this.imgSrcReplay.next(this.imageRootPath + productUpdate.row.imagePath);
-
-
-		console.log('this.category$: ', this.category$);
-	}
-
-	onClear() {
-		this.form.reset();
-		this.imgSrcReplay.next(this.defaultimageRootPath);
 	}
 
 	/**
 	 * Observable valuse of the form initiated with values
 	 */
-	 public get formValue$(): Observable<any> {
-		return this.form.valueChanges.pipe(
-			startWith(this.form.value),
-			shareReplay(1),
-		);
+	public get formValue$(): Observable<any> {
+		return this.form.valueChanges.pipe(startWith(this.form.value), shareReplay(1));
 	}
 }

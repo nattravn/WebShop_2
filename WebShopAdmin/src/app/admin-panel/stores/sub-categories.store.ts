@@ -1,23 +1,21 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { Observable, ReplaySubject } from "rxjs";
-import { tap } from "rxjs/operators";
+import { Observable, ReplaySubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
-import { environment } from "src/environments/environment";
-import { SubCategory } from "../models/sub-category.model";
+import { environment } from 'src/environments/environment';
+import { SubCategory } from '../models/sub-category.model';
 
 @Injectable({
-	providedIn: "root",
+	providedIn: 'root',
 })
 export class SubCategoriesStore {
-	readonly baseUrl = environment.baseUrl;
-
 	public subCategoryReplay$: ReplaySubject<SubCategory> = new ReplaySubject<SubCategory>(1);
 
 	private subCategoriesReplay: ReplaySubject<SubCategory[]> = new ReplaySubject<SubCategory[]>(1);
 
-	public subCategoriesReplay$: Observable<SubCategory[]> = this.subCategoriesReplay.asObservable();
+	private readonly baseUrl = environment.baseUrl;
 
 	constructor(private http: HttpClient) {}
 

@@ -1,7 +1,9 @@
 {
+	"prettier.configPath": ".prettierrc",
 	"editor.tabSize": 2,
 	"editor.detectIndentation": false,
-  "importSorter.importStringConfiguration.quoteMark": "double",
+  "importSorter.importStringConfiguration.quoteMark": "single",
+	"importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 120,
   "importSorter.sortConfiguration.customOrderingRules.rules": [
     {
         "type": "importMember",
@@ -14,11 +16,11 @@
         "orderLevel": 20
     },
     {
-      "regex": "rxjs|ngx",
+      "regex": "rxjs|ngx|@ngneat",
       "orderLevel": 30
     },
     {
-      "regex": "@environment",
+      "regex": "@environment|@admin-panel|@app|@database-tables|@table-dialogs",
       "orderLevel": 40
     },
     {

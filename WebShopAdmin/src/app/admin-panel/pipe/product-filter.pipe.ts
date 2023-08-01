@@ -1,14 +1,15 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { BaseProduct } from '../models/base-product.model';
+
+import { BaseProduct } from '@admin-panel/models/base-product.model';
 
 @Pipe({
-	name: 'productFilter'
+	name: 'productFilter',
 })
 export class ProductFilterPipe implements PipeTransform {
 	transform(products: BaseProduct[], subCategoryId: number): BaseProduct[] {
 		if (!products || !subCategoryId) {
 			return products;
 		}
-		return products.filter(product => product.subCategoryId === subCategoryId);
+		return products.filter((product) => product.subCategoryId === subCategoryId);
 	}
 }

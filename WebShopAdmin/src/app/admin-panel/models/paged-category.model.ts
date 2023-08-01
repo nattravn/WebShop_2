@@ -1,12 +1,11 @@
-import { Category } from "./category.model"
+import { Category } from './category.model';
 
 export class PagedCategory {
+	public currentPage: number;
 
-	public currentPage: number
+	public totalItems: number;
 
-	public totalItems: number
+	public totalPages: number;
 
-	public totalPages: number
-
-	public items: Category[]
+	public items: Category[];
 }

@@ -1,24 +1,24 @@
 export class Record {
-	id: number;
-	band: string;
-	album: string;
-	releaseDate: Date;
-	genre: string;
-	description: string;
-	image: File;
-	imagePath: string;
-	title: string;
-	price: string;
-	categoryId: number;
-	subCategoryId: number;
-	editorUserId: string;
-	creatorUserId: string;
-	categoryName: string;
-	lastUpdatedTime: Date;
-	owner: string;
+	public id: number;
+	public band: string;
+	public album: string;
+	public releaseDate: Date;
+	public genre: string;
+	public description: string;
+	public image: File;
+	public imagePath: string;
+	public title: string;
+	public price: string;
+	public categoryId: number;
+	public subCategoryId: number;
+	public editorUserId: string;
+	public creatorUserId: string;
+	public categoryName: string;
+	public lastUpdatedTime: Date;
+	public owner: string;
 
-	public constructor(init?: Partial<Record>) {
+	constructor(init?: Partial<Record>) {
 		init.releaseDate = new Date(init.releaseDate);
-        Object.assign(this, init);
-    }
+		Object.assign(this, init);
+	}
 }

@@ -40,7 +40,7 @@
 						"tabWidth": 2,
 						"singleQuote:": false,
 						"semi": true,
-						"printWidth": 120,
+						// "printWidth": 120,
 						"trailingComma": "all", // other options `es5` or `all`
 						"bracketSpacing": true,
 						"arrowParens": "always", // other option "always"

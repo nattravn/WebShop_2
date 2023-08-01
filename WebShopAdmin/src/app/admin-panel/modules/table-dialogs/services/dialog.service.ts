@@ -1,44 +1,32 @@
-import { TemplateRef, Injectable, OnInit, Directive } from '@angular/core';
+import { Directive, TemplateRef } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Observable, ReplaySubject } from 'rxjs';
+import { UntilDestroy } from '@ngneat/until-destroy';
+import { DialogComponent } from '@table-dialogs/dialog/dialog.component';
 
-import { first, switchMap, tap } from 'rxjs/operators';
-import { Category } from '../../../models/category.model';
-import { DialogComponent } from '../dialog/dialog.component';
+import { ReplaySubject } from 'rxjs';
 
+import { Category } from '@admin-panel/models/category.model';
 
 @UntilDestroy()
 @Directive()
-export class DialogService implements OnInit {
-	opened$ = this.dialogRef.afterOpened().pipe(first());
-
+export class DialogService {
 	public categoryReplay$ = new ReplaySubject<Category>(1);
 
-	constructor(
-		private dialogRef: MatDialogRef<DialogComponent>,
-		private activatedRoute: ActivatedRoute,
-		private router: Router
-	) { }
-	ngOnInit(): void {
-
-	}
+	constructor(private dialogRef: MatDialogRef<DialogComponent>) {}
 
 	get context() {
 		return this.dialogRef.componentInstance.data;
 	}
 
-	close(): void {
+	public close(): void {
 		this.dialogRef.close();
-		//this.dialogRef.beforeClosed().subscribe(() => console.log('tjaaaa'));
 	}
 
-	setHeaderText(headerText: string): void {
+	public setHeaderText(headerText: string): void {
 		this.dialogRef.componentInstance.data.headerText = headerText;
 	}
 
-	setTemplate(template: TemplateRef<any>): void {
+	public setTemplate(template: TemplateRef<any>): void {
 		this.dialogRef.componentInstance.data.template = template;
 	}
 }

@@ -1,44 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 import { ToastrService } from 'ngx-toastr';
 
-
-import { environment } from 'src/environments/environment';
-import { MatDialogRef } from '@angular/material/dialog';
-import { ShoeStore } from 'src/app/admin-panel/stores/shoe.store';
-import { UserStore } from 'src/app/admin-panel/stores/user.store';
+import { ShoeStore } from '@admin-panel/stores/shoe.store';
+import { environment } from '@environments/environment';
 
 @Component({
 	selector: 'app-shoe',
 	templateUrl: './shoe-dialog-form.component.html',
-	styles: []
+	styles: [],
 })
-export class ShoeDialogFormComponent implements OnInit {
-
-	public defaultImage = environment.baseUrl + '/Images/40/default-image.png';
-	fileToUpload: File;
+export class ShoeDialogFormComponent {
+	public defaultImage = `${environment.baseUrl}/Images/40/default-image.png`;
+	private fileToUpload: File;
 
 	constructor(
 		public shoeStore: ShoeStore,
 		private toastr: ToastrService,
 		public dialogRef: MatDialogRef<ShoeDialogFormComponent>,
-		private userStore: UserStore) {
-	}
+	) {}
 
-	ngOnInit() {
-	}
-
-	onFileSelected(file: FileList) {
+	public onFileSelected(file: FileList) {
 		this.fileToUpload = file.item(0);
 		const inputNode: any = document.querySelector('#file');
 
-		if (typeof (FileReader) !== 'undefined') {
+		if (typeof FileReader !== 'undefined') {
 			const reader = new FileReader();
 
 			reader.onload = (event: any) => {
 				this.shoeStore.imageRootPath = event.target.result;
-				this.shoeStore.form.value.ImagePath = inputNode.files[0].name;
-
+				this.shoeStore.form.value.imagePath = inputNode.files[0].name;
 			};
 
 			reader.readAsDataURL(this.fileToUpload);
@@ -46,14 +38,12 @@ export class ShoeDialogFormComponent implements OnInit {
 		}
 	}
 
-	onClear() {
+	public onClear() {
 		this.shoeStore.form.reset();
 		this.shoeStore.initializeFormGroup();
 	}
 
-	onSubmit() {
-
-
+	public onSubmit() {
 		if (!this.shoeStore.form.value.id) {
 			this.insertShoe(this.shoeStore.form);
 		} else {
@@ -64,26 +54,26 @@ export class ShoeDialogFormComponent implements OnInit {
 		this.dialogRef.close();
 	}
 
-	onClose() {
+	public onClose() {
 		this.shoeStore.form.reset();
 		this.shoeStore.initializeFormGroup();
 		this.dialogRef.close();
 	}
 
-	insertShoe(form: any) {
-		this.shoeStore.postShoe(form.value, this.fileToUpload).subscribe(res => {
-			this.toastr.success('inserted successfully', 'EMP. Register');
-		},
-			err => {
-				debugger;
+	public insertShoe(form: any) {
+		this.shoeStore.postShoe(form.value, this.fileToUpload).subscribe(
+			(res) => {
+				this.toastr.success('inserted successfully', 'EMP. Register');
+			},
+			(err) => {
 				console.log(err);
-			});
+			},
+		);
 	}
 
-	updateShoe(form: any) {
-		this.shoeStore.putShoe(form.value, this.fileToUpload).subscribe(res => {
+	public updateShoe(form: any) {
+		this.shoeStore.putShoe(form.value, this.fileToUpload).subscribe((res) => {
 			this.toastr.info('updated successfully', 'EMP. Register');
 		});
 	}
-
 }

@@ -1,79 +1,78 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatDialogRef} from '@angular/material/dialog';
+import { Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 import { switchMap } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { CategoryDialogService } from './services/category-dialog.service';
-import { UserStore } from 'src/app/admin-panel/stores/user.store';
-import { CategoryTableService } from '../../database-tables/category-table/services/category-table.service';
-import { CategoryStore } from '../../../stores/category.store';
+import { UserStore } from '@admin-panel/stores/user.store';
+import { CategoryTableService } from '@database-tables/category-table/services/category-table.service';
+import { CategoryStore } from '@admin-panel/stores/category.store';
+import { SubCategory } from '@admin-panel/models/sub-category.model';
+import { Category } from '@admin-panel/models/category.model';
 
 @UntilDestroy()
 @Component({
 	selector: 'app-category-dialog',
 	templateUrl: 'category-dialog.component.html',
 	styleUrls: ['category-dialog.component.scss'],
-	//providers: [ CategoryDialogService ]
 })
-export class CategoryDialogComponent implements OnInit, OnDestroy {
+export class CategoryDialogComponent {
 	constructor(
 		public categoryDialogService: CategoryDialogService,
 		private userStore: UserStore,
 		private categoryStore: CategoryStore,
 		private categoryListService: CategoryTableService,
-		public dialogRef: MatDialogRef<CategoryDialogComponent>
-	) { }
-	ngOnDestroy(): void { }
+		public dialogRef: MatDialogRef<CategoryDialogComponent>,
+	) {}
 
-	ngOnInit() {
-
-	}
-
-	onSubmit() {
+	public onSubmit() {
 		// Form data becomes null in observable so it needs to be cloned
-		const clonedForm = Object.assign({}, this.categoryDialogService.form.value);
+		const clonedForm = Object.assign({}, this.categoryDialogService.form.value) as Category;
 
-		this.userStore.getUserProfile().pipe(
-			untilDestroyed(this),
-			switchMap(user => {
-				clonedForm.userId = user.userId;
-				return this.categoryStore.getCategory(clonedForm.id);
-			}),
-			switchMap(() => {
-				clonedForm.categoryName = 'Category';
-				if (!clonedForm.id) {
-					return this.categoryStore.postCategory(clonedForm);
-				} else {
-					return this.categoryStore.putCategory(clonedForm);
-				}
-			})
-		).subscribe(() => {
-			this.categoryListService.refreshMatTable();
-			this.categoryDialogService.form.reset();
-			this.dialogRef.close();
-		});
+		this.userStore
+			.getUserProfile()
+			.pipe(
+				untilDestroyed(this),
+				switchMap((user) =>
+					// clonedForm.userId = user.userId;
+					this.categoryStore.getCategory(clonedForm.id),
+				),
+				switchMap(() => {
+					clonedForm.name = 'Category';
+					if (!clonedForm.id) {
+						return this.categoryStore.postCategory(clonedForm);
+					} else {
+						return this.categoryStore.putCategory(clonedForm);
+					}
+				}),
+			)
+			.subscribe(() => {
+				this.categoryListService.refreshMatTable();
+				this.categoryDialogService.form.reset();
+				this.dialogRef.close();
+			});
 	}
 
-	onClear() {
+	public onClear() {
 		this.categoryDialogService.form.reset();
 	}
 
-	onClose() {
+	public onClose() {
 		this.dialogRef.close();
 	}
 
-	addSubCategory() {
-		const newSubCategory = {
-			'id': 0,
-			'name': '',
-			'route': '',
-			'categoryId': 0,
+	public addSubCategory() {
+		const newSubCategory: SubCategory = {
+			id: 0,
+			name: '',
+			route: '',
+			subCategoryId: 0,
 		};
-		this.categoryDialogService.addItem(newSubCategory);
+		this.categoryDialogService.addSubCategoryItem(newSubCategory);
 	}
 
-	removeSubCategory() {
+	public removeSubCategory() {
 		this.categoryDialogService.removeItem();
 	}
 }

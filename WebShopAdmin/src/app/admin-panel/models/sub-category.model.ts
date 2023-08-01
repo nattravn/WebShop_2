@@ -1,6 +1,6 @@
 export class SubCategory {
-    id: number;
-    name: string;
-    route: string;
-    categoryId: number;
+	public id: number;
+	public name: string;
+	public route: string;
+	public subCategoryId: number;
 }

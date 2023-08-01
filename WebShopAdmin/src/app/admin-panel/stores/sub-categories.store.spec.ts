@@ -1,16 +1,16 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, inject, waitForAsync } from '@angular/core/testing';
+import { TestBed, inject } from '@angular/core/testing';
 import { SubCategoriesStore } from './sub-categories.store';
 
 describe('Service: SubCategories', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [SubCategoriesStore]
-    });
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			providers: [SubCategoriesStore],
+		});
+	});
 
-  it('should ...', inject([SubCategoriesStore], (service: SubCategoriesStore) => {
-    expect(service).toBeTruthy();
-  }));
+	it('should ...', inject([SubCategoriesStore], (service: SubCategoriesStore) => {
+		expect(service).toBeTruthy();
+	}));
 });

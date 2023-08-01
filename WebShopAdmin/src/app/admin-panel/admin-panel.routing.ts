@@ -1,20 +1,20 @@
-import { NgModule } from "@angular/core";
-import { Routes, RouterModule } from "@angular/router";
-import { AdminPanelComponent } from "./admin-panel.component";
-import { AuthGuard } from "../guard/auth.guard";
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { AuthGuard } from '@app/guard/auth.guard';
+import { AdminPanelComponent } from './admin-panel.component';
 
 const routes: Routes = [
 	{
-		path: "adminpanel",
+		path: 'adminpanel',
 		component: AdminPanelComponent,
 		children: [
 			{
-				path: "tables",
-				loadChildren: () =>
-					import("./modules/database-tables/category-table.module").then((m) => m.CategoryTablesModule),
+				path: 'tables',
+				loadChildren: () => import('./modules/database-tables/database-tables.module').then((m) => m.CategoryTablesModule),
 			},
 		],
-		data: { permittedRoles: ["Admin"] },
+		data: { permittedRoles: ['Admin'] },
 		canActivate: [AuthGuard],
 	},
 ];

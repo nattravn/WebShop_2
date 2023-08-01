@@ -1,25 +1,25 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-//import { ProductDialogsComponent } from './product-dialogs.component';
-import { MaterialModule } from 'src/app/material/material.module';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseModalRoutingModule } from './base-modal.routing';
-import { BaseModalComponent } from './base-modal.component';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MaterialModule } from 'src/app/material/material.module';
 
+import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
+import { UserDetailsPipe } from '@admin-panel/pipe/user-details.pipe';
+
+import { BaseModalComponent } from './base-modal.component';
+import { BaseModalRoutingModule } from './base-modal.routing';
+import { CategoryDialogComponent } from './category-dialog/category-dialog.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { CategoryDropdownComponent } from './products-dialog/category-dropdown/category-dropdown.component';
-
-import { CategoryDialogComponent } from './category-dialog/category-dialog.component';
-import { CustomDatePipe } from '../../pipe/custom.datepipe';
-import { UserDetailsPipe } from '../../pipe/user-details.pipe';
-import { RecordDialogComponent } from './products-dialog/record-dialog/record-dialog.component';
 import { ClothingDialogComponent } from './products-dialog/clothing-dialog/clothing-dialog.component';
-import { ShoeDialogFormComponent } from './products-dialog/shoe-dialog/shoe-dialog-form.component';
 import { ProductDialogsComponent } from './products-dialog/product-dialogs.component';
+import { RecordDialogComponent } from './products-dialog/record-dialog/record-dialog.component';
+import { ShoeDialogFormComponent } from './products-dialog/shoe-dialog/shoe-dialog-form.component';
 import { UserDialogComponent } from './user-dialog/user-dialog.component';
 
 @NgModule({
+	// eslint-disable-next-line prettier/prettier
 	imports: [
 		CommonModule,
 		MaterialModule,
@@ -37,12 +37,11 @@ import { UserDialogComponent } from './user-dialog/user-dialog.component';
 		CustomDatePipe,
 		UserDetailsPipe,
 		ProductDialogsComponent,
-		UserDialogComponent
+		UserDialogComponent,
 	],
 	providers: [
 		{ provide: MAT_DIALOG_DATA, useValue: {} },
 		{ provide: MatDialogRef, useValue: {} },
 	],
-
 })
-export class BaseModalModule { }
+export class BaseModalModule {}

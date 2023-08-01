@@ -1,40 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 import { ToastrService } from 'ngx-toastr';
 
-import { UserStore } from '../../admin-panel/stores/user.store';
+import { UserStore } from '@admin-panel/stores/user.store';
 
 @Component({
 	selector: 'app-add-user',
 	templateUrl: './add-user.component.html',
 })
-export class AddUserComponent implements OnInit {
-
+export class AddUserComponent {
 	constructor(
-		private userStore: UserStore,
+		public userStore: UserStore,
 		public dialogRef: MatDialogRef<AddUserComponent>,
-		private toaster: ToastrService) { }
+		private toaster: ToastrService,
+	) {}
 
-	ngOnInit() {
+	public onClear() {
+		this.userStore.userForm.reset();
 	}
 
-	onClear() {
-		this.userStore.formModel.reset();
-	}
-
-	onClose() {
+	public onClose() {
 		this.dialogRef.close();
 	}
 
-	onSubmit() {
+	public onSubmit() {
 		this.userStore.register().subscribe(
 			(res: any) => {
 				if (res.succeeded) {
-					this.userStore.formModel.reset();
+					this.userStore.userForm.reset();
 					this.toaster.success('New user created!', 'Registartion successful');
 				} else {
-					res.errors.forEach(element => {
+					res.errors.forEach((element) => {
 						switch (element.code) {
 							case 'DuplicateUserName':
 								this.toaster.error('User is already taken', 'Register faild');
@@ -49,10 +46,9 @@ export class AddUserComponent implements OnInit {
 					});
 				}
 			},
-			err => {
+			(err) => {
 				console.log(err);
-			}
+			},
 		);
 	}
-
 }

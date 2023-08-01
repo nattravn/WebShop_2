@@ -1,4 +1,4 @@
 export class DialogOptions {
-	width: number;
-	disableClose: boolean;
+	public width: number;
+	public disableClose: boolean;
 }

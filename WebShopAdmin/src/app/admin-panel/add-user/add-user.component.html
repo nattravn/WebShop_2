@@ -1,46 +1,61 @@
-<form [formGroup]="userStore.formModel" autocomplete="on" (submit)="onSubmit()">
+<form [formGroup]="userStore.userForm" autocomplete="on" (submit)="onSubmit()">
 	<mat-grid-list cols="1" rowHeight="800px">
 		<mat-grid-tile>
 			<div class="controls-container">
 				<mat-form-field class="required">
-					<input matInput formControlName="userName" placeholder="User name">
-					<label class="text-danger"
-						*ngIf="userStore.formModel.get('userName').touched && userStore.formModel.get('userName').errors?.required">This
-						is mandatory.</label>
+					<input matInput formControlName="userName" placeholder="User name" />
+					<label
+						class="text-danger"
+						*ngIf="userStore.userForm.get('userName').touched && userStore.userForm.get('userName').errors?.required"
+						>This is mandatory.</label
+					>
 				</mat-form-field>
 				<mat-form-field class="required">
-					<input matInput formControlName="email" placeholder="Email">
-					<label class="text-danger"
-						*ngIf="userStore.formModel.get('email').touched && userStore.formModel.get('email').errors?.email">Invalid
-						email adress</label>
+					<input matInput formControlName="email" placeholder="Email" />
+					<label class="text-danger" *ngIf="userStore.userForm.get('email').touched && userStore.userForm.get('email').errors?.email"
+						>Invalid email adress</label
+					>
 				</mat-form-field>
 				<mat-form-field>
-					<input matInput formControlName="fullName" placeholder="fullName">
+					<input matInput formControlName="fullName" placeholder="fullName" />
 				</mat-form-field>
 				<div formGroupName="passwords">
 					<mat-form-field style="width: 100%">
-						<input type="password" matInput formControlName="password" placeholder="Password">
-						<label class="text-danger"
-							*ngIf="userStore.formModel.get('passwords.password').touched && userStore.formModel.get('Passwords.password').errors?.required">This
-							is mandatory.</label>
-						<label class="text-danger"
-							*ngIf="userStore.formModel.get('passwords.password').touched && userStore.formModel.get('Passwords.Password').errors?.minlength">Minimum
-							4 characters required</label>
+						<input type="password" matInput formControlName="password" placeholder="Password" />
+						<label
+							class="text-danger"
+							*ngIf="userStore.userForm.get('passwords.password').touched && userStore.userForm.get('Passwords.password').errors?.required"
+							>This is mandatory.</label
+						>
+						<label
+							class="text-danger"
+							*ngIf="userStore.userForm.get('passwords.password').touched && userStore.userForm.get('Passwords.Password').errors?.minlength"
+							>Minimum 4 characters required</label
+						>
 					</mat-form-field>
 					<mat-form-field style="width: 100%" class="required">
-						<input type="password" matInput formControlName="confirmPassword" placeholder="confirmPassword">
-						<label class="text-danger"
-							*ngIf="userStore.formModel.get('passwords.confirmPassword').touched && userStore.formModel.get('passwords.confirmPassword').errors?.required">This
-							is mandatory.</label>
-						<label class="text-danger"
-							*ngIf="userStore.formModel.get('passwords.confirmPassword').touched && userStore.formModel.get('passwords.confirmPassword').errors?.passwordMismatch">Confirmed
-							password does not match.</label>
+						<input type="password" matInput formControlName="confirmPassword" placeholder="confirmPassword" />
+						<label
+							class="text-danger"
+							*ngIf="
+								userStore.userForm.get('passwords.confirmPassword').touched &&
+								userStore.userForm.get('passwords.confirmPassword').errors?.required
+							"
+							>This is mandatory.</label
+						>
+						<label
+							class="text-danger"
+							*ngIf="
+								userStore.userForm.get('passwords.confirmPassword').touched &&
+								userStore.userForm.get('passwords.confirmPassword').errors?.passwordMismatch
+							"
+							>Confirmed password does not match.</label
+						>
 					</mat-form-field>
 				</div>
 				<div class="button-row">
-					<button mat-raised-button color="primary" type="submit"
-						[disabled]="userStore.form.invalid">Submit</button>
-					<button mat-raised-button color="warn" type='button' (click)="onClear()">Clear</button>
+					<button mat-raised-button color="primary" type="submit" [disabled]="userStore.userForm.invalid">Submit</button>
+					<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
 				</div>
 			</div>
 		</mat-grid-tile>

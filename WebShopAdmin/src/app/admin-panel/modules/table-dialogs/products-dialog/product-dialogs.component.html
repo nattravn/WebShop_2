@@ -1,17 +1,22 @@
 <!-- <ng-template #firstDialogTemplate> -->
-	<ng-container *ngIf="{
-		paramMapProduct: paramMapProduct$ | async, 
+<ng-container
+	*ngIf="{
+		paramMapProduct: paramMapProduct$ | async,
 		category: categoryChange$ | async
-	} as source">
-		
-		<app-category-dropdown [selectedCategory]="source.category | lowercase" (selectCategory)="selectedCataegory($event)" *ngIf="data.createNew"></app-category-dropdown>
+	} as source"
+>
+	<app-category-dropdown
+		[selectedCategory]="source.category | lowercase"
+		(selectCategory)="selectedCataegory($event)"
+		*ngIf="data.createNew"
+	></app-category-dropdown>
 
-		<div [ngSwitch]="source.category | lowercase">
-			<app-record-dialog *ngSwitchCase=categoryEnum.Record></app-record-dialog>
-			<app-clothing-dialog *ngSwitchCase=categoryEnum.Clothing></app-clothing-dialog>
-			<app-shoe *ngSwitchCase=categoryEnum.Shoe></app-shoe>
-			<app-category-dialog *ngSwitchCase=categoryEnum.Category></app-category-dialog>
-			<div *ngSwitchDefault>Default</div>
-		</div>
-	</ng-container>
+	<div [ngSwitch]="source.category | lowercase">
+		<app-record-dialog *ngSwitchCase="categoryEnum.record"></app-record-dialog>
+		<app-clothing-dialog *ngSwitchCase="categoryEnum.clothing"></app-clothing-dialog>
+		<app-shoe *ngSwitchCase="categoryEnum.shoe"></app-shoe>
+		<app-category-dialog *ngSwitchCase="categoryEnum.category"></app-category-dialog>
+		<div *ngSwitchDefault>Default</div>
+	</div>
+</ng-container>
 <!-- </ng-template> -->

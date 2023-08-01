@@ -1,6 +1,6 @@
 export class UserItem {
-    title: string;
-    imagePath: string;
-    category: string;
-    id: number;
+	public title: string;
+	public imagePath: string;
+	public category: string;
+	public id: number;
 }

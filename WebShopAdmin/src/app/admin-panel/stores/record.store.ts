@@ -1,27 +1,21 @@
-import { Injectable, OnDestroy } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { environment } from 'src/environments/environment';
 
-import { ToastrService } from "ngx-toastr";
-import { tap, catchError } from "rxjs/operators";
-import { Observable, Subject, throwError, ReplaySubject, of } from "rxjs";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ToastrService } from 'ngx-toastr';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
-import { Record } from "../models/record.model";
-import { environment } from "src/environments/environment";
-import { ProductTable } from "../models/product-table.model";
+import { ProductTable } from '@admin-panel/models/product-table.model';
+import { Record } from '@admin-panel/models/record.model';
 
 @UntilDestroy()
 @Injectable({
-	providedIn: "root",
+	providedIn: 'root',
 })
-export class RecordStore implements OnDestroy {
-	activeRoute: Subject<boolean> = new Subject<boolean>();
-
-	list: Record[];
-
-	filter: string;
-
-	readonly baseUrl = environment.baseUrl;
+export class RecordStore {
+	public readonly baseUrl = environment.baseUrl;
 
 	public imageRootPath = `${this.baseUrl}/Images/original/default-image.png`;
 
@@ -35,73 +29,69 @@ export class RecordStore implements OnDestroy {
 		private http: HttpClient,
 		private toastr: ToastrService,
 	) {
-		this.filterReplay.next("");
+		this.filterReplay.next('');
 		this.refreshList();
 	}
 
-	ngOnDestroy(): void {
-		throw new Error("Method not implemented.");
-	}
-
-	postRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
+	public postRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
 		const formData: FormData = new FormData();
 
-		formData.append("band", modelFormData.band);
-		formData.append("album", modelFormData.album);
-		formData.append("releaseDate", modelFormData.releaseDate.toDateString());
-		formData.append("genre", modelFormData.genre);
+		formData.append('band', modelFormData.band);
+		formData.append('album', modelFormData.album);
+		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
+		formData.append('genre', modelFormData.genre);
 
 		if (fileToUpload) {
-			formData.append("image", fileToUpload, fileToUpload.name);
+			formData.append('image', fileToUpload, fileToUpload.name);
 		}
 
-		formData.append("imagePath", modelFormData.imagePath);
-		formData.append("title", modelFormData.title);
-		formData.append("price", modelFormData.price);
-		formData.append("description", modelFormData.description);
-		formData.append("categoryId", "0");
-		formData.append("subCategoryId", "0");
-		formData.append("editorUserId", modelFormData.editorUserId);
+		formData.append('imagePath', modelFormData.imagePath);
+		formData.append('title', modelFormData.title);
+		formData.append('price', modelFormData.price);
+		formData.append('description', modelFormData.description);
+		formData.append('categoryId', '0');
+		formData.append('subCategoryId', '0');
+		formData.append('editorUserId', modelFormData.editorUserId);
 
 		return this.http.post<Record>(`${this.baseUrl}/Records`, formData).pipe(
 			tap(() => {
-				this.toastr.success("inserted successfully", "EMP. Register");
+				this.toastr.success('inserted successfully', 'EMP. Register');
 			}),
 		);
 	}
 
-	putRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
+	public putRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
 		const formData: FormData = new FormData();
-		formData.append("band", modelFormData.band);
-		formData.append("id", JSON.stringify(modelFormData.id));
-		formData.append("album", modelFormData.album);
-		formData.append("releaseDate", modelFormData.releaseDate.toDateString());
-		formData.append("genre", modelFormData.genre);
+		formData.append('band', modelFormData.band);
+		formData.append('id', JSON.stringify(modelFormData.id));
+		formData.append('album', modelFormData.album);
+		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
+		formData.append('genre', modelFormData.genre);
 		if (fileToUpload != null) {
-			formData.append("image", fileToUpload, fileToUpload.name);
+			formData.append('image', fileToUpload, fileToUpload.name);
 		}
 
-		formData.append("imagePath", modelFormData.imagePath);
+		formData.append('imagePath', modelFormData.imagePath);
 
-		formData.append("description", modelFormData.description);
-		formData.append("title", modelFormData.title);
-		formData.append("price", modelFormData.price);
-		formData.append("categoryId", JSON.stringify(modelFormData.categoryId));
-		formData.append("subCategoryId", JSON.stringify(modelFormData.subCategoryId));
-		formData.append("editorUserId", modelFormData.editorUserId);
+		formData.append('description', modelFormData.description);
+		formData.append('title', modelFormData.title);
+		formData.append('price', modelFormData.price);
+		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
+		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
+		formData.append('editorUserId', modelFormData.editorUserId);
 
 		return this.http.put<Record>(`${this.baseUrl}/Records/${modelFormData.id}`, formData).pipe(
 			tap(() => {
-				this.toastr.info("updated successfully", "EMP. Register");
+				this.toastr.info('updated successfully', 'EMP. Register');
 			}),
 		);
 	}
 
-	deleteRecord(row: any) {
+	public deleteRecord(row: any) {
 		return this.http.delete(`${this.baseUrl}/${row.categoryName}/${row.id}`);
 	}
 
-	getProducts(
+	public getProducts(
 		route: string,
 		limit: number,
 		page: number,
@@ -116,32 +106,32 @@ export class RecordStore implements OnDestroy {
 					page: page.toString(),
 					key: active,
 					order: direction,
-					searchQuery: keyWord ? keyWord.toString() : "",
+					searchQuery: keyWord ? keyWord.toString() : '',
 				},
 			})
 			.pipe(
 				untilDestroyed(this),
 				tap((items) => this.recordsReplay.next(items)),
 				catchError((error) => {
-					console.error("Error: ", error);
+					console.error('Error: ', error);
 					return of(null);
 				}),
 			);
 	}
 
-	getRecord(id: number): Observable<Record> {
+	public getRecord(id: number): Observable<Record> {
 		return this.http.get<Record>(`${this.baseUrl}/Records/${id}`).pipe(
 			tap((item) => this.recordItemReplay.next(item)),
 			catchError((error) => {
-				console.error("Error: ", error);
+				console.error('Error: ', error);
 				return of(null);
 			}),
 		);
 	}
 
-	getRecordsByKeyWord(keyWord: string) {
+	public getRecordsByKeyWord(keyWord: string) {
 		const params: URLSearchParams = new URLSearchParams();
-		params.set("band", keyWord);
+		params.set('band', keyWord);
 
 		return this.http
 			.get<Record>(`${this.baseUrl}/Records/`, {
@@ -152,30 +142,30 @@ export class RecordStore implements OnDestroy {
 			.pipe(
 				tap((item) => this.recordItemReplay.next(item)),
 				catchError((error) => {
-					console.error("Error: ", error);
+					console.error('Error: ', error);
 					return of(null);
 				}),
 			);
 	}
 
-	getRecordByUserName(userName: string): Observable<Record[]> {
+	public getRecordByUserName(userName: string): Observable<Record[]> {
 		return this.http.get<Record[]>(`${this.baseUrl}/Records/username/${userName}`);
 	}
 
-	refreshList(): Observable<Record[]> {
+	public refreshList(): Observable<Record[]> {
 		return this.http.get<Record[]>(`${this.baseUrl}/Records`);
 	}
 
-	errorHandler(error) {
-		let errorMessage = "";
-		if (error.error instanceof ErrorEvent) {
-			// Get client-side error
-			errorMessage = error.error.message;
-		} else {
-			// Get server-side error
-			errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-		}
-		console.log(errorMessage);
-		return throwError(errorMessage);
-	}
+	// private errorHandler(error) {
+	// 	let errorMessage = '';
+	// 	if (error.error instanceof ErrorEvent) {
+	// 		// Get client-side error
+	// 		errorMessage = error.error.message;
+	// 	} else {
+	// 		// Get server-side error
+	// 		errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+	// 	}
+	// 	console.log(errorMessage);
+	// 	return throwError(errorMessage);
+	// }
 }

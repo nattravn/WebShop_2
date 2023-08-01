@@ -1,29 +1,27 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { ReplaySubject } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ReplaySubject } from 'rxjs';
 
-import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
-import { Category } from 'src/app/admin-panel/models/category.model';
+import { Category } from '@admin-panel/models/category.model';
+import { CategoryStore } from '@admin-panel/stores/category.store';
 
 @UntilDestroy()
 @Injectable()
-export class CategoryTableService implements OnDestroy {
-
+export class CategoryTableService {
 	public tableData = new ReplaySubject<MatTableDataSource<Category>>(1);
 	public dataSource = new MatTableDataSource<Category>();
 
 	constructor(private categoryStore: CategoryStore) {}
-	ngOnDestroy(): void { }
 
-	refreshMatTable() {
-		this.categoryStore.getPagedCategories(5,1).pipe(
-			untilDestroyed(this)
-		).subscribe(items => {
-			console.log('items: ', items);
-			this.dataSource.data = items.items;
-			this.tableData.next(this.dataSource);
-		});
+	public refreshMatTable() {
+		this.categoryStore
+			.getPagedCategories(5, 1)
+			.pipe(untilDestroyed(this))
+			.subscribe((items) => {
+				this.dataSource.data = items.items;
+				this.tableData.next(this.dataSource);
+			});
 	}
 }

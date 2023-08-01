@@ -1,19 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component } from '@angular/core';
 
 @Component({
 	selector: 'app-product-lists',
-	templateUrl: './category-table-container.component.html',
-	styleUrls: ['./category-table-container.component.css'],
-
+	templateUrl: './database-tables-container.component.html',
+	styleUrls: ['./database-tables-container.component.css'],
 })
 export class DatabaseTableContainerComponent {
+	constructor() {}
 
-	constructor(private route: Router,
-		private router: ActivatedRoute ) {}
-
-	opemModal(){
-
+	public openModal() {
 		// this.router.firstChild.paramMap.subscribe( paramMap => {
 		// 	console.log('this.router: ', paramMap);
 		// 	if(paramMap.get('product')){
@@ -27,5 +22,4 @@ export class DatabaseTableContainerComponent {
 		// 	}
 		// })
 	}
-
 }

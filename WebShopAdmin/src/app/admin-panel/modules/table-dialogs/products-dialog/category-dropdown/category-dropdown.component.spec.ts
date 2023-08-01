@@ -8,9 +8,8 @@ describe('CategoryPanelComponent', () => {
 
 	beforeEach(waitForAsync(() => {
 		TestBed.configureTestingModule({
-			declarations: [CategoryDropdownComponent]
-		})
-			.compileComponents();
+			declarations: [CategoryDropdownComponent],
+		}).compileComponents();
 	}));
 
 	beforeEach(() => {

@@ -1,12 +1,12 @@
 export class Shoe {
-    id: number;
-    title: string;
-    price: string;
-    description: string;
-    image: File;
-    imagePath: string;
-    categoryId: number;
-    userName: string;
-    subCategoryId: number;
-    categoryName: string;
+	public id: number;
+	public title: string;
+	public price: string;
+	public description: string;
+	public image: File;
+	public imagePath: string;
+	public categoryId: number;
+	public userName: string;
+	public subCategoryId: number;
+	public categoryName: string;
 }

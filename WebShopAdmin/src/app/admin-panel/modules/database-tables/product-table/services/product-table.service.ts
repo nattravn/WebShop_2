@@ -1,50 +1,40 @@
-import { Injectable, OnDestroy } from '@angular/core';
-
-import { ReplaySubject, of, Observable } from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Injectable } from '@angular/core';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { environment } from 'src/environments/environment';
-import { RecordStore } from '../../../../stores/record.store';
-import { Record } from '../../../../models/record.model';
-import { filter, finalize, map, shareReplay, switchMap } from 'rxjs/operators';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { Clothing } from 'src/app/admin-panel/models/clothing.model';
-import { MatSort } from '@angular/material/sort';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { Observable, of } from 'rxjs';
+import { shareReplay, switchMap } from 'rxjs/operators';
+
+import { Clothing } from '@admin-panel/models/clothing.model';
+import { Record } from '@admin-panel/models/record.model';
+import { RecordStore } from '@admin-panel/stores/record.store';
 
 @UntilDestroy()
 @Injectable()
-export class ProductTableService implements OnDestroy {
+export class ProductTableService {
+	public tableData$ = new Observable<{ items: MatTableDataSource<Record | Clothing>; totalItems: number }>();
 
-	public tableData$ = new Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}>();
 	public dataSource = new MatTableDataSource<Record | Clothing>();
-
-	private eventUrl = '';
 
 	public initPageLimit = 5;
 
 	public sortKey = 'band';
 
-	public order = 'asc'; 
+	public order = 'asc';
 
 	public currentPageIndex = 1;
 
 	public currentTableSize = 5;
 
-	constructor(
-		private recordStore: RecordStore,
-		private router: Router,
-		private route: ActivatedRoute
-	) {
+	// private eventUrl = '';
 
-		const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-
+	constructor(private recordStore: RecordStore) {
+		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 		// this.route.data.subscribe(v => console.log('v: ', v))
-
 		// this.route.queryParams.subscribe(v => console.log('v: ', v))
 		// this.route.params.subscribe(v => console.log('v: ', v))
 		// this.route.paramMap.subscribe(v => console.log('v: ', v))
-
 		// this.route.events.pipe(
 		// 	filter(event => event instanceof NavigationStart)
 		// ).subscribe((event:NavigationStart) => {
@@ -52,39 +42,33 @@ export class ProductTableService implements OnDestroy {
 		// 	this.eventUrl = event.url.substring(event.url.lastIndexOf('/') + 1);
 		// 	this.refreshMatTable();
 		// });
-
-
-		//this.refreshMatTable(eventUrl,5,1);
+		// this.refreshMatTable(eventUrl,5,1);
 	}
 
-	ngOnDestroy(): void { }
-
-	refreshMatTable(
-		productString: string, 
-		pageLimit: number = null, 
+	public refreshMatTable(
+		productString: string,
+		pageLimit: number = null,
 		page: number = null,
 		key: string,
 		order: string,
 		searchQuery: string,
-		sort: MatSort | null
-	): Observable<{items: MatTableDataSource<Record | Clothing>, totalItems: number}> {
-		this.tableData$ = this.recordStore.getProducts(productString, pageLimit, page,key, order, searchQuery).pipe(
+		sort: MatSort | null,
+	): Observable<{ items: MatTableDataSource<Record | Clothing>; totalItems: number }> {
+		this.tableData$ = this.recordStore.getProducts(productString, pageLimit, page, key, order, searchQuery).pipe(
 			untilDestroyed(this),
-			switchMap(records => {
+			switchMap((records) => {
 				this.dataSource.data = records.items;
 				this.sortKey = key;
 				this.order = order;
-				if(sort){
+				if (sort) {
 					this.dataSource.sort = sort;
 				}
 
-				console.log('records.Items: ', records);
-				return of({items: this.dataSource, totalItems: records.totalItems});
+				return of({ items: this.dataSource, totalItems: records.totalItems });
 			}),
 			shareReplay(1),
-		)
+		);
 
 		return this.tableData$;
 	}
-
 }

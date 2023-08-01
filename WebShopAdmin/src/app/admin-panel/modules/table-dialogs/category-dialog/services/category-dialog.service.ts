@@ -1,47 +1,58 @@
-import { Injectable, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormArray, UntypedFormBuilder } from '@angular/forms';
+import { Category } from '@admin-panel/models/category.model';
+import { SubCategory } from '@admin-panel/models/sub-category.model';
+import { Injectable } from '@angular/core';
+import { FormControl, FormArray, FormGroup } from '@angular/forms';
 
-import { Category } from '../../../../models/category.model';
+export interface ICategoryDialogForm {
+	id: FormControl<number>;
+	route: FormControl<string>;
+	name: FormControl<string>;
+	subCategories: FormArray<FormGroup<ISubCategoryForm>>;
+}
+
+export interface ISubCategoryForm {
+	id: FormControl<number>;
+	route: FormControl<string>;
+	name: FormControl<string>;
+	subCategoryId: FormControl<number>;
+}
 
 @Injectable()
 export class CategoryDialogService {
-
-	public form: UntypedFormGroup = this._formBuilder.group({
-		id: new UntypedFormControl(null),
-		route: new UntypedFormControl(''),
-		name: new UntypedFormControl(''),
-		subCategories: this._formBuilder.array([]),
+	public form = new FormGroup<ICategoryDialogForm>({
+		id: new FormControl(null),
+		route: new FormControl(''),
+		name: new FormControl(''),
+		subCategories: new FormArray<FormGroup<ISubCategoryForm>>([]),
 	});
 
-	constructor(private _formBuilder: UntypedFormBuilder) { }
+	constructor() {}
 	public get subCategoryArray() {
-		return this.form.get('subCategories') as UntypedFormArray;
+		return this.form.get('subCategories').value;
 	}
 
-	addItem(item) {
-		this.subCategoryArray.push(this._formBuilder.group(item));
+	public addSubCategoryItem(item: SubCategory) {
+		this.subCategoryArray.push(item);
 	}
 
-	removeItem() {
-		this.subCategoryArray.removeAt(this.subCategoryArray.length - 1);
+	public removeItem() {
+		this.subCategoryArray.splice(this.subCategoryArray.length - 1);
 	}
 
-	populateForm(category: Category) {
+	public populateForm(category: Category) {
 		this.form.get('id').setValue(category.id);
 		this.form.get('route').setValue(category.route);
 		this.form.get('name').setValue(category.name);
 
-		this.subCategoryArray.clear();
+		this.form.get('subCategories').setValue([]);
 
-		category?.subCategories?.forEach(subCategory => {
-			this.addItem({
-				'id': subCategory.id,
-				'name': subCategory.name,
-				'route': subCategory.route,
-				'categoryId': subCategory.categoryId,
+		category?.subCategories?.forEach((subCategory) => {
+			this.addSubCategoryItem({
+				id: subCategory.id,
+				name: subCategory.name,
+				route: subCategory.route,
+				subCategoryId: subCategory.subCategoryId,
 			});
 		});
-
-
 	}
 }

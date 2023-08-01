@@ -17,8 +17,11 @@
 			"dom"
 		],
 		"paths": {
-			"@admin/*": ["src/app/admin-panel/*"],
+			"@database-tables/*": ["src/app/admin-panel/modules/database-tables/*"],
+			"@table-dialogs/*": ["src/app/admin-panel/modules/table-dialogs/*"],
+			"@admin-panel/*": ["src/app/admin-panel/*"],
 			"@environments/*": ["src/environments/*"],
+			"@app/*": ["src/app/*"],
 		}
 	},
 		"angularCompilerOptions": {

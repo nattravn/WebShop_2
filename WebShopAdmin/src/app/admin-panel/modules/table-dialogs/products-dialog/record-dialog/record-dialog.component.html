@@ -1,61 +1,63 @@
-<ng-container *ngIf="{
-	noooothing: populateForm$ | async,
-	formValue: formValue$ | async,
-	category: category$ | async
-} as source">
-source.formValue.value: <pre>{{source.formValue | json}}</pre>
-source.formValue.genre: <pre>{{source.formValue.genre | json}}</pre>
-source.formValue.lastDateTime: <pre>{{form.get('lastUpdateTime').value | customDate}}</pre>
-<form [formGroup]="form" (submit)="onSubmit(source.formValue)">
-	<div class="controls-container">
-		<!-- <input hidden formControlName="categoryName" [value]="source.formValue.value.category" matInput> -->
+<ng-container
+	*ngIf="{
+		noooothing: populateForm$ | async,
+		formValue: formValue$ | async,
+		category: category$ | async
+	} as source"
+>
+	source.formValue.value:
+	<pre>{{ source.formValue | json }}</pre>
+	source.formValue.genre:
+	<pre>{{ source.formValue.genre | json }}</pre>
+	source.formValue.lastDateTime:
+	<pre>{{ form.get("lastUpdateTime").value | customDate }}</pre>
+	<form [formGroup]="form" (submit)="onSubmit(source.formValue)">
+		<div class="controls-container">
+			<!-- <input hidden formControlName="categoryName" [value]="source.formValue.value.category" matInput> -->
 
-		<mat-form-field class="w-100">
-			<mat-label>RecordID</mat-label>
-			<input formControlName="id" [readonly]="true" matInput placeholder="RecordID">
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<mat-label>RecordID</mat-label>
+				<input formControlName="id" [readonly]="true" matInput placeholder="RecordID" />
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<mat-label>Last editor</mat-label>
-			<input [readonly]="true" value="{{(source.formValue?.editorUserId | userDetails | async)?.userName}}" matInput placeholder="RecordID">
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<mat-label>Last editor</mat-label>
+				<input
+					[readonly]="true"
+					value="{{ (source.formValue?.editorUserId | userDetails | async)?.userName }}"
+					matInput
+					placeholder="RecordID"
+				/>
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<mat-label>Last update time</mat-label>
-			<input formControlName="lastUpdateTime" [readonly]="true" matInput >
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<mat-label>Last update time</mat-label>
+				<input formControlName="lastUpdateTime" [readonly]="true" matInput />
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<mat-label>Title</mat-label>
-			<input formControlName="title" matInput placeholder="Title">
-			<mat-error>
-				<div *ngIf="form.controls['title']?.errors?.minlength">
-					title length must be greater than 4 letters.
-				</div>
-				<div *ngIf="form.controls['title']?.errors?.maxlength">
-					title length must less than 100 letters.
-				</div>
-				<div *ngIf="form.controls['title']?.errors?.required">
-					title is required.
-				</div>
+			<mat-form-field class="w-100">
+				<mat-label>Title</mat-label>
+				<input formControlName="title" matInput placeholder="Title" />
+				<mat-error>
+					<div *ngIf="form.controls['title']?.errors?.minlength">title length must be greater than 4 letters.</div>
+					<div *ngIf="form.controls['title']?.errors?.maxlength">title length must less than 100 letters.</div>
+					<div *ngIf="form.controls['title']?.errors?.required">title is required.</div>
+				</mat-error>
+			</mat-form-field>
 
-			</mat-error>
-			
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<mat-label>Band</mat-label>
+				<input formControlName="band" matInput placeholder="Band" />
+				<mat-error>This field is mandatory.</mat-error>
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<mat-label>Band</mat-label>
-			<input formControlName="band" matInput placeholder="Band">
-			<mat-error>This field is mandatory.</mat-error>
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<mat-label>Album</mat-label>
+				<input formControlName="album" matInput placeholder="Album" />
+				<mat-error>This field is mandatory.</mat-error>
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<mat-label>Album</mat-label>
-			<input formControlName="album" matInput placeholder="Album">
-			<mat-error>This field is mandatory.</mat-error>
-		</mat-form-field>
-
-		<!-- <mat-form-field class="w-100">
+			<!-- <mat-form-field class="w-100">
 			<input formControlName="releaseDate" matInput placeholder="Year">
 			<mat-error>
 				<div *ngIf="form.controls['year'].errors?.pattern" class="text-danger">Number Only</div>
@@ -63,45 +65,51 @@ source.formValue.lastDateTime: <pre>{{form.get('lastUpdateTime').value | customD
 			</mat-error>
 		</mat-form-field> -->
 
-		<mat-form-field class="w-100">
-			<mat-select matInput formControlName="genre" placeholder="Genre" [value]="source.formValue.genre">
-				<mat-option *ngFor="let subCategory of source.category?.subCategories" [value]="subCategory.name">
-					{{ subCategory.name }}
-				</mat-option>
-			</mat-select>
-		</mat-form-field>
-		
-		<mat-form-field appearance="fill">
-			<mat-label>Choose a date</mat-label>
-			<input formControlName="releaseDate" matInput [matDatepicker]="picker">
-			<mat-hint>MM/DD/YYYY</mat-hint>
-			<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-			<mat-datepicker #picker></mat-datepicker>
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<mat-select matInput formControlName="genre" placeholder="Genre" [value]="source.formValue.genre">
+					<mat-option *ngFor="let subCategory of source.category?.subCategories" [value]="subCategory.name">
+						{{ subCategory.name }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<input formControlName="price" matInput placeholder="Price">
-			<mat-error >Number Only
-				<div *ngIf="form.controls['price'].errors?.pattern" class="text-danger">Number Only</div>
-				<div *ngIf="form.controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
-			</mat-error>
-		</mat-form-field>
+			<mat-form-field appearance="fill">
+				<mat-label>Choose a date</mat-label>
+				<input formControlName="releaseDate" matInput [matDatepicker]="picker" />
+				<mat-hint>MM/DD/YYYY</mat-hint>
+				<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+				<mat-datepicker #picker></mat-datepicker>
+			</mat-form-field>
 
-		<mat-form-field class="w-100">
-			<input formControlName="description" matInput placeholder="Description">
-		</mat-form-field>
+			<mat-form-field class="w-100">
+				<input formControlName="price" matInput placeholder="Price" />
+				<mat-error
+					>Number Only
+					<div *ngIf="form.controls['price'].errors?.pattern" class="text-danger">Number Only</div>
+					<div *ngIf="form.controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
+				</mat-error>
+			</mat-form-field>
 
-		<div class="d-flex justify-content-center w-100">
-			<img [src]="(imgSrcReplay$ | async) || defaultimageRootPath" (click)="fileInput.click()" style="max-width: 250px; max-height: 200px; background-size: cover;">
+			<mat-form-field class="w-100">
+				<input formControlName="description" matInput placeholder="Description" />
+			</mat-form-field>
+
+			<div class="d-flex justify-content-center w-100">
+				<img
+					[src]="(imgSrcReplay$ | async) || defaultimageRootPath"
+					(click)="fileInput.click()"
+					style="max-width: 250px; max-height: 200px; background-size: cover"
+				/>
+			</div>
+
+			<label>Select file to upload</label>
+			<br />
+			<input ngInput #fileInput type="file" accept="image/*" (change)="showPreview(fileInput.files[0])" />
+
+			<div class="button-row">
+				<button mat-raised-button color="primary" type="submit">Submit</button>
+				<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
+			</div>
 		</div>
-
-		<label>Select file to upload</label>
-		<br>
-		<input ngInput #fileInput type="file" accept="image/*" (change)="showPreview(fileInput.files[0])">
-
-		<div class="button-row">
-			<button mat-raised-button color="primary" type="submit">Submit</button>
-			<button mat-raised-button color="warn" type='button' (click)="onClear()">Clear</button>
-		</div>
-	</div>
-</form>
+	</form>
+</ng-container>

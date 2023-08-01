@@ -1,62 +1,65 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+
 import { ToastrService } from 'ngx-toastr';
 import { EMPTY } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+
 import { AuthService } from './services/auth.service';
 
+export interface ILoginUser {
+	userName: FormControl<string>;
+	password: FormControl<string>;
+}
 @UntilDestroy()
 @Component({
 	selector: 'app-auth',
 	templateUrl: './auth.component.html',
 	styleUrls: ['./auth.component.scss'],
-	providers: [ToastrService]
+	providers: [ToastrService],
 })
-export class AuthComponent implements OnInit, OnDestroy {
+export class AuthComponent {
+	public authForm = new FormGroup<ILoginUser>({
+		userName: new FormControl('', { nonNullable: true }),
+		password: new FormControl('', { nonNullable: true }),
+	});
 
-	authForm: UntypedFormGroup;
-	isSubmitted  =  false;
+	public isSubmitted = false;
 
 	constructor(
 		private authService: AuthService,
 		private router: Router,
-		private formBuilder: UntypedFormBuilder,
-		private toastr: ToastrService
-	) { }
-	ngOnDestroy(): void {}
+		private toastr: ToastrService,
+	) {}
 
-	ngOnInit() {
-		this.authForm = this.formBuilder.group({
-			userName: ['', Validators.required],
-			password: ['', Validators.required]
-		});
+	public get formControls() {
+		return this.authForm.controls;
 	}
 
-	signIn(){
+	public signIn() {
 		this.isSubmitted = true;
-		if(this.authForm.invalid){
+		if (this.authForm.invalid) {
 			return;
 		}
-		this.authService.signIn(this.authForm.value).pipe(
-			untilDestroyed(this),
-			tap((res: any) => {
-				localStorage.setItem('ACCESS_TOKEN', res.token);
-				this.router.navigateByUrl('/adminpanel');
-			}),
-			catchError(err => {
-                if (err.status === 400) {
-                    this.toastr.error('Incorrect username or password.', 'Authentication failed.');
-                } else {
-                    console.log(err);
-				}
-				return EMPTY;
-            })
-		).subscribe();
-
+		this.authService
+			.signIn(this.authForm.getRawValue())
+			.pipe(
+				untilDestroyed(this),
+				tap((res: any) => {
+					localStorage.setItem('ACCESS_TOKEN', res.token);
+					this.router.navigateByUrl('/adminpanel');
+				}),
+				catchError((err) => {
+					if (err.status === 400) {
+						this.toastr.error('Incorrect username or password.', 'Authentication failed.');
+					} else {
+						console.log(err);
+					}
+					return EMPTY;
+				}),
+			)
+			.subscribe();
 	}
-
-	get formControls() { return this.authForm.controls; }
-
 }

@@ -1,16 +1,16 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, inject, waitForAsync } from '@angular/core/testing';
-import { RecordService } from './record.service';
+import { TestBed, inject } from '@angular/core/testing';
+import { RecordDialogService } from './record-dialog.service';
 
 describe('Service: Record', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [RecordService]
-    });
-  });
+	beforeEach(() => {
+		TestBed.configureTestingModule({
+			providers: [RecordDialogService],
+		});
+	});
 
-  it('should ...', inject([RecordService], (service: RecordService) => {
-    expect(service).toBeTruthy();
-  }));
+	it('should ...', inject([RecordDialogService], (service: RecordDialogService) => {
+		expect(service).toBeTruthy();
+	}));
 });

@@ -1,35 +1,32 @@
-<ng-container *ngIf="{categoris: categories$ | async} as source">
+<ng-container *ngIf="{ categoris: categories$ | async } as source">
 	<div class="header">
 		<button mat-raised-button color="primary" (click)="logout()">Logga ut</button>
 	</div>
 
 	<!-- Items menu -->
-    <div class="container-fluid">
+	<div class="container-fluid">
 		<div class="row">
 			<div class="col-2">
 				<h1>Record Register</h1>
-				<ul *ngFor="let category of source.categoris ">
-					<li (click)=categoryRoute(category)>{{category.name}}</li>
+				<ul *ngFor="let category of source.categoris">
+					<li (click)="categoryRoute(category)">{{ category.name }}</li>
 				</ul>
 				<ul>
-					<li [routerLink]="['tables/categories/'+AdminCategoryEnum.Category,  {outlets: {tablesOutlet: null}}]" >Categories</li>
+					<li [routerLink]="['tables/categories/' + adminCategoryEnum.category, { outlets: { tablesOutlet: null } }]">Categories</li>
 				</ul>
 				<ul>
-					<li [routerLink]="['tables/users/'+AdminCategoryEnum.User, {outlets: {tablesOutlet: null}}]" >Users</li>
+					<li [routerLink]="['tables/users/' + adminCategoryEnum.user, { outlets: { tablesOutlet: null } }]">Users</li>
 				</ul>
 				<ul>
-					<li [routerLink]="['tables/' ]">Back</li>
+					<li [routerLink]="['tables/']">Back</li>
 				</ul>
 			</div>
 			<div class="col-10">
 				<router-outlet></router-outlet>
 				<!-- The modal -->
-
 			</div>
 		</div>
-    </div>
+	</div>
 </ng-container>
-
-
 
 <!-- <li [routerLink]="[{product: category.name}, {outlets: {primary: 'tables/products', tablesOutlet: null}}] -->

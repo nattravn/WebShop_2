@@ -1,24 +1,20 @@
 modal-wrapper-component
-<ng-container *ngIf="{activatedRouteEvent: activatedRoute.paramMap  | async } as source">
-
+<ng-container *ngIf="{ activatedRouteEvent: activatedRoute.paramMap | async } as source">
 	<div mat-dialog-content>
 		<p class="dialog-paragraph">{{ data.headerText }}</p>
 
 		<mat-toolbar>
 			<span class="fill-remaining-space"></span>
-				<button class="btn-dialog-close" mat-stroked-button (click)="onClose()" tabIndex="-1"><mat-icon>clear</mat-icon></button>
+			<button class="btn-dialog-close" mat-stroked-button (click)="onClose()" tabIndex="-1"><mat-icon>clear</mat-icon></button>
 			<span class="fill-remaining-space"></span>
 		</mat-toolbar>
 
-
 		<!-- <ng-container [ngTemplateOutlet]="data.template"></ng-container> -->
 
-
 		<div [ngSwitch]="data.category.route | lowercase">
-			<app-product-dialogs *ngSwitchCase=categoryEnum.Products></app-product-dialogs>
-			<app-user-dialog *ngSwitchCase=categoryEnum.User></app-user-dialog>
+			<app-product-dialogs *ngSwitchCase="categoryEnum.products"></app-product-dialogs>
+			<app-user-dialog *ngSwitchCase="categoryEnum.user"></app-user-dialog>
 			<div *ngSwitchDefault>Default</div>
 		</div>
-
 	</div>
 </ng-container>

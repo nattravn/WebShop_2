@@ -1,6 +1,6 @@
 export class User {
-	userName: string;
-	email: string;
-	userId: string;
-	fullName: string;
+	public userName: string;
+	public email: string;
+	public userId: string;
+	public fullName: string;
 }

@@ -1,10 +1,10 @@
 export class Other {
-    id: number;
-    title: string;
-    price: string;
-    description: string;
-    image: File;
-    imagePath: string;
-    category: string;
-    userName: string;
+	public id: number;
+	public title: string;
+	public price: string;
+	public description: string;
+	public image: File;
+	public imagePath: string;
+	public category: string;
+	public userName: string;
 }

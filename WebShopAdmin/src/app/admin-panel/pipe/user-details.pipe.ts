@@ -4,15 +4,14 @@ import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 
 @Pipe({
-	name: 'userDetails'
+	name: 'userDetails',
 })
 export class UserDetailsPipe implements PipeTransform {
-
-	constructor(private userStore: UserStore) { }
+	constructor(private userStore: UserStore) {}
 	transform(userId: string, args?: any): Observable<User> {
-		if(!userId){
+		if (!userId) {
 			return;
 		}
-		return this.userStore.getUserProfileById(userId)
+		return this.userStore.getUserProfileById(userId);
 	}
 }
