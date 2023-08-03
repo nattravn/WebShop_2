@@ -8,7 +8,7 @@ import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { ProductTable } from '@admin-panel/models/product-table.model';
-import { Record } from '@admin-panel/models/record.model';
+import { RecordModel } from '@admin-panel/models/record.model';
 
 @UntilDestroy()
 @Injectable({
@@ -23,7 +23,7 @@ export class RecordStore {
 
 	private filterReplay: ReplaySubject<string> = new ReplaySubject<string>(1);
 
-	private recordItemReplay: ReplaySubject<Record> = new ReplaySubject<Record>(1);
+	private recordItemReplay: ReplaySubject<RecordModel> = new ReplaySubject<RecordModel>(1);
 
 	constructor(
 		private http: HttpClient,
@@ -33,7 +33,7 @@ export class RecordStore {
 		this.refreshList();
 	}
 
-	public postRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
+	public postRecord(modelFormData: RecordModel, fileToUpload: File): Observable<RecordModel> {
 		const formData: FormData = new FormData();
 
 		formData.append('band', modelFormData.band);
@@ -47,20 +47,21 @@ export class RecordStore {
 
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('title', modelFormData.title);
-		formData.append('price', modelFormData.price);
+		formData.append('price', JSON.stringify(modelFormData.price));
 		formData.append('description', modelFormData.description);
-		formData.append('categoryId', '0');
-		formData.append('subCategoryId', '0');
+		formData.append('categoryId', JSON.stringify(0));
+		formData.append('subCategoryId', JSON.stringify(0));
 		formData.append('editorUserId', modelFormData.editorUserId);
+		formData.append('creatorUserId', modelFormData.creatorUserId);
 
-		return this.http.post<Record>(`${this.baseUrl}/Records`, formData).pipe(
+		return this.http.post<RecordModel>(`${this.baseUrl}/Records`, formData).pipe(
 			tap(() => {
 				this.toastr.success('inserted successfully', 'EMP. Register');
 			}),
 		);
 	}
 
-	public putRecord(modelFormData: Record, fileToUpload: File): Observable<Record> {
+	public putRecord(modelFormData: RecordModel, fileToUpload: File): Observable<RecordModel> {
 		const formData: FormData = new FormData();
 		formData.append('band', modelFormData.band);
 		formData.append('id', JSON.stringify(modelFormData.id));
@@ -75,12 +76,12 @@ export class RecordStore {
 
 		formData.append('description', modelFormData.description);
 		formData.append('title', modelFormData.title);
-		formData.append('price', modelFormData.price);
+		formData.append('price', JSON.stringify(modelFormData.price));
 		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
 		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
 		formData.append('editorUserId', modelFormData.editorUserId);
 
-		return this.http.put<Record>(`${this.baseUrl}/Records/${modelFormData.id}`, formData).pipe(
+		return this.http.put<RecordModel>(`${this.baseUrl}/Records/${modelFormData.id}`, formData).pipe(
 			tap(() => {
 				this.toastr.info('updated successfully', 'EMP. Register');
 			}),
@@ -119,8 +120,8 @@ export class RecordStore {
 			);
 	}
 
-	public getRecord(id: number): Observable<Record> {
-		return this.http.get<Record>(`${this.baseUrl}/Records/${id}`).pipe(
+	public getRecord(id: number): Observable<RecordModel> {
+		return this.http.get<RecordModel>(`${this.baseUrl}/Records/${id}`).pipe(
 			tap((item) => this.recordItemReplay.next(item)),
 			catchError((error) => {
 				console.error('Error: ', error);
@@ -134,7 +135,7 @@ export class RecordStore {
 		params.set('band', keyWord);
 
 		return this.http
-			.get<Record>(`${this.baseUrl}/Records/`, {
+			.get<RecordModel>(`${this.baseUrl}/Records/`, {
 				params: {
 					searchQuery: keyWord,
 				},
@@ -148,12 +149,12 @@ export class RecordStore {
 			);
 	}
 
-	public getRecordByUserName(userName: string): Observable<Record[]> {
-		return this.http.get<Record[]>(`${this.baseUrl}/Records/username/${userName}`);
+	public getRecordByUserName(userName: string): Observable<RecordModel[]> {
+		return this.http.get<RecordModel[]>(`${this.baseUrl}/Records/username/${userName}`);
 	}
 
-	public refreshList(): Observable<Record[]> {
-		return this.http.get<Record[]>(`${this.baseUrl}/Records`);
+	public refreshList(): Observable<RecordModel[]> {
+		return this.http.get<RecordModel[]>(`${this.baseUrl}/Records`);
 	}
 
 	// private errorHandler(error) {

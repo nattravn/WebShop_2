@@ -4,7 +4,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from 'src/app/material/material.module';
 
-import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 import { UserDetailsPipe } from '@admin-panel/pipe/user-details.pipe';
 
 import { BaseModalComponent } from './base-modal.component';
@@ -17,6 +16,7 @@ import { ProductDialogsComponent } from './products-dialog/product-dialogs.compo
 import { RecordDialogComponent } from './products-dialog/record-dialog/record-dialog.component';
 import { ShoeDialogFormComponent } from './products-dialog/shoe-dialog/shoe-dialog-form.component';
 import { UserDialogComponent } from './user-dialog/user-dialog.component';
+import { PipeModuleModule } from '@admin-panel/pipe/pipe-module.module';
 
 @NgModule({
 	// eslint-disable-next-line prettier/prettier
@@ -24,7 +24,8 @@ import { UserDialogComponent } from './user-dialog/user-dialog.component';
 		CommonModule,
 		MaterialModule,
 		ReactiveFormsModule,
-		BaseModalRoutingModule
+		BaseModalRoutingModule,
+		PipeModuleModule,
 	],
 	declarations: [
 		DialogComponent,
@@ -34,11 +35,11 @@ import { UserDialogComponent } from './user-dialog/user-dialog.component';
 		ClothingDialogComponent,
 		ShoeDialogFormComponent,
 		CategoryDialogComponent,
-		CustomDatePipe,
 		UserDetailsPipe,
 		ProductDialogsComponent,
 		UserDialogComponent,
 	],
+	// eslint-disable-next-line prettier/prettier
 	providers: [
 		{ provide: MAT_DIALOG_DATA, useValue: {} },
 		{ provide: MatDialogRef, useValue: {} },

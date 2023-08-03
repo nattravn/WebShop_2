@@ -11,13 +11,15 @@ import { Observable } from 'rxjs';
 import { shareReplay, switchMap } from 'rxjs/operators';
 
 import { Clothing } from '@admin-panel/models/clothing.model';
-import { Record } from '@admin-panel/models/record.model';
+import { RecordModel } from '@admin-panel/models/record.model';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { RecordStore } from '@admin-panel/stores/record.store';
 import { environment } from '@environments/environment';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 
 import { ProductTableService } from './services/product-table.service';
+// import { RecordUpdate } from '@admin-panel/models/record-update.model';
+// import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
 export interface IFilterForm {
 	search: FormControl<string>;
@@ -32,12 +34,6 @@ export interface IFilterForm {
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductTableComponent implements AfterViewInit {
-	public displayedColumns: string[] = ['id', 'title', 'band', 'price', 'categoryName', 'imagePath', 'actions'];
-
-	public filterForm = new FormGroup<IFilterForm>({
-		search: new FormControl('', []),
-	});
-
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(MatSort) sort: MatSort;
 
@@ -47,11 +43,17 @@ export class ProductTableComponent implements AfterViewInit {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
+	public displayedColumns: string[] = ['id', 'title', 'band', 'price', 'categoryName', 'imagePath', 'actions'];
+
+	public filterForm = new FormGroup<IFilterForm>({
+		search: new FormControl('', []),
+	});
+
 	public imageRootPath = `${environment.baseUrl}/Images/original/`;
 
 	public routerEvent$: Observable<any>;
 
-	public tableData$ = new Observable<{ items: MatTableDataSource<Record | Clothing>; totalItems: number }>();
+	public tableData$ = new Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }>();
 
 	private active = 'band';
 
@@ -94,7 +96,7 @@ export class ProductTableComponent implements AfterViewInit {
 		this.refreshMatTable(
 			this.activatedRoute.snapshot.paramMap.get('product'),
 			5,
-			this.productTableService.currentPageIndex,
+			this.productTableService.currentPage,
 			sort.active,
 			sort.direction,
 			filterForm.value['search'],
@@ -108,7 +110,7 @@ export class ProductTableComponent implements AfterViewInit {
 		active: string,
 		direction: string,
 		searchQuery: string,
-	): Observable<{ items: MatTableDataSource<Record | Clothing>; totalItems: number }> {
+	): Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }> {
 		return this.productTableService
 			.refreshMatTable(productString, pageLimit, page, active, direction, searchQuery, this.sort)
 			.pipe(untilDestroyed(this), shareReplay(1));
@@ -130,7 +132,7 @@ export class ProductTableComponent implements AfterViewInit {
 		// return this.tableData$;
 	}
 
-	public applyFilter(event: Event, dataSource: MatTableDataSource<Record | Clothing>, filterForm: FormGroup) {
+	public applyFilter(event: Event, dataSource: MatTableDataSource<RecordModel | Clothing>, filterForm: FormGroup) {
 		// const filterValue = (event.target as HTMLInputElement).value;
 
 		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
@@ -155,7 +157,7 @@ export class ProductTableComponent implements AfterViewInit {
 		// )
 	}
 
-	public onSearchClear(dataSource: MatTableDataSource<Record | Clothing>) {
+	public onSearchClear(dataSource: MatTableDataSource<RecordModel | Clothing>) {
 		this.filterForm.reset();
 
 		this.refreshMatTable(this.activatedRoute.snapshot.paramMap.get('product'), 5, 1, this.active, this.direction, '');
@@ -204,8 +206,8 @@ export class ProductTableComponent implements AfterViewInit {
 	}
 
 	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent) {
-		this.productTableService.currentPageIndex = event.pageIndex + 1;
-		this.productTableService.currentTableSize = event.pageSize;
+		this.productTableService.currentPage = event.pageIndex + 1;
+		this.productTableService.totalPages = event.pageSize;
 
 		this.refreshMatTable(
 			paramMap.get('product'),
@@ -217,26 +219,52 @@ export class ProductTableComponent implements AfterViewInit {
 		);
 	}
 
-	public onEdit(row: any, paramMap: any) {
-		switch (paramMap.products) {
-			case 'records':
-				row = new Record(row);
-				break;
-			case 'clothing':
-				row = new Clothing(row);
-				break;
-			default:
-				row = new Record(row);
-				break;
-		}
+	public onEdit(row: RecordModel | Clothing, paramMap: any) {
+		// let updateModel;
 
 		this.moduleService.productData$.next({
 			row: row,
-			currentPage: this.productTableService.currentPageIndex,
-			totalPages: this.productTableService.currentTableSize,
+			currentPage: this.productTableService.currentPage,
+			totalPages: this.productTableService.totalPages,
 			order: this.productTableService.order,
 			sortKey: this.productTableService.sortKey,
 		});
+
+		// switch (paramMap.products) {
+		// 	case 'records':
+		// 		updateModel = new RecordUpdate(row as RecordUpdate);
+
+		// 		this.moduleService.productDataRecord$.next({
+		// 			row: updateModel,
+		// 			currentPage: this.productTableService.currentPage,
+		// 			totalPages: this.productTableService.totalPages,
+		// 			order: this.productTableService.order,
+		// 			sortKey: this.productTableService.sortKey,
+		// 		});
+
+		// 		break;
+		// 	case 'clothing':
+		// 		this.moduleService.productDataClothing$.next({
+		// 			row: updateModel,
+		// 			currentPage: this.productTableService.currentPage,
+		// 			totalPages: this.productTableService.totalPages,
+		// 			order: this.productTableService.order,
+		// 			sortKey: this.productTableService.sortKey,
+		// 		});
+
+		// 		updateModel = new ClothingUpdate(row as ClothingUpdate);
+		// 		break;
+		// 	default:
+		// 		this.moduleService.productDataRecord$.next({
+		// 			row: updateModel,
+		// 			currentPage: this.productTableService.currentPage,
+		// 			totalPages: this.productTableService.totalPages,
+		// 			order: this.productTableService.order,
+		// 			sortKey: this.productTableService.sortKey,
+		// 		});
+		// 		updateModel = new RecordUpdate(row as RecordUpdate);
+		// 		break;
+		// }
 
 		if (paramMap.get('product')) {
 			this.router

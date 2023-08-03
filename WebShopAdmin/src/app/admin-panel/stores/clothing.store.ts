@@ -57,7 +57,8 @@ export class ClothingStore {
 		formData.append('category', modelFormData.categoryId.toString());
 		formData.append('userId', modelFormData.editorUserId.toString());
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
-		formData.append('userName', modelFormData.userName);
+		formData.append('editorUserId', modelFormData.editorUserId);
+		formData.append('creatorUserId', modelFormData.creatorUserId);
 
 		return this.http.post(`${this.baseUrl}/Clothings`, formData);
 	}
@@ -75,7 +76,7 @@ export class ClothingStore {
 		}
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('category', modelFormData.categoryId.toString());
-		formData.append('userId', modelFormData.editorUserId.toString());
+		formData.append('editorUserId', modelFormData.editorUserId.toString());
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
 
 		return this.http.put(`${this.baseUrl}/Clothings/${modelFormData.id}`, formData).pipe(

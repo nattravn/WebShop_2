@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { CdkTableModule } from '@angular/cdk/table';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -18,6 +19,8 @@ import { DatabaseTableContainerComponent } from './database-tables-container.com
 import { CategoryTableRoutes } from './database-tables.routing';
 import { ProductTableComponent } from './product-table/product-table.component';
 import { UserTableComponent } from './user-table/user-table.component';
+import { ProductDialogService } from '@table-dialogs/products-dialog/services/product-dialog.service';
+import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 
 @NgModule({
 	imports: [
@@ -29,8 +32,27 @@ import { UserTableComponent } from './user-table/user-table.component';
 		CdkTableModule,
 		MatDialogModule,
 	],
-	declarations: [DatabaseTableContainerComponent, CategoryTableComponent, ProductTableComponent, UserTableComponent],
-	exports: [DatabaseTableContainerComponent, CategoryTableComponent, ProductTableComponent, UserTableComponent],
-	providers: [RecordStore, UserStore, RecordDialogService, ToastrService, CategoryStore, DialogFactoryService],
+	declarations: [
+		DatabaseTableContainerComponent,
+		CategoryTableComponent,
+		ProductTableComponent,
+		UserTableComponent,
+	],
+	exports: [
+		DatabaseTableContainerComponent,
+		CategoryTableComponent,
+		ProductTableComponent,
+		UserTableComponent,
+	],
+	providers: [
+		RecordStore,
+		UserStore,
+		RecordDialogService,
+		ToastrService,
+		CategoryStore,
+		DialogFactoryService,
+		ProductDialogService,
+		CustomDatePipe
+	],
 })
-export class CategoryTablesModule {}
+export class DatabaseTablesModule {}

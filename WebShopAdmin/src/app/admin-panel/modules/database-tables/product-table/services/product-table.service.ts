@@ -7,15 +7,15 @@ import { Observable, of } from 'rxjs';
 import { shareReplay, switchMap } from 'rxjs/operators';
 
 import { Clothing } from '@admin-panel/models/clothing.model';
-import { Record } from '@admin-panel/models/record.model';
+import { RecordModel } from '@admin-panel/models/record.model';
 import { RecordStore } from '@admin-panel/stores/record.store';
 
 @UntilDestroy()
 @Injectable()
 export class ProductTableService {
-	public tableData$ = new Observable<{ items: MatTableDataSource<Record | Clothing>; totalItems: number }>();
+	public tableData$ = new Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }>();
 
-	public dataSource = new MatTableDataSource<Record | Clothing>();
+	public dataSource = new MatTableDataSource<RecordModel | Clothing>();
 
 	public initPageLimit = 5;
 
@@ -23,9 +23,9 @@ export class ProductTableService {
 
 	public order = 'asc';
 
-	public currentPageIndex = 1;
+	public currentPage = 1;
 
-	public currentTableSize = 5;
+	public totalPages = 5;
 
 	// private eventUrl = '';
 
@@ -53,7 +53,7 @@ export class ProductTableService {
 		order: string,
 		searchQuery: string,
 		sort: MatSort | null,
-	): Observable<{ items: MatTableDataSource<Record | Clothing>; totalItems: number }> {
+	): Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }> {
 		this.tableData$ = this.recordStore.getProducts(productString, pageLimit, page, key, order, searchQuery).pipe(
 			untilDestroyed(this),
 			switchMap((records) => {

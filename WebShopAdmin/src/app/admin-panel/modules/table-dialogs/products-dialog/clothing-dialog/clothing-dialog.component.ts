@@ -15,6 +15,7 @@ import { UserStore } from '@admin-panel/stores/user.store';
 import { ProductTableService } from '@database-tables/product-table/services/product-table.service';
 import { environment } from '@environments/environment';
 import { RecordDialogService } from '@table-dialogs/products-dialog/record-dialog/services/record-dialog.service';
+import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
 export interface IClothingForm {
 	id: FormControl<number>;
@@ -77,7 +78,7 @@ export class ClothingDialogComponent implements OnInit {
 	) {}
 
 	ngOnInit() {
-		this.populateForm$ = this.moduleService.productData$.pipe(
+		this.populateForm$ = this.moduleService.productDataClothing$.pipe(
 			untilDestroyed(this),
 			filter((queryParams) => !this.data.createNew),
 			switchMap((productData) => {
@@ -88,18 +89,10 @@ export class ClothingDialogComponent implements OnInit {
 		);
 	}
 
-	public populateForm(clothing: ProductUpdate<Clothing>) {
-		this.form.get('id').setValue(clothing.row.id);
-		this.form.get('description').setValue(clothing.row.description);
-		this.form.get('title').setValue(clothing.row.title);
-		this.form.get('price').setValue(clothing.row.price);
-		this.form.get('categoryId').setValue(clothing.row.categoryId);
-		this.form.get('subCategoryId').setValue(clothing.row.subCategoryId);
-		this.form.get('imagePath').setValue(clothing.row.imagePath);
-		this.form.get('currentPageIndex').setValue(clothing.currentPage);
-		this.form.get('currentTableSize').setValue(clothing.totalPages);
+	public populateForm(clothing: ProductUpdate<ClothingUpdate>) {
+		this.form.get('size').setValue(clothing.row.size);
 
-		this.imgSrcReplay.next(this.imageRootPath + clothing.row.imagePath);
+		// this.imgSrcReplay.next(this.imageRootPath + clothing.row.imagePath);
 	}
 
 	public onFileSelected(file: FileList) {

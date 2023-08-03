@@ -1,13 +1,14 @@
 import { BaseProduct } from './base-product.model';
 
-export class RecordModel extends BaseProduct {
+export class RecordUpdate extends BaseProduct {
 	public band: string;
+
 	public album: string;
+
 	public genre: string;
 
-	constructor(init?: Partial<RecordModel>) {
+	constructor(init?: Partial<RecordUpdate>) {
 		super();
-		init.releaseDate = new Date(init.releaseDate);
 		Object.assign(this, init);
 	}
 }

@@ -1,4 +1,4 @@
-import { Record } from '@admin-panel/models/record.model';
+import { RecordModel } from '@admin-panel/models/record.model';
 import { Clothing } from './clothing.model';
 
 export class ProductTable {
@@ -8,5 +8,5 @@ export class ProductTable {
 
 	public totalPages: number;
 
-	public items: Record[] | Clothing[];
+	public items: RecordModel[] | Clothing[];
 }

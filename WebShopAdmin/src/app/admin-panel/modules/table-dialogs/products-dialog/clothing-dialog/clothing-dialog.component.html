@@ -7,28 +7,50 @@
 	<pre>{{ source.formValue | json }}</pre>
 	<form [formGroup]="form" class="normal-form" (submit)="onSubmit(source.formValue)">
 		<div class="controls-container">
-			<!-- <input hidden formControlName="category" [value]="form.value.category" matInput> -->
-
 			<mat-form-field class="w-100">
+				<mat-label>ClothingID</mat-label>
 				<input formControlName="id" [readonly]="true" matInput placeholder="ClothingID" />
 			</mat-form-field>
 
 			<mat-form-field class="w-100">
+				<mat-label>Last editor</mat-label>
+				<input
+					[readonly]="true"
+					value="{{ (source.formValue?.editorUserId | userDetails | async)?.userName }}"
+					matInput
+					placeholder="RecordID"
+				/>
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
+				<mat-label>Last update time</mat-label>
+				<input formControlName="lastUpdateTime" [readonly]="true" matInput />
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
+				<mat-label>Title</mat-label>
 				<input formControlName="title" matInput placeholder="Title" />
 				<mat-error>This field is mandatory.</mat-error>
 			</mat-form-field>
 
 			<mat-form-field class="w-100">
+				<mat-label>Price</mat-label>
 				<input formControlName="price" matInput placeholder="Price" />
-				<mat-error>Invalid email address.</mat-error>
+				<mat-error>
+					Number Only
+					<div *ngIf="form.controls['price'].errors?.pattern" class="text-danger">Number Only</div>
+					<div *ngIf="form.controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
+				</mat-error>
 			</mat-form-field>
 
 			<mat-form-field class="w-100">
-				<input formControlName="size" matInput placeholder="Size" />
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
+				<mat-label>Description</mat-label>
 				<input formControlName="description" matInput placeholder="Description" />
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
+				<mat-label>Size</mat-label>
+				<input formControlName="size" matInput placeholder="Size" />
 			</mat-form-field>
 
 			<div class="d-flex justify-content-center w-100">
