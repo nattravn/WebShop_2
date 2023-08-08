@@ -78,19 +78,19 @@ export class ClothingDialogComponent implements OnInit {
 	) {}
 
 	ngOnInit() {
-		this.populateForm$ = this.moduleService.productDataClothing$.pipe(
+		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
 			filter((queryParams) => !this.data.createNew),
 			switchMap((productData) => {
-				this.populateForm(productData);
+				this.populateForm(productData.row as ClothingUpdate);
 				return of(null);
 			}),
 			shareReplay(1),
 		);
 	}
 
-	public populateForm(clothing: ProductUpdate<ClothingUpdate>) {
-		this.form.get('size').setValue(clothing.row.size);
+	public populateForm(clothing: ClothingUpdate) {
+		this.form.get('size').setValue(clothing.size);
 
 		// this.imgSrcReplay.next(this.imageRootPath + clothing.row.imagePath);
 	}

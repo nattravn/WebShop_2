@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, Observable, ReplaySubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 
 import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
 import { Category } from '@admin-panel/models/category.model';
@@ -13,7 +13,7 @@ import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.ser
 import { DialogService } from '@table-dialogs/services/dialog.service';
 import { ProductDialogService } from './services/product-dialog.service';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
-import { filter, shareReplay, switchMap, tap, startWith } from 'rxjs/operators';
+import { filter, shareReplay, switchMap, startWith, delay, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { ProductUpdate } from '@admin-panel/models/product-update.model';
 import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
@@ -26,6 +26,14 @@ import { Clothing } from '@admin-panel/models/clothing.model';
 import { RecordUpdate } from '@admin-panel/models/record-update.model';
 
 export interface IProductForm {
+	currentPage: FormControl<number>;
+	totalPages: FormControl<number>;
+	order: FormControl<string>;
+	sortKey: FormControl<string>;
+	row: FormGroup<IBaseProductForm>;
+}
+
+export interface IBaseProductForm {
 	id: FormControl<number>;
 	releaseDate: FormControl<Date>;
 	description: FormControl<string>;
@@ -36,11 +44,7 @@ export interface IProductForm {
 	subCategoryId: FormControl<number>;
 	editorUserId: FormControl<string>;
 	categoryName: FormControl<string>;
-	currentPage: FormControl<number>;
-	totalPages: FormControl<number>;
-	lastUpdateTime: FormControl<Date>;
-	order: FormControl<string>;
-	sortKey: FormControl<string>;
+	lastUpdatedTime: FormControl<Date>;
 }
 
 @UntilDestroy()
@@ -56,22 +60,24 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild('firstDialogTemplate') firstDialogTemplate: TemplateRef<ProductDialogsComponent>;
 
-	public productBaseForm = new FormGroup<IProductForm>({
-		id: new FormControl(0),
-		releaseDate: new FormControl(new Date(), [Validators.required]),
-		description: new FormControl('', Validators.required),
-		imagePath: new FormControl('default-image.png'),
-		title: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
-		price: new FormControl(null, [Validators.required, Validators.pattern('^[0-9]*$')]),
-		categoryId: new FormControl(null),
-		subCategoryId: new FormControl(null),
-		editorUserId: new FormControl(null),
-		categoryName: new FormControl(''),
+	public productForm = new FormGroup<IProductForm>({
 		currentPage: new FormControl(1),
 		totalPages: new FormControl(1),
-		lastUpdateTime: new FormControl(new Date()),
 		order: new FormControl(''),
 		sortKey: new FormControl(''),
+		row: new FormGroup<IBaseProductForm>({
+			id: new FormControl(0),
+			releaseDate: new FormControl(new Date(), [Validators.required]),
+			description: new FormControl('', Validators.required),
+			imagePath: new FormControl('default-image.png'),
+			title: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(100)]),
+			price: new FormControl(null, [Validators.required, Validators.pattern('^[0-9]*$')]),
+			categoryId: new FormControl(null),
+			subCategoryId: new FormControl(null),
+			editorUserId: new FormControl(null),
+			categoryName: new FormControl(''),
+			lastUpdatedTime: new FormControl(new Date()),
+		}),
 	});
 
 	public imgSrcReplay$ = new ReplaySubject<string>(1);
@@ -85,7 +91,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	// public dialogRef: MatDialogRef<RecordDialogComponent>
 
-	public populateForm$ = new Observable<any>();
+	public populateForm$ = new Observable<ProductUpdate<RecordModel | Clothing>>();
 
 	public paramMapProduct$: Observable<any>;
 
@@ -118,14 +124,15 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit(): void {
-		this.paramMapProduct$ = this.activatedRoute.queryParams;
+		this.paramMapProduct$ = this.activatedRoute.paramMap;
 
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
 			filter((queryParams) => !this.data.createNew),
-			switchMap((productData) => {
+			delay(1), // otherwise lastUpdatedTime the pipes wont fire in template
+			map((productData) => {
 				this.populateForm(productData);
-				return of(productData);
+				return productData;
 			}),
 			shareReplay(1),
 		);
@@ -143,21 +150,21 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	}
 
 	public populateForm(productUpdate: ProductUpdate<RecordModel | Clothing>) {
-		this.productBaseForm.get('id').setValue(productUpdate.row.id);
-		this.productBaseForm.get('releaseDate').setValue(productUpdate.row.releaseDate);
-		this.productBaseForm.get('description').setValue(productUpdate.row.description);
-		this.productBaseForm.get('title').setValue(productUpdate.row.title);
-		this.productBaseForm.get('price').setValue(productUpdate.row.price);
-		this.productBaseForm.get('categoryId').setValue(productUpdate.row.categoryId);
-		this.productBaseForm.get('subCategoryId').setValue(productUpdate.row.subCategoryId);
-		this.productBaseForm.get('categoryName').setValue(productUpdate.row.categoryName);
-		this.productBaseForm.get('imagePath').setValue(productUpdate.row.imagePath);
-		this.productBaseForm.get('currentPage').setValue(productUpdate.currentPage);
-		this.productBaseForm.get('totalPages').setValue(productUpdate.totalPages);
-		this.productBaseForm.get('order').setValue(productUpdate.order);
-		this.productBaseForm.get('sortKey').setValue(productUpdate.sortKey);
-		this.productBaseForm.get('editorUserId').setValue(productUpdate.row.editorUserId);
-		this.productBaseForm.get('lastUpdateTime').setValue(this.customDatePipe.transform(productUpdate.row.lastUpdatedTime));
+		this.productForm.get('row').get('id').setValue(productUpdate.row.id);
+		this.productForm.get('row').get('releaseDate').setValue(productUpdate.row.releaseDate);
+		this.productForm.get('row').get('description').setValue(productUpdate.row.description);
+		this.productForm.get('row').get('title').setValue(productUpdate.row.title);
+		this.productForm.get('row').get('price').setValue(productUpdate.row.price);
+		this.productForm.get('row').get('categoryId').setValue(productUpdate.row.categoryId);
+		this.productForm.get('row').get('subCategoryId').setValue(productUpdate.row.subCategoryId);
+		this.productForm.get('row').get('categoryName').setValue(productUpdate.row.categoryName);
+		this.productForm.get('row').get('imagePath').setValue(productUpdate.row.imagePath);
+		this.productForm.get('currentPage').setValue(productUpdate.currentPage);
+		this.productForm.get('totalPages').setValue(productUpdate.totalPages);
+		this.productForm.get('order').setValue(productUpdate.order);
+		this.productForm.get('sortKey').setValue(productUpdate.sortKey);
+		this.productForm.get('row').get('editorUserId').setValue(productUpdate.row.editorUserId);
+		this.productForm.get('row').get('lastUpdatedTime').setValue(productUpdate.row.lastUpdatedTime);
 
 		this.imgSrcReplay$.next(this.imageRootPath + productUpdate.row.imagePath);
 	}
@@ -191,11 +198,10 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 	}
 
-	public onSubmit(form: ProductUpdate<RecordUpdate | Clothing>) {
-		if (this.productBaseForm.invalid) {
+	public onSubmit(form: ProductUpdate<RecordUpdate | Clothing>): void {
+		if (this.productForm.invalid) {
 			return;
 		}
-		form.row.categoryName = 'Record';
 
 		// Form data becomes null in observable so it needs to be cloned
 		this.populateForm$ = this.userStore.getUserProfile().pipe(
@@ -204,34 +210,32 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 				// Set forms userId to in logged user
 				form.row.editorUserId = user.userId;
 
-				const newRecord = new RecordModel(this.productBaseForm.value);
-
 				// Create or update
 				if (!form.row.id) {
-					return this.recordStore.postRecord(newRecord, this.fileToUpload);
+					return this.productDialogService.createProduct(form.row, this.fileToUpload);
 				} else {
-					return this.recordStore.putRecord(newRecord, this.fileToUpload);
+					return this.productDialogService.updateProduct(form.row, this.fileToUpload);
 				}
 			}),
-			tap((updatedRecord) => {
-				let productUpdate = new ProductUpdate<RecordModel>();
-
-				productUpdate = { ...form, row: updatedRecord };
+			map((updatedRecord: RecordModel | Clothing) => {
+				const productUpdate = new ProductUpdate<RecordModel | Clothing>({ ...form, row: updatedRecord });
 
 				this.populateForm(productUpdate);
 
-				return of(null);
+				return productUpdate;
 			}),
-			switchMap((x) =>
-				this.productTableService.refreshMatTable(
-					'records',
-					form.totalPages,
-					form.currentPage,
-					form.sortKey,
-					form.order,
-					'',
-					null,
-				),
+			switchMap((productUpdate) =>
+				this.productTableService
+					.refreshMatTable(
+						productUpdate.row.categoryName.toLocaleLowerCase(),
+						form.totalPages,
+						form.currentPage,
+						form.sortKey,
+						form.order,
+						'',
+						null,
+					)
+					.pipe(map(() => productUpdate)),
 			),
 			shareReplay(1),
 		);
@@ -249,7 +253,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	}
 
 	public onClear() {
-		this.productBaseForm.reset();
+		this.productForm.reset();
 		this.imgSrcReplay$.next(this.defaultimageRootPath);
 	}
 
@@ -262,7 +266,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 			this.imgSrcReplay$.next(e.target.result);
 		};
 		reader.readAsDataURL(file);
-		this.productBaseForm.get('imagePath').setValue(file.name);
+		this.productForm.get('row').get('imagePath').setValue(file.name);
 		this.fileToUpload = file;
 	}
 
@@ -270,6 +274,6 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	 * Observable valuse of the form initiated with values
 	 */
 	public get formValue$(): Observable<any> {
-		return this.productBaseForm.valueChanges.pipe(startWith(this.productBaseForm.value), shareReplay(1));
+		return this.productForm.valueChanges.pipe(startWith(this.productForm.value), shareReplay(1));
 	}
 }

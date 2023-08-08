@@ -219,9 +219,9 @@ export class ProductTableComponent implements AfterViewInit {
 		);
 	}
 
-	public onEdit(row: RecordModel | Clothing, paramMap: any) {
+	public onEdit(row: RecordModel | Clothing, paramMap: ParamMap) {
 		// let updateModel;
-
+		console.log('paramMap: ', paramMap.get('product'));
 		this.moduleService.productData$.next({
 			row: row,
 			currentPage: this.productTableService.currentPage,

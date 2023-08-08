@@ -1,6 +1,9 @@
+import { CategoryNameEnum } from '@admin-panel/enums/categoryName.enum';
 import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
+import { Clothing } from '@admin-panel/models/clothing.model';
 import { ProductUpdate } from '@admin-panel/models/product-update.model';
 import { RecordUpdate } from '@admin-panel/models/record-update.model';
+import { RecordModel } from '@admin-panel/models/record.model';
 import { ClothingStore } from '@admin-panel/stores/clothing.store';
 import { RecordStore } from '@admin-panel/stores/record.store';
 import { Injectable } from '@angular/core';
@@ -85,19 +88,37 @@ export class ProductDialogService {
 		// this.imgSrcReplay.next(this.imageRootPath + productUpdate.row.imagePath);
 	}
 
-	public updateProduct(productUpdate: ProductUpdate<RecordUpdate | ClothingUpdate>, fileToUpload: File) {
-		if (productUpdate.row instanceof RecordUpdate) {
-			this.recordStore.putRecord(productUpdate.row as RecordUpdate, fileToUpload);
-		} else if (productUpdate.row instanceof ClothingUpdate) {
-			this.clothingStore.putClothing(productUpdate.row as ClothingUpdate, fileToUpload);
+	public updateProduct(
+		productUpdate: RecordUpdate | ClothingUpdate,
+		fileToUpload: File,
+	): Observable<RecordModel | Clothing> {
+		if (productUpdate.categoryName.toLocaleLowerCase() === CategoryNameEnum.records) {
+			//
+			const newRecord = new RecordUpdate({ ...productUpdate, ...this.recordForm.value });
+			return this.recordStore.putRecord(newRecord, fileToUpload);
+		} else if (productUpdate.categoryName.toLocaleLowerCase() === CategoryNameEnum.clothings) {
+			//
+			const newClothing = new ClothingUpdate({ ...productUpdate, ...this.clothingForm.value });
+			return this.clothingStore.putClothing(newClothing, fileToUpload);
+		} else {
+			console.error('error: ', productUpdate);
 		}
 	}
 
-	public createProduct(productUpdate: ProductUpdate<RecordUpdate | ClothingUpdate>, fileToUpload: File) {
-		if (productUpdate.row instanceof RecordUpdate) {
-			this.recordStore.postRecord(productUpdate.row as RecordUpdate, fileToUpload);
-		} else if (productUpdate.row instanceof ClothingUpdate) {
-			this.clothingStore.postClothing(productUpdate.row as ClothingUpdate, fileToUpload);
+	public createProduct(
+		productUpdate: RecordUpdate | ClothingUpdate,
+		fileToUpload: File,
+	): Observable<RecordModel | Clothing> {
+		if (productUpdate instanceof RecordUpdate) {
+			//
+			productUpdate.categoryName = CategoryNameEnum.records;
+			const newRecord = new RecordUpdate({ ...productUpdate, ...this.recordForm.value });
+			return this.recordStore.postRecord(newRecord, fileToUpload);
+		} else if (productUpdate instanceof ClothingUpdate) {
+			//
+			productUpdate.categoryName = CategoryNameEnum.clothings;
+			const newClothing = new ClothingUpdate({ ...productUpdate, ...this.clothingForm.value });
+			return this.clothingStore.postClothing(newClothing, fileToUpload);
 		}
 	}
 

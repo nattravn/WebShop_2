@@ -8,65 +8,9 @@
 	<form [formGroup]="form" class="normal-form" (submit)="onSubmit(source.formValue)">
 		<div class="controls-container">
 			<mat-form-field class="w-100">
-				<mat-label>ClothingID</mat-label>
-				<input formControlName="id" [readonly]="true" matInput placeholder="ClothingID" />
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
-				<mat-label>Last editor</mat-label>
-				<input
-					[readonly]="true"
-					value="{{ (source.formValue?.editorUserId | userDetails | async)?.userName }}"
-					matInput
-					placeholder="RecordID"
-				/>
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
-				<mat-label>Last update time</mat-label>
-				<input formControlName="lastUpdateTime" [readonly]="true" matInput />
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
-				<mat-label>Title</mat-label>
-				<input formControlName="title" matInput placeholder="Title" />
-				<mat-error>This field is mandatory.</mat-error>
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
-				<mat-label>Price</mat-label>
-				<input formControlName="price" matInput placeholder="Price" />
-				<mat-error>
-					Number Only
-					<div *ngIf="form.controls['price'].errors?.pattern" class="text-danger">Number Only</div>
-					<div *ngIf="form.controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
-				</mat-error>
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
-				<mat-label>Description</mat-label>
-				<input formControlName="description" matInput placeholder="Description" />
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
 				<mat-label>Size</mat-label>
 				<input formControlName="size" matInput placeholder="Size" />
 			</mat-form-field>
-
-			<div class="d-flex justify-content-center w-100">
-				<img [src]="(imgSrcReplay$ | async) || defaultimageRootPath" (click)="fileInput.click()" style="width: 250px; height: 200px" />
-			</div>
-
-			<input hidden (change)="onFileSelected($event.target.files)" #fileInput type="file" id="file" />
-
-			<div class="add-bottom-padding">
-				<button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
-			</div>
-
-			<div class="button-row">
-				<button mat-raised-button color="primary" type="submit">Submit</button>
-				<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
-			</div>
 		</div>
 	</form>
 </ng-container>

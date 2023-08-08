@@ -4,4 +4,8 @@ export class ProductUpdate<T> {
 	public order: string;
 	public sortKey: string;
 	public row: T;
+
+	constructor(init?: Partial<ProductUpdate<T>>) {
+		Object.assign(this, init);
+	}
 }

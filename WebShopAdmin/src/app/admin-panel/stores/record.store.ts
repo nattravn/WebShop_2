@@ -35,10 +35,10 @@ export class RecordStore {
 
 	public postRecord(modelFormData: RecordModel, fileToUpload: File): Observable<RecordModel> {
 		const formData: FormData = new FormData();
-
+		const releaseDate = new Date(modelFormData.releaseDate);
 		formData.append('band', modelFormData.band);
 		formData.append('album', modelFormData.album);
-		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
+		formData.append('releaseDate', releaseDate.toDateString());
 		formData.append('genre', modelFormData.genre);
 
 		if (fileToUpload) {
@@ -63,10 +63,12 @@ export class RecordStore {
 
 	public putRecord(modelFormData: RecordModel, fileToUpload: File): Observable<RecordModel> {
 		const formData: FormData = new FormData();
+		const releaseDate = new Date(modelFormData.releaseDate);
 		formData.append('band', modelFormData.band);
 		formData.append('id', JSON.stringify(modelFormData.id));
 		formData.append('album', modelFormData.album);
-		formData.append('releaseDate', modelFormData.releaseDate.toDateString());
+		formData.append('releaseDate', releaseDate.toDateString());
+		// lastUpdateTime is always updated in backend
 		formData.append('genre', modelFormData.genre);
 		if (fileToUpload != null) {
 			formData.append('image', fileToUpload, fileToUpload.name);

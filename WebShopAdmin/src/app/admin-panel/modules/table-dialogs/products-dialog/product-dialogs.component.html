@@ -12,87 +12,94 @@
 		(selectCategory)="selectedCataegory($event)"
 		*ngIf="data.createNew"
 	></app-category-dropdown>
+	<br />
+	<form [formGroup]="productForm" (submit)="onSubmit(source.formValue)">
+		<div formGroupName="row">
+			<div class="controls-container">
+				<mat-form-field class="w-100">
+					<mat-label>RecordID</mat-label>
+					<input formControlName="id" [readonly]="true" matInput placeholder="RecordID" />
+				</mat-form-field>
 
-	lastUpdateTime: <pre>{{ productBaseForm.get("lastUpdateTime").value | customDate }}</pre>
+				<mat-form-field class="w-100">
+					<mat-label>Last editor</mat-label>
+					<input
+						formControlName="editorUserId"
+						[readonly]="true"
+						value="{{ (source.productData?.row?.editorUserId | userDetails | async)?.userName }}"
+						matInput
+						placeholder="Last editor"
+					/>
+				</mat-form-field>
 
-	<form [formGroup]="productBaseForm" (submit)="onSubmit(source.formValue)">
-		<div class="controls-container">
-			<mat-form-field class="w-100">
-				<mat-label>RecordID</mat-label>
-				<input formControlName="id" [readonly]="true" matInput placeholder="RecordID" />
-			</mat-form-field>
+				<!-- get the pipe to work instead of doing it in ts file -->
+				<mat-form-field class="w-100">
+					<mat-label>Last update time</mat-label>
+					<input
+						formControlName="lastUpdatedTime"
+						[readonly]="true"
+						matInput
+						value="{{ source.productData?.row?.lastUpdatedTime | customDate }}"
+					/>
+				</mat-form-field>
 
-			<mat-form-field class="w-100">
-				<mat-label>Last editor</mat-label>
-				<input
-					[readonly]="true"
-					value="{{ (source.productData?.row.editorUserId | userDetails | async)?.userName }}"
-					matInput
-					placeholder="RecordID"
-				/>
-			</mat-form-field>
+				<mat-form-field class="w-100">
+					<mat-label>Title</mat-label>
+					<input formControlName="title" matInput placeholder="Title" />
+					<mat-error>
+						<div *ngIf="productForm.controls['row'].controls['title']?.errors?.minlength">title length must be greater than 4 letters.</div>
+						<div *ngIf="productForm.controls['row'].controls['title']?.errors?.maxlength">title length must less than 100 letters.</div>
+						<div *ngIf="productForm.controls['row'].controls['title']?.errors?.required">title is required.</div>
+					</mat-error>
+				</mat-form-field>
 
-			<mat-form-field class="w-100">
-				<mat-label>Last update time</mat-label>
-				<input formControlName="lastUpdateTime" [readonly]="true" matInput />
-			</mat-form-field>
+				<mat-form-field class="w-100">
+					<mat-label>Price</mat-label>
+					<input formControlName="price" matInput placeholder="Price" />
+					<mat-error
+						>Number Only
+						<div *ngIf="productForm.controls['row'].controls['price'].errors?.pattern" class="text-danger">Number Only</div>
+						<div *ngIf="productForm.controls['row'].controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
+					</mat-error>
+				</mat-form-field>
 
-			<mat-form-field class="w-100">
-				<mat-label>Title</mat-label>
-				<input formControlName="title" matInput placeholder="Title" />
-				<mat-error>
-					<div *ngIf="productBaseForm.controls['title']?.errors?.minlength">title length must be greater than 4 letters.</div>
-					<div *ngIf="productBaseForm.controls['title']?.errors?.maxlength">title length must less than 100 letters.</div>
-					<div *ngIf="productBaseForm.controls['title']?.errors?.required">title is required.</div>
-				</mat-error>
-			</mat-form-field>
+				<mat-form-field class="w-100">
+					<mat-label>Description</mat-label>
+					<input formControlName="description" matInput placeholder="Description" />
+				</mat-form-field>
 
-			<mat-form-field class="w-100">
-				<mat-label>Price</mat-label>
-				<input formControlName="price" matInput placeholder="Price" />
-				<mat-error
-					>Number Only
-					<div *ngIf="productBaseForm.controls['price'].errors?.pattern" class="text-danger">Number Only</div>
-					<div *ngIf="productBaseForm.controls['price'].errors?.required" class="text-danger">This field is mandatory.</div>
-				</mat-error>
-			</mat-form-field>
+				<mat-form-field appearance="fill">
+					<mat-label>Choose a date</mat-label>
+					<input formControlName="releaseDate" matInput [matDatepicker]="picker" />
+					<mat-hint>MM/DD/YYYY</mat-hint>
+					<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+					<mat-datepicker #picker></mat-datepicker>
+				</mat-form-field>
 
-			<mat-form-field class="w-100">
-				<mat-label>Description</mat-label>
-				<input formControlName="description" matInput placeholder="Description" />
-			</mat-form-field>
+				<div [ngSwitch]="source.category | lowercase">
+					<app-record-dialog *ngSwitchCase="categoryEnum.record"></app-record-dialog>
+					<app-clothing-dialog *ngSwitchCase="categoryEnum.clothing"></app-clothing-dialog>
+					<app-shoe *ngSwitchCase="categoryEnum.shoe"></app-shoe>
+					<app-category-dialog *ngSwitchCase="categoryEnum.category"></app-category-dialog>
+					<div *ngSwitchDefault>Default</div>
+				</div>
 
-			<mat-form-field appearance="fill">
-				<mat-label>Choose a date</mat-label>
-				<input formControlName="releaseDate" matInput [matDatepicker]="picker" />
-				<mat-hint>MM/DD/YYYY</mat-hint>
-				<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-				<mat-datepicker #picker></mat-datepicker>
-			</mat-form-field>
+				<div class="d-flex justify-content-center w-100">
+					<img
+						[src]="(imgSrcReplay$ | async) || defaultimageRootPath"
+						(click)="fileInput.click()"
+						style="max-width: 250px; max-height: 200px; background-size: cover"
+					/>
+				</div>
 
-			<div [ngSwitch]="source.category | lowercase">
-				<app-record-dialog *ngSwitchCase="categoryEnum.record"></app-record-dialog>
-				<app-clothing-dialog *ngSwitchCase="categoryEnum.clothing"></app-clothing-dialog>
-				<app-shoe *ngSwitchCase="categoryEnum.shoe"></app-shoe>
-				<app-category-dialog *ngSwitchCase="categoryEnum.category"></app-category-dialog>
-				<div *ngSwitchDefault>Default</div>
-			</div>
+				<label>Select file to upload</label>
+				<br />
+				<input ngInput #fileInput type="file" accept="image/*" (change)="showPreview(fileInput.files[0])" />
 
-			<div class="d-flex justify-content-center w-100">
-				<img
-					[src]="(imgSrcReplay$ | async) || defaultimageRootPath"
-					(click)="fileInput.click()"
-					style="max-width: 250px; max-height: 200px; background-size: cover"
-				/>
-			</div>
-
-			<label>Select file to upload</label>
-			<br />
-			<input ngInput #fileInput type="file" accept="image/*" (change)="showPreview(fileInput.files[0])" />
-
-			<div class="button-row">
-				<button mat-raised-button color="primary" type="submit">Submit</button>
-				<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
+				<div class="button-row">
+					<button mat-raised-button color="primary" type="submit">Submit</button>
+					<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
+				</div>
 			</div>
 		</div>
 	</form>

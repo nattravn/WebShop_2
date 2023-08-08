@@ -45,41 +45,45 @@ export class ClothingStore {
 		);
 	}
 
-	public postClothing(modelFormData: Clothing, fileToUpload: File) {
+	public postClothing(modelFormData: Clothing, fileToUpload: File): Observable<Clothing> {
 		const formData: FormData = new FormData();
-
+		const releaseDate = new Date(modelFormData.releaseDate);
 		formData.append('title', modelFormData.title);
 		formData.append('price', modelFormData.price.toString());
 		formData.append('size', modelFormData.size);
 		formData.append('description', modelFormData.description);
 		formData.append('image', fileToUpload, fileToUpload.name);
 		formData.append('imagePath', modelFormData.imagePath);
-		formData.append('category', modelFormData.categoryId.toString());
-		formData.append('userId', modelFormData.editorUserId.toString());
+		formData.append('categoryName', modelFormData.categoryName.toString());
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
 		formData.append('editorUserId', modelFormData.editorUserId);
 		formData.append('creatorUserId', modelFormData.creatorUserId);
+		formData.append('releaseDate', releaseDate.toDateString());
 
-		return this.http.post(`${this.baseUrl}/Clothings`, formData);
+		return this.http.post<Clothing>(`${this.baseUrl}/Clothings`, formData);
 	}
 
-	public putClothing(modelFormData: Clothing, fileToUpload: File) {
+	public putClothing(modelFormData: Clothing, fileToUpload: File): Observable<Clothing> {
 		const formData: FormData = new FormData();
-		console.log('modelFormData: ', modelFormData);
+		const releaseDate = new Date(modelFormData.releaseDate);
+
 		formData.append('title', modelFormData.title);
 		formData.append('id', modelFormData.id.toString());
 		formData.append('price', modelFormData.price.toString());
 		formData.append('size', modelFormData.size);
 		formData.append('description', modelFormData.description);
 		if (fileToUpload != null) {
-			formData.append('Image', fileToUpload, fileToUpload.name);
+			formData.append('image', fileToUpload, fileToUpload.name);
 		}
+		formData.append('releaseDate', releaseDate.toDateString());
 		formData.append('imagePath', modelFormData.imagePath);
-		formData.append('category', modelFormData.categoryId.toString());
+		formData.append('categoryName', modelFormData.categoryName.toString());
 		formData.append('editorUserId', modelFormData.editorUserId.toString());
-		formData.append('subCategory', modelFormData.subCategoryId.toString());
+		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
+		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
+		formData.append('editorUserId', modelFormData.editorUserId);
 
-		return this.http.put(`${this.baseUrl}/Clothings/${modelFormData.id}`, formData).pipe(
+		return this.http.put<Clothing>(`${this.baseUrl}/Clothings/${modelFormData.id}`, formData).pipe(
 			tap(() => {
 				this.toastr.info('updated successfully', `Clothing:  ${modelFormData.title}`);
 			}),
