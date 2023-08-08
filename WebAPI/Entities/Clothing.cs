@@ -17,9 +17,6 @@ public partial class Clothing
     [StringLength(100)]
     public string Title { get; set; }
 
-    [StringLength(100)]
-    public string Size { get; set; }
-
     public double? Price { get; set; }
 
     [StringLength(250)]
@@ -32,9 +29,22 @@ public partial class Clothing
 
     public int? CategoryId { get; set; }
 
-    public string UserId { get; set; }
+    [Column("CreatorUserID")]
+    public string CreatorUserId { get; set; }
 
     public int? SubCategoryId { get; set; }
 
     public string CategoryName { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? LastUpdatedTime { get; set; }
+
+    [StringLength(450)]
+    public string EditorUserId { get; set; }
+
+    [Column(TypeName = "date")]
+    public DateTime? ReleaseDate { get; set; }
+
+    [StringLength(100)]
+    public string Size { get; set; }
 }

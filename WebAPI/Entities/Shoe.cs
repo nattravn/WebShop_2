@@ -29,9 +29,23 @@ public partial class Shoe
 
     public int? CategoryId { get; set; }
 
-    public string UserId { get; set; }
-
     public int? SubCategoryId { get; set; }
 
     public string CategoryName { get; set; }
+
+    [Column("CreatorUserID")]
+    [StringLength(450)]
+    public string CreatorUserId { get; set; }
+
+    [Column(TypeName = "date")]
+    public DateTime? ReleaseDate { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? LastUpdatedTime { get; set; }
+
+    [StringLength(450)]
+    public string EditorUserId { get; set; }
+
+    [StringLength(10)]
+    public string Size { get; set; }
 }

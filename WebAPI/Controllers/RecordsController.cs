@@ -195,6 +195,7 @@ namespace WebAPI.Controllers
             }
 
             recordToUpdate.LastUpdatedTime = DateTime.Now;
+            clothingToUpdate.CategoryName = "records";
             // map the entity to a RecordForUpdateDto
             // apply the updated field values to that dto
             // map the RecordForUpdateDto back to an entity

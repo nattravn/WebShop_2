@@ -126,7 +126,7 @@ namespace WebAPI.Services
 
         public IEnumerable<Clothing> GetClothingsFromUserId(string userId)
         {
-            return _context.Clothings.Where(c => c.UserId == userId).ToList();
+            return _context.Clothings.Where(c => c.CreatorUserId == userId).ToList();
         }
 
         public async Task<GetTableListResponseDto<ClothingDto>> GetClothingsWithParams(int limit, int page, CancellationToken cancellationToken)
@@ -153,7 +153,10 @@ namespace WebAPI.Services
                     CategoryName = p.CategoryName,
                     SubCategoryId = p.SubCategoryId.GetValueOrDefault(),
                     Title = p.Title,
-                    UserId = p.UserId
+                    CreatorUserId = p.CreatorUserId,
+                    EditorUserId = p.EditorUserId,
+                    LastUpdatedTime = p.LastUpdatedTime,
+                    ReleaseDate = p.ReleaseDate
                 }).ToList()
             };
         }

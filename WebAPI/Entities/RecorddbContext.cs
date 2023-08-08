@@ -52,6 +52,7 @@ public partial class RecorddbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK_Flags");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Size).IsFixedLength();
         });
 
         modelBuilder.Entity<SubCategory>(entity =>

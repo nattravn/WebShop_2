@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -145,17 +146,17 @@ namespace WebAPI.Services
             string search,
             CancellationToken cancellationToken)
         {
-            var searchQuery = search;
+            var searchQuery = "";
 
-            if (search != null)
+            if (!string.IsNullOrEmpty(search))
             {
-                searchQuery = search.Trim().ToLower();
-            } 
+                searchQuery = search.Trim().ToLower(CultureInfo.CurrentCulture);
+            }
             
 
             var records = await _context.Records
                                     .AsNoTracking()
-                                    .WhereIf(searchQuery == null || searchQuery == "", a => a.Band.Contains(searchQuery) 
+                                    .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Band.Contains(searchQuery) 
                                         || a.Album.Contains(searchQuery)
                                         || a.Title.Contains(searchQuery)
                                         || a.CategoryName.Contains(searchQuery)
@@ -179,7 +180,7 @@ namespace WebAPI.Services
                     Genre = p.Genre,
                     ImagePath = p.ImagePath,
                     Price = p.Price.GetValueOrDefault(),
-                    subCategoryId = p.SubCategoryId.GetValueOrDefault(),
+                    SubCategoryId = p.SubCategoryId.GetValueOrDefault(),
                     CategoryId = p.CategoryId.GetValueOrDefault(),
                     Title = p.Title,
                     ReleaseDate = p.ReleaseDate,

@@ -119,7 +119,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{clothingId}")]
-        public IActionResult UpdateClothing([FromForm] ClothingForCreationDto clothingToUpdate, int clothingId)
+        public IActionResult UpdateClothing([FromForm] ClothingDto clothingToUpdate, int clothingId)
         {
             if (Request.Form.Files.Count != 0)
             {
@@ -154,6 +154,8 @@ namespace WebAPI.Controllers
                     clothingToReturn);
             }
 
+            clothingToUpdate.LastUpdatedTime = DateTime.Now;
+            clothingToUpdate.CategoryName = "clothings";
             // map the entity to a ClothingForUpdateDto
             // apply the updated field values to that dto
             // map the ClothingForUpdateDto back to an entity
@@ -162,7 +164,9 @@ namespace WebAPI.Controllers
             _clothingRepository.UpdateClothing(clothingFromRepo);
 
             _clothingRepository.Save();
-            return NoContent();
+            return CreatedAtRoute("GetClothing",
+                new { clothingId = clothingFromRepo.Id },
+                clothingFromRepo);
         }
 
         // DELETE: api/Clothing/5

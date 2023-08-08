@@ -9,6 +9,7 @@ using WebAPI.Entities;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Extensions;
+using System.Drawing;
 
 namespace WebAPI.Services
 {
@@ -85,7 +86,7 @@ namespace WebAPI.Services
             //shoeToAdd.Id = _context.shoe.OrderByDescending(r => r.Id).First().Id +1;
             shoeToAdd.CategoryId = 4;
             shoeToAdd.CategoryName = "shoe";
-            shoeToAdd.UserId = "test";
+            shoeToAdd.CreatorUserId = "test";
 
             _context.Shoes.Add(shoeToAdd);
         }
@@ -129,7 +130,7 @@ namespace WebAPI.Services
 
         public IEnumerable<Shoe> GetShoesFromUserId(string userId)
         {
-            return _context.Shoes.Where(f => f.UserId == userId).ToList();
+            return _context.Shoes.Where(f => f.CreatorUserId == userId).ToList();
         }
 
         public async Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(int limit, int page, CancellationToken cancellationToken)
@@ -155,8 +156,11 @@ namespace WebAPI.Services
                     Description = p.Description,
                     CategoryName = p.CategoryName,
                     Image = p.Image,
-                    UserId = p.UserId
-                    
+                    CreatorUserId = p.CreatorUserId,
+                    Size = p.Size,
+                    EditorUserId = p.EditorUserId,
+                    ReleaseDate = p.ReleaseDate,
+                    LastUpdatedTime = p.LastUpdatedTime
                 }).ToList()
             };
         }

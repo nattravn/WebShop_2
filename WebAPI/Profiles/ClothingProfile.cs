@@ -12,6 +12,7 @@ namespace WebAPI
         {
             CreateMap<Entities.Clothing, Models.ClothingDto>();
             CreateMap<Models.ClothingForCreationDto, Entities.Clothing>();
+            CreateMap<Models.ClothingDto, Entities.Clothing>();
         }
         
     }

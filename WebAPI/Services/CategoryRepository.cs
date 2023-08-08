@@ -82,7 +82,7 @@ namespace WebAPI.Services
         {
             if(categoryToAdd == null)
             {
-                throw new ArgumentException(nameof(categoryToAdd));
+                throw new ArgumentException(null, nameof(categoryToAdd));
             }
 
             int newId = _context.SubCategories.Count();
