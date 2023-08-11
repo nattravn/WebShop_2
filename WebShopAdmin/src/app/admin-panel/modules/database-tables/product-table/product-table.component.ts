@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -18,6 +18,7 @@ import { environment } from '@environments/environment';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 
 import { ProductTableService } from './services/product-table.service';
+import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
 // import { RecordUpdate } from '@admin-panel/models/record-update.model';
 // import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
@@ -33,7 +34,7 @@ export interface IFilterForm {
 	providers: [DialogFactoryService],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductTableComponent implements AfterViewInit {
+export class ProductTableComponent implements AfterViewInit, OnInit {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(MatSort) sort: MatSort;
 
@@ -43,7 +44,8 @@ export class ProductTableComponent implements AfterViewInit {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
-	public displayedColumns: string[] = ['id', 'title', 'band', 'price', 'categoryName', 'imagePath', 'actions'];
+	public definedColumns: string[] = ['id', 'title', 'price', 'categoryName'];
+	public columnsToDisplay: string[] = ['id', 'title', 'price', 'categoryName', 'imagePath', 'actions'];
 
 	public filterForm = new FormGroup<IFilterForm>({
 		search: new FormControl('', []),
@@ -55,7 +57,9 @@ export class ProductTableComponent implements AfterViewInit {
 
 	public tableData$ = new Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }>();
 
-	private active = 'band';
+	public optionalColumnName = 'band';
+
+	public active = 'title';
 
 	private direction = 'asc';
 
@@ -70,6 +74,22 @@ export class ProductTableComponent implements AfterViewInit {
 		public activatedRoute: ActivatedRoute,
 		private moduleService: ModuleService,
 	) {}
+	ngOnInit(): void {
+		switch (this.activatedRoute.snapshot.paramMap.get('product')) {
+			case AdminCategoryEnum.records:
+				this.active = 'band';
+				this.definedColumns.splice(2, 0, 'band');
+				this.columnsToDisplay.splice(2, 0, 'band');
+				break;
+			case AdminCategoryEnum.clothing:
+				this.active = 'title';
+				this.definedColumns.splice(2, 0, 'size');
+				this.columnsToDisplay.splice(2, 0, 'size');
+				break;
+			default:
+				break;
+		}
+	}
 
 	ngAfterViewInit() {
 		let eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
@@ -112,7 +132,7 @@ export class ProductTableComponent implements AfterViewInit {
 		searchQuery: string,
 	): Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }> {
 		return this.productTableService
-			.refreshMatTable(productString, pageLimit, page, active, direction, searchQuery, this.sort)
+			.refreshMatTable(productString, pageLimit, page, active, direction, searchQuery, null)
 			.pipe(untilDestroyed(this), shareReplay(1));
 
 		// this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction,searchQuery).pipe(
@@ -171,15 +191,7 @@ export class ProductTableComponent implements AfterViewInit {
 					untilDestroyed(this),
 					switchMap(() => {
 						this.toastr.warning('Deleted successfully');
-						return this.productTableService.refreshMatTable(
-							row.categoryName,
-							5,
-							1,
-							this.active,
-							this.direction,
-							'',
-							this.sort,
-						);
+						return this.productTableService.refreshMatTable(row.categoryName, 5, 1, this.active, this.direction, '', null);
 					}),
 				)
 				.subscribe();

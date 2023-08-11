@@ -30,7 +30,7 @@ export class CategoryDropdownComponent implements OnInit {
 		subCategory: new FormControl(''),
 	});
 
-	public defaultCategory: AdminCategoryEnum = AdminCategoryEnum.record;
+	public defaultCategory: AdminCategoryEnum = AdminCategoryEnum.records;
 
 	constructor(
 		public recordService: RecordStore,

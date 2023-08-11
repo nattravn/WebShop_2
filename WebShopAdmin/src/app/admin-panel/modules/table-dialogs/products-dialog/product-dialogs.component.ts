@@ -45,6 +45,7 @@ export interface IBaseProductForm {
 	editorUserId: FormControl<string>;
 	categoryName: FormControl<string>;
 	lastUpdatedTime: FormControl<Date>;
+	creatorUserId: FormControl<string>;
 }
 
 @UntilDestroy()
@@ -76,7 +77,8 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 			subCategoryId: new FormControl(null),
 			editorUserId: new FormControl(null),
 			categoryName: new FormControl(''),
-			lastUpdatedTime: new FormControl(new Date()),
+			creatorUserId: new FormControl(null),
+			lastUpdatedTime: new FormControl(this.customDatePipe.transform(new Date())),
 		}),
 	});
 
@@ -165,6 +167,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		this.productForm.get('sortKey').setValue(productUpdate.sortKey);
 		this.productForm.get('row').get('editorUserId').setValue(productUpdate.row.editorUserId);
 		this.productForm.get('row').get('lastUpdatedTime').setValue(productUpdate.row.lastUpdatedTime);
+		this.productForm.get('row').get('creatorUserId').setValue(productUpdate.row.creatorUserId);
 
 		this.imgSrcReplay$.next(this.imageRootPath + productUpdate.row.imagePath);
 	}
@@ -199,7 +202,8 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	}
 
 	public onSubmit(form: ProductUpdate<RecordUpdate | Clothing>): void {
-		if (this.productForm.invalid) {
+		if (this.productForm.invalid || !form.row.categoryName) {
+			console.error('Form invalid or missing CategoryName');
 			return;
 		}
 
