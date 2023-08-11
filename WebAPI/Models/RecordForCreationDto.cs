@@ -6,19 +6,10 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Models
 {
-    public class RecordForCreationDto
+    public class RecordForCreationDto : BaseProduct
     {
-        public string Title { get; set; }
+        public string Genre { get; set; }
         public string Band { get; set; }
         public string Album { get; set; }
-        public DateTime? ReleaseDate { get; set; }
-        public string Genre { get; set; }
-        public IFormFile ImageFile { get; set; }
-        public string ImagePath { get; set; }
-        public float Price { get; set; }
-        public string Description { get; set; }
-        public DateTime? LastUpdatedTime { get; set; }
-        public string EditorUserId { get; set; }
-        public string CreatorUserId { get; set; }
     }
 }

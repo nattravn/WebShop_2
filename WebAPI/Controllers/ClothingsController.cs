@@ -41,6 +41,7 @@ namespace WebAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<ClothingDto>>(clothingsFromRepo));
         }
 
+        // api/clothings/GetPagedProducts/
         [HttpGet("GetPagedProducts", Name = "GetClothingListAsync")]
         [ProducesResponseType(typeof(GetTableListResponseDto<ClothingDto>), Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
@@ -57,6 +58,9 @@ namespace WebAPI.Controllers
             var records = await _clothingRepository.GetClothingsWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
+                                    urlQueryParameters.Key,
+                                    urlQueryParameters.Order,
+                                    urlQueryParameters.SearchQuery,
                                     cancellationToken).ConfigureAwait(true);
 
             return Ok(records);

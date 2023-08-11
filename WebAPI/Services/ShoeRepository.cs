@@ -10,6 +10,9 @@ using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Extensions;
 using System.Drawing;
+using WebAPI.Constants;
+using System.Globalization;
+using WebAPI.Filter;
 
 namespace WebAPI.Services
 {
@@ -17,11 +20,14 @@ namespace WebAPI.Services
     {
         private RecorddbContext _context;
         private readonly UserService _userService;
+        ICategoryRepository _categoryRepository;
 
-        public ShoeRepository(RecorddbContext context, UserService userService)
+        public ShoeRepository(RecorddbContext context, UserService userService, ICategoryRepository categoryRepository)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _userService = userService;
+            _categoryRepository = categoryRepository
+                ?? throw new ArgumentNullException(nameof(categoryRepository));
         }
 
         public Shoe GetShoe(int shoeId)
@@ -84,11 +90,12 @@ namespace WebAPI.Services
             }   
 
             //shoeToAdd.Id = _context.shoe.OrderByDescending(r => r.Id).First().Id +1;
-            shoeToAdd.CategoryId = 4;
-            shoeToAdd.CategoryName = "shoe";
-            shoeToAdd.CreatorUserId = "test";
+            shoeToAdd.CategoryId = _categoryRepository.GetCategoryByName(CategoryNames.Shoes).Id;
+            shoeToAdd.CategoryName = CategoryNames.Shoes;
+            // shoeToAdd.CreatorUserId = _userService.
 
-            _context.Shoes.Add(shoeToAdd);
+
+            // _context.Shoes.Add(shoeToAdd);
         }
 
         public void DeleteShoe(Shoe shoe)
@@ -133,12 +140,29 @@ namespace WebAPI.Services
             return _context.Shoes.Where(f => f.CreatorUserId == userId).ToList();
         }
 
-        public async Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(int limit, int page, CancellationToken cancellationToken)
+        public async Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(
+            int limit,
+            int page,
+            string key,
+            string order,
+            string search,
+            CancellationToken cancellationToken)
         {
+            var searchQuery = "";
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                searchQuery = search.Trim().ToLower(CultureInfo.CurrentCulture);
+            }
+
+
             var shoes = await _context.Shoes
-                           .AsNoTracking()
-                           .OrderBy(p => p.Id)
-                           .PaginateAsync(page, limit, cancellationToken);
+                                    .AsNoTracking()
+                                    .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Title.Contains(searchQuery)
+                                        || a.CategoryName.Contains(searchQuery)
+                                        || a.Id.ToString().Equals(searchQuery))
+                                    .OrderByMember(key, order == "desc")
+                                    .PaginateAsync(page, limit, cancellationToken);
 
             return new GetTableListResponseDto<ShoeDto>
             {

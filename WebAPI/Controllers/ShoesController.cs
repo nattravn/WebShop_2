@@ -70,6 +70,9 @@ namespace WebAPI.Controllers
             var records = await _shoeRepository.GetShoesWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
+                                    urlQueryParameters.Key,
+                                    urlQueryParameters.Order,
+                                    urlQueryParameters.SearchQuery,
                                     cancellationToken);
 
             return Ok(records);
@@ -194,7 +197,6 @@ namespace WebAPI.Controllers
 
             return NoContent();
         }
-
 
     }
 }

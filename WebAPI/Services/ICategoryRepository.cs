@@ -18,6 +18,7 @@ namespace WebAPI.Services
         IEnumerable<Category> GetCategories(CategoriesResourceParameters categoriesResourceParameters);
         void addCategory(Category category);
         Category GetCategory(int id);
+        Category GetCategoryByName(string categoryName);
         void DeleteCategory(Category category);
         void UpdateCategory(CategoryForCreationDto category);
         bool Save();

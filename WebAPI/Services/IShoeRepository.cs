@@ -12,7 +12,13 @@ namespace WebAPI.Services
     public interface IShoeRepository
     {
         Shoe GetShoe(int shoeId);
-        Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(int limit, int page, CancellationToken cancellationToken);
+        Task<GetTableListResponseDto<ShoeDto>> GetShoesWithParams(
+            int limit,
+            int page,
+            string key,
+            string order,
+            string search,
+            CancellationToken cancellationToken);
         IEnumerable<Shoe> GetShoes();
         IEnumerable<Shoe> GetShoesFromUserId(string shoeId);
         IEnumerable<Shoe> GetShoes(CommonResourceParameters commonResourceParameters);

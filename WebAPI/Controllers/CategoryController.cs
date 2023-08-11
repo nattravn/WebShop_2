@@ -62,6 +62,20 @@ namespace WebAPI.Controllers
             return Ok(_mapper.Map<CategoryDto>(categoryFromRepo));
         }
 
+        // GET: api/Category/categoryName
+        [HttpGet("categoryName/{categoryName}", Name = "GetCategoryByName")]
+        public IActionResult GetCategoryByName(string categoryName)
+        {
+            var categoryFromRepo = _categoryRepository.GetCategoryByName(categoryName);
+
+            if (categoryFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CategoryDto>(categoryFromRepo));
+        }
+
         [HttpPost]
         public ActionResult<CategoryDto> CreateCategory(CategoryForCreationDto categoryToCreate)
         {

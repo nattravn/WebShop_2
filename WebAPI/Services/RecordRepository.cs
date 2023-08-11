@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using WebAPI.Constants;
 using WebAPI.Entities;
 using WebAPI.Extensions;
 using WebAPI.Filter;
@@ -20,10 +21,15 @@ namespace WebAPI.Services
     public class RecordRepository : IRecordRepository, IDisposable
     {
         private RecorddbContext _context;
+        ICategoryRepository _categoryRepository;
 
-        public RecordRepository(RecorddbContext context)
+        public RecordRepository(
+            RecorddbContext context, 
+            ICategoryRepository categoryRepository)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _categoryRepository = categoryRepository
+                ?? throw new ArgumentNullException(nameof(categoryRepository));
         }
 
         public Record GetRecord(int recordId)
@@ -90,8 +96,8 @@ namespace WebAPI.Services
             }
 
             recordToAdd.Id = _context.Records.OrderByDescending(r => r.Id).First().Id +1;
-            recordToAdd.CategoryId = _context.Records.FirstOrDefault().CategoryId;
-            recordToAdd.CategoryName = _context.Records.FirstOrDefault().CategoryName;
+            recordToAdd.CategoryId = _categoryRepository.GetCategoryByName(CategoryNames.Records).Id;
+            recordToAdd.CategoryName = CategoryNames.Records;
 
             _context.Records.Add(recordToAdd);
         }

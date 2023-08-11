@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>WebAPI1_1</AssemblyName>
+    <AssemblyName>WebAPI</AssemblyName>
     <RootNamespace>WebAPI</RootNamespace>
     <UserSecretsId>bfaef5a8-b5bd-4fd0-9461-b9a5aa1fe8f5</UserSecretsId>
   </PropertyGroup>
@@ -83,6 +83,10 @@
   <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="wwwroot\api\Images\resized\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UserApi\UserApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@ using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("webApi/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {

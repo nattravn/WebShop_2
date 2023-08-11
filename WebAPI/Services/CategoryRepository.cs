@@ -9,6 +9,7 @@ using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Extensions;
 using AutoMapper;
+using WebAPI.Constants;
 
 namespace WebAPI.Services
 {
@@ -157,6 +158,11 @@ namespace WebAPI.Services
                     SubCategories = _mapper.Map<ICollection<SubCategoryDto>>(p.SubCategories) 
                 }).ToList()
             };
+        }
+
+        public Category GetCategoryByName(string categoryName)
+        {
+            return _context.Categories.Include(b => b.SubCategories).FirstOrDefault(c => c.Name == categoryName);
         }
     }
 }

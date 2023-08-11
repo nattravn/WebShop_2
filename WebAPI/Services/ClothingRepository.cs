@@ -9,16 +9,23 @@ using WebAPI.Entities;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
 using WebAPI.Extensions;
+using WebAPI.Constants;
+using System.Globalization;
+using WebAPI.Filter;
 
 namespace WebAPI.Services
 {
     public class ClothingRepository : IClothingRepository, IDisposable
     {
         private RecorddbContext _context;
+        ICategoryRepository _categoryRepository;
 
-        public ClothingRepository(RecorddbContext context)
+        public ClothingRepository(RecorddbContext context, ICategoryRepository categoryRepository)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _categoryRepository = categoryRepository
+                ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _categoryRepository = categoryRepository;
         }
 
         public Clothing GetClothing(int clothingId)
@@ -82,7 +89,8 @@ namespace WebAPI.Services
 
             clothingToAdd.Id = _context.Clothings.OrderByDescending(r => r.Id).First().Id +1;
             //Clothing id
-            clothingToAdd.CategoryId = 2;
+            clothingToAdd.CategoryId = _categoryRepository.GetCategoryByName(CategoryNames.Clothings).Id;
+            clothingToAdd.CategoryName = CategoryNames.Clothings;
 
             _context.Clothings.Add(clothingToAdd);
         }
@@ -129,12 +137,28 @@ namespace WebAPI.Services
             return _context.Clothings.Where(c => c.CreatorUserId == userId).ToList();
         }
 
-        public async Task<GetTableListResponseDto<ClothingDto>> GetClothingsWithParams(int limit, int page, CancellationToken cancellationToken)
+        public async Task<GetTableListResponseDto<ClothingDto>> GetClothingsWithParams(
+            int limit,
+            int page,
+            string key,
+            string order,
+            string search,
+            CancellationToken cancellationToken)
         {
+            var searchQuery = "";
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                searchQuery = search.Trim().ToLower(CultureInfo.CurrentCulture);
+            }
+
             var clothings = await _context.Clothings
-                           .AsNoTracking()
-                           .OrderBy(p => p.Id)
-                           .PaginateAsync(page, limit, cancellationToken);
+                                    .AsNoTracking()
+                                    .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Title.Contains(searchQuery)
+                                        || a.CategoryName.Contains(searchQuery)
+                                        || a.Id.ToString().Equals(searchQuery))
+                                    .OrderByMember(key, order == "desc")
+                                    .PaginateAsync(page, limit, cancellationToken).ConfigureAwait(false);
 
             return new GetTableListResponseDto<ClothingDto>
             {

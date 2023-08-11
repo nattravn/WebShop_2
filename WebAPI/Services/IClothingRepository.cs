@@ -12,7 +12,13 @@ namespace WebAPI.Services
     public interface IClothingRepository
     {
         Clothing GetClothing(int clothingId);
-        Task<GetTableListResponseDto<ClothingDto>> GetClothingsWithParams(int limit, int page, CancellationToken cancellationToken);
+        Task<GetTableListResponseDto<ClothingDto>> GetClothingsWithParams(
+            int limit,
+            int page,
+            string key,
+            string order,
+            string searchQuery,
+            CancellationToken cancellationToken);
         IEnumerable<Clothing> GetClothings();
         IEnumerable<Clothing> GetClothingsFromUserId(string userId);
         IEnumerable<Clothing> GetClothings(CommonResourceParameters clothingsResourceParameters);
