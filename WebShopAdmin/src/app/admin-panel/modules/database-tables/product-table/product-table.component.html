@@ -80,24 +80,3 @@
 
 	<router-outlet name="tablesOutlet"></router-outlet>
 </ng-container>
-
-<pre>displayedColumns: {{ columnsToDisplay | json }}</pre>
-<pre>optionalColumnName: {{ optionalColumnName | json }}</pre>
-<ng-template #optionalColumn>
-	<ng-container [ngSwitch]="optionalColumnName">
-		<ng-container *ngSwitchCase="'band'">
-			fghghh
-			<ng-container matColumnDef="band">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>Band</mat-header-cell>
-				<mat-cell *matCellDef="let element">{{ element.band }}</mat-cell>
-			</ng-container>
-		</ng-container>
-		<div *ngSwitchCase="'size'">
-			<ng-container matColumnDef="size">
-				<mat-header-cell *matHeaderCellDef mat-sort-header>Size</mat-header-cell>
-				<mat-cell *matCellDef="let element">{{ element.size }}</mat-cell>
-			</ng-container>
-		</div>
-		<div *ngSwitchDefault>This is Default</div>
-	</ng-container>
-</ng-template>
