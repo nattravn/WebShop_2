@@ -13,7 +13,7 @@ import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.ser
 import { DialogService } from '@table-dialogs/services/dialog.service';
 import { ProductDialogService } from './services/product-dialog.service';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
-import { filter, shareReplay, switchMap, startWith, delay, map } from 'rxjs/operators';
+import { shareReplay, switchMap, startWith, delay, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { ProductUpdate } from '@admin-panel/models/product-update.model';
 import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
@@ -24,6 +24,7 @@ import { UserStore } from '@admin-panel/stores/user.store';
 import { ProductTableService } from '@database-tables/product-table/services/product-table.service';
 import { Clothing } from '@admin-panel/models/clothing.model';
 import { RecordUpdate } from '@admin-panel/models/record-update.model';
+import { BaseProduct } from '@admin-panel/models/base-product.model';
 
 export interface IProductForm {
 	currentPage: FormControl<number>;
@@ -93,7 +94,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	// public dialogRef: MatDialogRef<RecordDialogComponent>
 
-	public populateForm$ = new Observable<ProductUpdate<RecordModel | Clothing>>();
+	public populateForm$ = new Observable<ProductUpdate<RecordModel | Clothing | BaseProduct>>();
 
 	public paramMapProduct$: Observable<any>;
 
@@ -130,7 +131,6 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
-			filter((queryParams) => !this.data.createNew),
 			delay(1), // otherwise lastUpdatedTime the pipes wont fire in template
 			map((productData) => {
 				this.populateForm(productData);
@@ -151,7 +151,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		// },);
 	}
 
-	public populateForm(productUpdate: ProductUpdate<RecordModel | Clothing>) {
+	public populateForm(productUpdate: ProductUpdate<RecordModel | Clothing | BaseProduct>) {
 		this.productForm.get('row').get('id').setValue(productUpdate.row.id);
 		this.productForm.get('row').get('releaseDate').setValue(productUpdate.row.releaseDate);
 		this.productForm.get('row').get('description').setValue(productUpdate.row.description);
@@ -169,7 +169,11 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		this.productForm.get('row').get('lastUpdatedTime').setValue(productUpdate.row.lastUpdatedTime);
 		this.productForm.get('row').get('creatorUserId').setValue(productUpdate.row.creatorUserId);
 
-		this.imgSrcReplay$.next(this.imageRootPath + productUpdate.row.imagePath);
+		if (productUpdate.row.id) {
+			this.imgSrcReplay$.next(this.imageRootPath + productUpdate.row.imagePath);
+		} else {
+			this.imgSrcReplay$.next(this.defaultimageRootPath);
+		}
 	}
 
 	public onDeactivate(event) {
@@ -185,6 +189,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		);
 	}
 
+	// Not used
 	public openDialog() {
 		console.log('open dialog');
 		this.dialogService = this.dialogFactoryService.open({
@@ -193,6 +198,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 				id: 0,
 				name: 'record',
 				route: this.activatedRoute.snapshot.params['product'],
+				implemented: true,
 			},
 			createNew: false,
 			template: this.firstDialogTemplate,
@@ -203,7 +209,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	public onSubmit(form: ProductUpdate<RecordUpdate | Clothing>): void {
 		if (this.productForm.invalid || !form.row.categoryName) {
-			console.error('Form invalid or missing CategoryName');
+			console.error('Form invalid or missing CategoryName. Form invalid: ', this.productForm.invalid, form);
 			return;
 		}
 
@@ -215,7 +221,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 				form.row.editorUserId = user.userId;
 
 				// Create or update
-				if (!form.row.id) {
+				if (!form.row.id || this.data.createNew) {
 					return this.productDialogService.createProduct(form.row, this.fileToUpload);
 				} else {
 					return this.productDialogService.updateProduct(form.row, this.fileToUpload);

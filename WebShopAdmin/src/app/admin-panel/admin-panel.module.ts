@@ -15,6 +15,7 @@ import { RecordDialogService } from './modules/table-dialogs/products-dialog/rec
 import { CategoryNamePipe } from './pipe/category-name.pipe';
 import { CategoryStore } from './stores/category.store';
 import { AddUserComponent } from './add-user/add-user.component';
+import { ProductStore } from './stores/product.store';
 
 @NgModule({
 	declarations: [AdminPanelComponent, CategoryNamePipe, AddUserComponent],
@@ -31,6 +32,7 @@ import { AddUserComponent } from './add-user/add-user.component';
 
 	providers: [
 		CategoryStore,
+		ProductStore,
 		RecordDialogService,
 		ProductTableService,
 		CategoryTableService,

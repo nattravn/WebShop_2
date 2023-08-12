@@ -19,6 +19,8 @@ import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.ser
 
 import { ProductTableService } from './services/product-table.service';
 import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { CategoryIdEnum } from '@admin-panel/enums/categoryId.enum';
+import { BaseProduct } from '@admin-panel/models/base-product.model';
 // import { RecordUpdate } from '@admin-panel/models/record-update.model';
 // import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
@@ -199,6 +201,17 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 	}
 
 	public onCreate(paramMap: ParamMap) {
+		this.moduleService.productData$.next({
+			row: {
+				categoryName: paramMap.get('product'),
+				categoryId: CategoryIdEnum[paramMap.get('product')],
+			} as BaseProduct,
+			currentPage: this.productTableService.currentPage,
+			totalPages: this.productTableService.totalPages,
+			order: this.productTableService.order,
+			sortKey: this.productTableService.sortKey,
+		});
+
 		this.router
 			.navigate([`adminpanel/tables/products/${paramMap.get('product')}/modal`], {
 				queryParams: { createNewProduct: true },

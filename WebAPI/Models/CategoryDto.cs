@@ -10,6 +10,7 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Route { get; set; }
+        public bool Implemented { get; set; }
         public ICollection<SubCategoryDto> SubCategories { get; set; } = new List<SubCategoryDto>();
     }
 }

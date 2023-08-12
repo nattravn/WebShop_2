@@ -8,7 +8,8 @@ import { shareReplay, switchMap } from 'rxjs/operators';
 
 import { Clothing } from '@admin-panel/models/clothing.model';
 import { RecordModel } from '@admin-panel/models/record.model';
-import { RecordStore } from '@admin-panel/stores/record.store';
+import { ProductTable } from '@admin-panel/models/product-table.model';
+import { CategoryStore } from '@admin-panel/stores/category.store';
 
 @UntilDestroy()
 @Injectable()
@@ -29,7 +30,7 @@ export class ProductTableService {
 
 	// private eventUrl = '';
 
-	constructor(private recordStore: RecordStore) {
+	constructor(private categoryStore: CategoryStore) {
 		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 		// this.route.data.subscribe(v => console.log('v: ', v))
 		// this.route.queryParams.subscribe(v => console.log('v: ', v))
@@ -54,17 +55,17 @@ export class ProductTableService {
 		searchQuery: string,
 		sort: MatSort | null,
 	): Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }> {
-		this.tableData$ = this.recordStore.getProducts(productString, pageLimit, page, key, order, searchQuery).pipe(
+		this.tableData$ = this.categoryStore.getProducts(productString, pageLimit, page, key, order, searchQuery).pipe(
 			untilDestroyed(this),
-			switchMap((records) => {
-				this.dataSource.data = records.items;
+			switchMap((products: ProductTable) => {
+				this.dataSource.data = products.items;
 				this.sortKey = key;
 				this.order = order;
 				if (sort) {
 					this.dataSource.sort = sort;
 				}
 
-				return of({ items: this.dataSource, totalItems: records.totalItems });
+				return of({ items: this.dataSource, totalItems: products.totalItems });
 			}),
 			shareReplay(1),
 		);

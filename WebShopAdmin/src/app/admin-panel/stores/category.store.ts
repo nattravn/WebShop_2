@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { catchError } from 'rxjs/operators';
+import { catchError, filter, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { Category } from '../models/category.model';
 import { environment } from 'src/environments/environment';
 import { PagedCategory } from '../models/paged-category.model';
+import { ProductTable } from '@admin-panel/models/product-table.model';
 
 @UntilDestroy()
 @Injectable()
@@ -33,7 +34,17 @@ export class CategoryStore {
 			untilDestroyed(this),
 			catchError((error) => {
 				console.error(error);
-				return of(error);
+				return of(null);
+			}),
+		);
+	}
+
+	public getCategoryByName(categoryName): Observable<Category> {
+		return this.http.get<Category>(`${this.rootURL}/Category/categoryName/${categoryName}`).pipe(
+			untilDestroyed(this),
+			catchError((error) => {
+				console.error(error);
+				return of(null);
 			}),
 		);
 	}
@@ -48,5 +59,37 @@ export class CategoryStore {
 
 	public deletCategory(id: number) {
 		return this.http.delete(`${this.rootURL}/Category/${id}`);
+	}
+
+	public getProducts(
+		route: string,
+		limit: number,
+		page: number,
+		active: string,
+		direction: string,
+		keyWord: String,
+	): Observable<ProductTable> {
+		return this.getCategoryByName(route).pipe(
+			filter((category) => !!category && category.implemented),
+			switchMap(() =>
+				this.http
+					.get<ProductTable>(`${this.rootURL}/${route}/GetPagedProducts/`, {
+						params: {
+							limit: limit.toString(),
+							page: page.toString(),
+							key: active,
+							order: direction,
+							searchQuery: keyWord ? keyWord.toString() : '',
+						},
+					})
+					.pipe(
+						untilDestroyed(this),
+						catchError((error) => {
+							console.error('Error: ', error);
+							return of(null);
+						}),
+					),
+			),
+		);
 	}
 }

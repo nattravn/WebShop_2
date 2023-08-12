@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { UntilDestroy } from '@ngneat/until-destroy';
 import { environment } from 'src/environments/environment';
 
 import { ToastrService } from 'ngx-toastr';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-import { ProductTable } from '@admin-panel/models/product-table.model';
 import { RecordModel } from '@admin-panel/models/record.model';
 
 @UntilDestroy()
@@ -19,11 +18,7 @@ export class RecordStore {
 
 	public imageRootPath = `${this.baseUrl}/Images/original/default-image.png`;
 
-	private recordsReplay: ReplaySubject<ProductTable> = new ReplaySubject<ProductTable>(1);
-
 	private filterReplay: ReplaySubject<string> = new ReplaySubject<string>(1);
-
-	private recordItemReplay: ReplaySubject<RecordModel> = new ReplaySubject<RecordModel>(1);
 
 	constructor(
 		private http: HttpClient,
@@ -47,7 +42,7 @@ export class RecordStore {
 
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('title', modelFormData.title);
-		formData.append('price', JSON.stringify(modelFormData.price));
+		formData.append('price', modelFormData.price.toString());
 		formData.append('description', modelFormData.description);
 		formData.append('categoryId', JSON.stringify(0));
 		formData.append('subCategoryId', JSON.stringify(0));
@@ -94,37 +89,8 @@ export class RecordStore {
 		return this.http.delete(`${this.baseUrl}/${row.categoryName}/${row.id}`);
 	}
 
-	public getProducts(
-		route: string,
-		limit: number,
-		page: number,
-		active: string,
-		direction: string,
-		keyWord: String,
-	): Observable<ProductTable> {
-		return this.http
-			.get<ProductTable>(`${this.baseUrl}/${route}/GetPagedProducts/`, {
-				params: {
-					limit: limit.toString(),
-					page: page.toString(),
-					key: active,
-					order: direction,
-					searchQuery: keyWord ? keyWord.toString() : '',
-				},
-			})
-			.pipe(
-				untilDestroyed(this),
-				tap((items) => this.recordsReplay.next(items)),
-				catchError((error) => {
-					console.error('Error: ', error);
-					return of(null);
-				}),
-			);
-	}
-
 	public getRecord(id: number): Observable<RecordModel> {
 		return this.http.get<RecordModel>(`${this.baseUrl}/Records/${id}`).pipe(
-			tap((item) => this.recordItemReplay.next(item)),
 			catchError((error) => {
 				console.error('Error: ', error);
 				return of(null);
@@ -143,7 +109,6 @@ export class RecordStore {
 				},
 			})
 			.pipe(
-				tap((item) => this.recordItemReplay.next(item)),
 				catchError((error) => {
 					console.error('Error: ', error);
 					return of(null);

@@ -14,7 +14,8 @@ modal-wrapper-component
 		<div [ngSwitch]="data.category.route | lowercase">
 			<app-product-dialogs *ngSwitchCase="categoryEnum.products"></app-product-dialogs>
 			<app-user-dialog *ngSwitchCase="categoryEnum.user"></app-user-dialog>
-			<div *ngSwitchDefault>Default</div>
+			<app-category-dialog *ngSwitchCase="categoryEnum.category"></app-category-dialog>
+			<div *ngSwitchDefault>Dialog form does not exist</div>
 		</div>
 	</div>
 </ng-container>

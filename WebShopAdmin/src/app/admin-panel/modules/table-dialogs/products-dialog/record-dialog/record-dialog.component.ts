@@ -3,18 +3,15 @@ import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Observable, of, ReplaySubject } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, shareReplay, switchMap } from 'rxjs/operators';
 
 import { Category } from '@admin-panel/models/category.model';
 import { DialogData } from '@admin-panel/models/dialog-data.model';
-import { ProductUpdate } from '@admin-panel/models/product-update.model';
-import { RecordModel } from '@admin-panel/models/record.model';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { CategoryStore } from '@admin-panel/stores/category.store';
 import { RecordStore } from '@admin-panel/stores/record.store';
 import { ProductTableService } from '@database-tables/product-table/services/product-table.service';
-import { environment } from '@environments/environment';
 
 import { RecordDialogService } from './services/record-dialog.service';
 import { ProductDialogService } from '../services/product-dialog.service';
@@ -34,14 +31,6 @@ export interface IRecordForm {
 })
 export class RecordDialogComponent implements OnInit {
 	public populateForm$ = new Observable<any>();
-
-	public imgSrcReplay = new ReplaySubject<string>(1);
-
-	public imgSrcReplay$ = this.imgSrcReplay.asObservable();
-
-	public imageRootPath = `${environment.baseUrl}/Images/original/`;
-
-	public defaultimageRootPath = `${environment.baseUrl}/Images/original/default-image.png`;
 
 	public categories$ = new Observable<Category[]>();
 
@@ -69,7 +58,6 @@ export class RecordDialogComponent implements OnInit {
 			untilDestroyed(this),
 			filter((queryParams) => !this.data.createNew),
 			switchMap((productData) => {
-				console.log('productData: ', productData);
 				this.populateForm(productData.row as RecordUpdate);
 				return of(null);
 			}),
@@ -79,62 +67,8 @@ export class RecordDialogComponent implements OnInit {
 		this.category$ = this.categoryStore.getCategory(1).pipe(untilDestroyed(this), shareReplay(1));
 	}
 
-	public onSubmit(form: RecordModel & ProductUpdate<RecordModel>) {
-		// if (this.form.invalid) {
-		// 	return;
-		// }
-		// form.categoryName = 'Record';
-		// // Form data becomes null in observable so it needs to be cloned
-		// this.populateForm$ = this.userStore.getUserProfile().pipe(
-		// 	untilDestroyed(this),
-		// 	switchMap((user) => {
-		// 		// Set forms userId to in logged user
-		// 		form.editorUserId = user.userId;
-		// 		const newRecord = new RecordModel(this.form.value);
-		// 		// Create or update
-		// 		if (!form.id) {
-		// 			return this.recordStore.postRecord(newRecord, this.fileToUpload);
-		// 		} else {
-		// 			return this.recordStore.putRecord(newRecord, this.fileToUpload);
-		// 		}
-		// 	}),
-		// 	tap((updatedRecord) => {
-		// 		let productUpdate = new ProductUpdate<RecordModel>();
-		// 		productUpdate = { ...form, row: updatedRecord };
-		// 		this.populateForm(productUpdate);
-		// 		return of(null);
-		// 	}),
-		// 	switchMap((x) =>
-		// 		this.productTableService.refreshMatTable(
-		// 			'records',
-		// 			form.totalPages,
-		// 			form.currentPage,
-		// 			form.sortKey,
-		// 			form.order,
-		// 			'',
-		// 			null,
-		// 		),
-		// 	),
-		// 	shareReplay(1),
-		// );
-	}
-
-	public showPreview(file: File) {
-		// if (!file) {
-		// 	return;
-		// }
-		// const reader = new FileReader();
-		// reader.onload = (e: any) => {
-		// 	this.imgSrcReplay.next(e.target.result);
-		// };
-		// reader.readAsDataURL(file);
-		// this.form.get('imagePath').setValue(file.name);
-		// this.fileToUpload = file;
-	}
-
 	public onClear() {
 		this.productDialogService.recordForm.reset();
-		this.imgSrcReplay.next(this.defaultimageRootPath);
 	}
 
 	private populateForm(productUpdate: RecordUpdate) {

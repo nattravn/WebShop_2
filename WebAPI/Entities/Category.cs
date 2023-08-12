@@ -18,6 +18,8 @@ public partial class Category
 
     public string Route { get; set; }
 
+    public bool? Implemented { get; set; }
+
     [InverseProperty("Category")]
     public virtual ICollection<SubCategory> SubCategories { get; set; } = new List<SubCategory>();
 }

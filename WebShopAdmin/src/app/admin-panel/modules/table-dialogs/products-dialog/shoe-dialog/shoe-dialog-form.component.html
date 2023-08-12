@@ -1,33 +1,9 @@
-<form [formGroup]="shoeStore.form" class="normal-form" (submit)="onSubmit()">
+<form [formGroup]="productDialogService.shoeForm" class="normal-form">
 	Record panel
-	<mat-grid-list cols="1" rowHeight="800px">
-		<mat-grid-tile>
-			<div class="controls-container">
-				<input hidden formControlName="category" [value]="shoeStore.form.value.category" matInput />
-				<mat-form-field>
-					<input formControlName="id" [readonly]="true" matInput placeholder="ShoeID" />
-				</mat-form-field>
-				<mat-form-field>
-					<input formControlName="title" matInput placeholder="Title" />
-					<mat-error>This field is mandatory.</mat-error>
-				</mat-form-field>
-				<mat-form-field>
-					<input formControlName="price" matInput placeholder="Price" />
-					<mat-error>Invalid email address.</mat-error>
-				</mat-form-field>
-				<mat-form-field>
-					<input formControlName="description" matInput placeholder="Description" />
-				</mat-form-field>
-				<img [src]="shoeStore.imageRootPath" style="width: 250px; height: 200px" />
-				<input hidden (change)="onFileSelected($event.target.files)" #fileInput type="file" id="file" />
-				<div class="add-bottom-padding">
-					<button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
-				</div>
-				<div class="button-row">
-					<button mat-raised-button color="primary" type="submit" [disabled]="shoeStore.form.invalid">Submit</button>
-					<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
-				</div>
-			</div>
-		</mat-grid-tile>
-	</mat-grid-list>
+	<div class="controls-container">
+		<mat-form-field class="w-100">
+			<input formControlName="label" matInput placeholder="Label" />
+			<mat-error>Invalid label.</mat-error>
+		</mat-form-field>
+	</div>
 </form>

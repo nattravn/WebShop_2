@@ -56,7 +56,7 @@ namespace WebAPI.Controllers
 
             if (categoryFromRepo == null)
             {
-                return NotFound();
+                return NoContent();
             }
 
             return Ok(_mapper.Map<CategoryDto>(categoryFromRepo));
@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
 
             if (categoryFromRepo == null)
             {
-                return NotFound();
+                return NoContent();
             }
 
             return Ok(_mapper.Map<CategoryDto>(categoryFromRepo));
