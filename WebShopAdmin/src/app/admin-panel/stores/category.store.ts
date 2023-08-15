@@ -23,9 +23,23 @@ export class CategoryStore {
 		return this.http.get<Category[]>(`${this.rootURL}/Category`).pipe(untilDestroyed(this));
 	}
 
-	public getPagedCategories(limit: number, page: number): Observable<PagedCategory> {
+	public getPagedCategories(
+		limit: number,
+		page: number,
+		key: string,
+		order: string,
+		keyWord: string,
+	): Observable<PagedCategory> {
 		return this.http
-			.get<PagedCategory>(`${this.rootURL}/category/GetPagedCategories?limit=${limit}&page=${page}`)
+			.get<PagedCategory>(`${this.rootURL}/category/GetPagedCategories`, {
+				params: {
+					limit: limit.toString(),
+					page: page.toString(),
+					key: key,
+					order: order,
+					searchQuery: keyWord ? keyWord.toString() : '',
+				},
+			})
 			.pipe(untilDestroyed(this));
 	}
 
@@ -61,7 +75,7 @@ export class CategoryStore {
 		return this.http.delete(`${this.rootURL}/Category/${id}`);
 	}
 
-	public getProducts(
+	public getPagedProducts(
 		route: string,
 		limit: number,
 		page: number,

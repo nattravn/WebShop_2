@@ -4,8 +4,7 @@
 		formValue: formValue$ | async
 	} as source"
 >
-	<pre>{{ source.formValue | json }}</pre>
-	<form [formGroup]="form" class="normal-form" (submit)="onSubmit(source.formValue)">
+	<form [formGroup]="productDialogService.clothingForm" class="normal-form">
 		<div class="controls-container">
 			<mat-form-field class="w-100">
 				<mat-label>Size</mat-label>

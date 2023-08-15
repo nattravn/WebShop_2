@@ -1,16 +1,9 @@
 <ng-container
 	*ngIf="{
 		noooothing: populateForm$ | async,
-		formValue: productDialogService.recordFormValue$ | async,
-		category: category$ | async
+		formValue: productDialogService.recordFormValue$ | async
 	} as source"
 >
-	source.formValue.value:
-	<pre>{{ source.formValue | json }}</pre>
-	source.formValue.genre:
-	<pre>{{ source.formValue.genre | json }}</pre>
-	source.formValue.lastDateTime:
-	<pre>{{ productDialogService.recordForm.get("band").value }}</pre>
 	<form [formGroup]="productDialogService.recordForm">
 		<div class="controls-container">
 			<mat-form-field class="w-100">
@@ -23,14 +16,6 @@
 				<mat-label>Album</mat-label>
 				<input formControlName="album" matInput placeholder="Album" />
 				<mat-error>This field is mandatory.</mat-error>
-			</mat-form-field>
-
-			<mat-form-field class="w-100">
-				<mat-select matInput formControlName="genre" placeholder="Genre" [value]="source.formValue.genre">
-					<mat-option *ngFor="let subCategory of source.category?.subCategories" [value]="subCategory.name">
-						{{ subCategory.name }}
-					</mat-option>
-				</mat-select>
 			</mat-form-field>
 		</div>
 	</form>

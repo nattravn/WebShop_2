@@ -10,6 +10,8 @@ using WebAPI.ResourceParameters;
 using WebAPI.Extensions;
 using AutoMapper;
 using WebAPI.Constants;
+using System.Globalization;
+using WebAPI.Filter;
 
 namespace WebAPI.Services
 {
@@ -137,13 +139,31 @@ namespace WebAPI.Services
             }
         }
 
-        public async Task<GetTableListResponseDto<CategoryDto>> GetCategoriesWithParams(int limit, int page, CancellationToken cancellationToken)
+        public async Task<GetTableListResponseDto<CategoryDto>> GetCategoriesWithParams(
+            int limit, 
+            int page, 
+            string key, 
+            string order, 
+            string search, 
+            CancellationToken cancellationToken)
         {
+
+            var searchQuery = "";
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                searchQuery = search.Trim().ToLower(CultureInfo.CurrentCulture);
+            }
+
             var category = await _context.Categories
-                           .AsNoTracking()
-                           .Include(b => b.SubCategories)
-                           .OrderBy(p => p.Id)
-                           .PaginateAsync(page, limit, cancellationToken);
+                                    .AsNoTracking()
+                                    .Include(b => b.SubCategories)
+                                    .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Name.Contains(searchQuery)
+                                        || a.Route.Contains(searchQuery)
+                                        || a.Id.ToString().Equals(searchQuery))
+                                    .Include(b => b.SubCategories)
+                                    .OrderByMember(key, order == "desc")
+                                    .PaginateAsync(page, limit, cancellationToken).ConfigureAwait(false);
 
             return new GetTableListResponseDto<CategoryDto>
             {

@@ -12,7 +12,13 @@ namespace WebAPI.Services
     public interface ICategoryRepository
     {
         bool CategoryExists(int categoryId);
-        Task<GetTableListResponseDto<CategoryDto>> GetCategoriesWithParams(int limit, int page, CancellationToken cancellationToken);
+        Task<GetTableListResponseDto<CategoryDto>> GetCategoriesWithParams(
+            int limit,
+            int page,
+            string key,
+            string order,
+            string searchQuery, 
+            CancellationToken cancellationToken);
         bool CategoryNameExists(string categoryName);
         IEnumerable<Category> GetCategories();
         IEnumerable<Category> GetCategories(CategoriesResourceParameters categoriesResourceParameters);

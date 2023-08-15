@@ -1,7 +1,16 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectorRef, Component, OnInit, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import {
+	AfterViewInit,
+	ChangeDetectorRef,
+	Component,
+	OnInit,
+	QueryList,
+	TemplateRef,
+	ViewChild,
+	ViewChildren,
+} from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 
 import { ToastrService } from 'ngx-toastr';
@@ -10,11 +19,17 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Category } from '@admin-panel/models/category.model';
 import { SubCategory } from '@admin-panel/models/sub-category.model';
 import { CategoryStore } from '@admin-panel/stores/category.store';
-import { CategoryDialogService } from '@table-dialogs/category-dialog/services/category-dialog.service';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 
 import { CategoryTableService } from './services/category-table.service';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { ModuleService } from '@admin-panel/modules/services/module-service.service';
+import { FormControl, FormGroup } from '@angular/forms';
 
+export interface IFilterForm {
+	search: FormControl<string>;
+}
 @Component({
 	selector: 'app-category-list',
 	templateUrl: './category-table.component.html',
@@ -28,7 +43,7 @@ import { CategoryTableService } from './services/category-table.service';
 		]),
 	],
 })
-export class CategoryTableComponent implements OnInit {
+export class CategoryTableComponent implements AfterViewInit, OnInit {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild('outerSort', { static: true }) sort: MatSort;
 
@@ -43,6 +58,11 @@ export class CategoryTableComponent implements OnInit {
 
 	public columnsToDisplay = ['id', 'name', 'route', 'actions'];
 	public innerDisplayedColumns = ['id', 'name', 'route', 'actions'];
+
+	public filterForm = new FormGroup<IFilterForm>({
+		search: new FormControl('', []),
+	});
+
 	public dataSource = new MatTableDataSource<Category>();
 
 	public searchKey: string;
@@ -61,16 +81,26 @@ export class CategoryTableComponent implements OnInit {
 		subCategories: null,
 	};
 
+	public active = 'name';
+
+	private direction = 'asc';
+
 	constructor(
 		private toastr: ToastrService,
 		private dialogFactoryService: DialogFactoryService,
-		public categoryListService: CategoryTableService,
+		public categoryTableService: CategoryTableService,
 		private categoryStore: CategoryStore,
 		private cd: ChangeDetectorRef,
-		private categoryDialogService: CategoryDialogService,
+		private router: Router,
+		public activatedRouteEvent: ActivatedRoute,
+		private moduleService: ModuleService,
 	) {}
+	ngAfterViewInit(): void {
+		this.categoryTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
+		// throw new Error('Method not implemented.');
+	}
 	ngOnInit() {
-		this.refreshMatTable();
+		console.log('hi');
 	}
 
 	public toggleRow(element: Category) {
@@ -80,6 +110,20 @@ export class CategoryTableComponent implements OnInit {
 			(table.dataSource as MatTableDataSource<SubCategory>).sort = this.innerSort.toArray()[index];
 		});
 		// this.innerTables.forEach((table, index) => (table.dataSource as MatTableDataSource<Address>).sort = this.innerSort.toArray()[index]);
+	}
+
+	public sortData(filterForm: FormGroup, sort: Sort) {
+		this.active = sort.active;
+		this.direction = sort.direction;
+
+		this.categoryTableService.refreshMatTable(
+			5,
+			this.categoryTableService.currentPage,
+			sort.active,
+			sort.direction,
+			filterForm.value['search'],
+			null,
+		);
 	}
 
 	public toggleExpanded(row: Category) {
@@ -110,56 +154,101 @@ export class CategoryTableComponent implements OnInit {
 			this.categoryStore.deletCategory(row.id).subscribe(() => {
 				this.toastr.warning('Deleted successfully', 'EMP. Register');
 				this.categoryStore.getCategories();
-				this.categoryListService.refreshMatTable();
+				return this.categoryTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
 			});
 		}
 	}
 
-	public onCreate() {
-		this.categoryStore.showCategories = true;
+	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent) {
+		this.categoryTableService.currentPage = event.pageIndex + 1;
+		this.categoryTableService.totalPages = event.pageSize;
 
-		this.categoryDialogService.populateForm(this.newCategory);
-
-		const dialog = this.dialogFactoryService.open({
-			headerText: 'Header text',
-			category: {
-				id: 0,
-				name: 'category',
-				route: 'category',
-			},
-			createNew: true,
-			template: this.userDialogTemplate,
-		});
-
-		// Change the header of the dialog
-		dialog.setHeaderText('New header');
-
-		// Change the content of the dialog
-		dialog.setTemplate(this.userDialogTemplate);
+		this.categoryTableService.refreshMatTable(
+			event.pageSize,
+			event.pageIndex + 1,
+			this.active,
+			this.direction,
+			filterForm.value['search'],
+			null,
+		);
 	}
 
-	public onEdit(row: Category) {
-		this.categoryDialogService.populateForm(row);
+	public onCreate(paramMap: ParamMap) {
+		this.categoryStore.showCategories = true;
+
+		this.moduleService.categoryFormData$.next({
+			row: this.newCategory,
+			currentPage: this.categoryTableService.currentPage,
+			totalPages: this.categoryTableService.totalPages,
+			order: this.categoryTableService.order,
+			sortKey: this.categoryTableService.sortKey,
+		});
+		// this.categoryDialogService.populateForm(this.newCategory);
+
+		// const dialog = this.dialogFactoryService.open({
+		// 	headerText: 'Header text',
+		// 	category: {
+		// 		id: 0,
+		// 		name: 'category',
+		// 		route: 'category',
+		// 	},
+		// 	createNew: true,
+		// 	template: this.userDialogTemplate,
+		// });
+
+		this.router
+			.navigate([`adminpanel/tables/categories/${AdminCategoryEnum.category}/modal`], {
+				queryParams: { createNewProduct: true },
+			})
+			.then(() => {
+				this.dialogFactoryService.open({
+					headerText: 'Header text record',
+					category: {
+						id: 99,
+						name: paramMap.get('category'),
+						route: 'category',
+					},
+					createNew: true,
+					template: this.userDialogTemplate,
+				});
+			});
+	}
+
+	public onEdit(row: Category, paramMap: ParamMap) {
+		// this.categoryDialogService.populateForm(row);
+		this.moduleService.categoryFormData$.next({
+			row: row,
+			currentPage: this.categoryTableService.currentPage,
+			totalPages: this.categoryTableService.totalPages,
+			order: this.categoryTableService.order,
+			sortKey: this.categoryTableService.sortKey,
+		});
 
 		this.selectedCategory = row;
 
-		this.dialogFactoryService.open({
-			headerText: 'Header text',
-			category: {
-				id: row.id,
-				name: 'category',
-				route: 'category',
-			},
-			createNew: false,
-			template: this.userDialogTemplate,
-		});
+		this.router
+			.navigate([`adminpanel/tables/categories/${AdminCategoryEnum.category}/modal`], {
+				queryParams: { createNewProduct: true },
+			})
+			.then(() => {
+				this.dialogFactoryService.open({
+					headerText: 'Header text record',
+					category: {
+						id: 99,
+						name: paramMap.get('category'),
+						route: 'category',
+					},
+					createNew: false,
+					template: this.userDialogTemplate,
+				});
+			});
 	}
 
-	private refreshMatTable() {
-		// async data from get function in service
-		this.categoryListService.dataSource.sort = this.sort;
-		this.categoryListService.dataSource.paginator = this.paginator;
-		this.categoryListService.dataSource.filterPredicate = this.filterPredicate;
-		this.categoryListService.refreshMatTable();
-	}
+	// private refreshMatTable() {
+	// 	// async data from get function in service
+	// 	this.categoryListService.dataSource.sort = this.sort;
+	// 	this.categoryListService.dataSource.paginator = this.paginator;
+	// 	this.categoryListService.dataSource.filterPredicate = this.filterPredicate;
+	// 	this.categoryListService.refreshMatTable();
+	// }
 }
