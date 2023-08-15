@@ -76,22 +76,32 @@ export class ShoeStore {
 		);
 	}
 
-	public putShoe(modelFormData: Shoe, fileToUpload: File) {
+	public putShoe(modelFormData: ShoeUpdate, fileToUpload: File): Observable<ShoeUpdate> {
 		const formData: FormData = new FormData();
+		const releaseDate = new Date(modelFormData.releaseDate);
 
 		formData.append('title', modelFormData.title);
 		formData.append('id', modelFormData.id.toString());
-		formData.append('price', modelFormData.price);
+		formData.append('price', modelFormData.price.toString());
 		formData.append('description', modelFormData.description);
+		formData.append('releaseDate', releaseDate.toDateString());
+
 		if (fileToUpload != null) {
 			formData.append('image', fileToUpload, fileToUpload.name);
 		}
+
 		formData.append('imagePath', modelFormData.imagePath);
 		formData.append('category', modelFormData.categoryId.toString());
-		formData.append('userName', modelFormData.userName);
-		formData.append('subCategory', modelFormData.subCategoryId.toString());
+		formData.append('userName', modelFormData.editorUserId);
+		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
+		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
+		formData.append('editorUserId', modelFormData.editorUserId);
 
-		return this.http.put(`${this.baseUrl}/shoes/${modelFormData.id}`, formData);
+		return this.http.put<ShoeUpdate>(`${this.baseUrl}/shoes/${modelFormData.id}`, formData).pipe(
+			tap(() => {
+				this.toastr.info('updated successfully', 'EMP. Register');
+			}),
+		);
 	}
 
 	public deleteShoe(id: number) {

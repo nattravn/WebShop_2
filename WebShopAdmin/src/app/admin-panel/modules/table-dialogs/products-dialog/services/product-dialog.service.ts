@@ -34,7 +34,6 @@ export interface IProductForm {
 export interface IRecordForm {
 	band: FormControl<string>;
 	album: FormControl<string>;
-	genre: FormControl<string>;
 }
 
 export interface IClothingForm {
@@ -50,7 +49,6 @@ export class ProductDialogService {
 	public recordForm = new FormGroup<IRecordForm>({
 		band: new FormControl('', Validators.required),
 		album: new FormControl('', Validators.required),
-		genre: new FormControl(''),
 	});
 
 	public clothingForm = new FormGroup<IClothingForm>({
@@ -78,6 +76,10 @@ export class ProductDialogService {
 			//
 			const newClothing = new ClothingUpdate({ ...productUpdate, ...this.clothingForm.value });
 			return this.clothingStore.putClothing(newClothing, fileToUpload);
+		} else if (productUpdate.categoryName.toLocaleLowerCase() === CategoryNameEnum.shoes) {
+			//
+			const newShoe = new ShoeUpdate({ ...productUpdate, ...this.shoeForm.value });
+			return this.shoeStore.putShoe(newShoe, fileToUpload);
 		} else {
 			console.error('error: no implemented category found', productUpdate);
 			return EMPTY;

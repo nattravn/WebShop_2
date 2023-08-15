@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using WebAPI.Constants;
 using WebAPI.Entities;
 using WebAPI.Models;
 using WebAPI.ResourceParameters;
@@ -138,12 +139,25 @@ namespace WebAPI.Controllers
         public IActionResult UpdateShoe(int shoeId,
             [FromForm] ShoeForCreationDto shoeToUpdate)
         {
-            var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
 
-            _imageService.uploadImage(resizedImage, "resized");
-            _imageService.uploadImage(Request.Form.Files[0], "original");
+            if (Request.Form.Files.Count != 0)
+            {
+                var resizedImage = _imageService.ResizeImage(Request.Form.Files[0]);
 
-            shoeToUpdate.ImagePath = Request.Form.Files[0].FileName;
+                ImageUploadModel imageUploadResized = _imageService.uploadImage(resizedImage, "resized");
+                ImageUploadModel imageUploadOriginal = _imageService.uploadImage(Request.Form.Files[0], "original");
+
+                if (imageUploadResized.Status == 0 || imageUploadOriginal.Status == 0)
+                {
+                    ModelState.AddModelError(
+                        "Description",
+                        imageUploadOriginal.Path);
+                    return BadRequest(ModelState);
+                }
+
+                shoeToUpdate.ImagePath = Request.Form.Files[0].FileName;
+
+            }
 
             if (!_shoeRepository.ShoeExists(shoeId))
             {
@@ -168,6 +182,9 @@ namespace WebAPI.Controllers
                     shoeToReturn);
             }
 
+            shoeToUpdate.LastUpdatedTime = DateTime.Now;
+            shoeToUpdate.CategoryName = CategoryNames.Shoes;
+
             // map the entity to a ShoeForUpdateDto
             // apply the updated field values to that dto
             // map the ShoeForUpdateDto back to an entity
@@ -176,7 +193,9 @@ namespace WebAPI.Controllers
             _shoeRepository.UpdateShoe(shoeFromRepo);
 
             _shoeRepository.Save();
-            return NoContent();
+            return CreatedAtRoute("GetShoe",
+                new { shoeId = shoeFromRepo.Id },
+                shoeFromRepo);
         }
 
         // DELETE: api/Shoe/5
