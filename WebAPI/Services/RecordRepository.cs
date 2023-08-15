@@ -183,7 +183,6 @@ namespace WebAPI.Services
                     Band = p.Band,
                     CategoryName = p.CategoryName,
                     Description = p.Description,
-                    Genre = p.Genre,
                     ImagePath = p.ImagePath,
                     Price = p.Price.GetValueOrDefault(),
                     SubCategoryId = p.SubCategoryId.GetValueOrDefault(),

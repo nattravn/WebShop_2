@@ -29,9 +29,6 @@ public partial class Record
     [Column(TypeName = "date")]
     public DateTime? ReleaseDate { get; set; }
 
-    [StringLength(250)]
-    public string Genre { get; set; }
-
     public byte[] Image { get; set; }
 
     [StringLength(250)]

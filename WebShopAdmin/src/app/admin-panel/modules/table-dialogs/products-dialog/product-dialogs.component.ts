@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, of } from 'rxjs';
 
 import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
 import { Category } from '@admin-panel/models/category.model';
@@ -96,6 +96,8 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	public populateForm$ = new Observable<ProductUpdate<RecordModel | Clothing | BaseProduct>>();
 
+	public category$ = new ReplaySubject<Category>(1);
+
 	public paramMapProduct$: Observable<any>;
 
 	private dialogService: DialogService;
@@ -132,9 +134,14 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
 			delay(1), // otherwise lastUpdatedTime the pipes wont fire in template
-			map((productData) => {
+			switchMap((productData) => {
 				this.populateForm(productData);
-				return productData;
+				return this.categoryStore.getCategory(productData.row.categoryId).pipe(
+					switchMap((category) => {
+						this.category$.next(category);
+						return of(productData);
+					}),
+				);
 			}),
 			shareReplay(1),
 		);
@@ -227,8 +234,8 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 					return this.productDialogService.updateProduct(form.row, this.fileToUpload);
 				}
 			}),
-			map((updatedRecord: RecordModel | Clothing) => {
-				const productUpdate = new ProductUpdate<RecordModel | Clothing>({ ...form, row: updatedRecord });
+			map((updatedProduct: RecordModel | Clothing) => {
+				const productUpdate = new ProductUpdate<RecordModel | Clothing>({ ...form, row: updatedProduct });
 
 				this.populateForm(productUpdate);
 
@@ -264,6 +271,9 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	public onClear() {
 		this.productForm.reset();
+		this.productDialogService.recordForm.reset();
+		this.productDialogService.clothingForm.reset();
+		this.productDialogService.shoeForm.reset();
 		this.imgSrcReplay$.next(this.defaultimageRootPath);
 	}
 

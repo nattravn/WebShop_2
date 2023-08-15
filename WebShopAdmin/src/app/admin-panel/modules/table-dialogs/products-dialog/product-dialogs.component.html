@@ -2,20 +2,21 @@
 <ng-container
 	*ngIf="{
 		paramMapProduct: paramMapProduct$ | async,
-		category: categoryChange$ | async,
+		categoryChange: categoryChange$ | async,
+		category: category$ | async,
 		productData: populateForm$ | async,
 		formValue: formValue$ | async
 	} as source"
 >
 	<app-category-dropdown
-		[selectedCategory]="source.category | lowercase"
+		[selectedCategory]="source.categoryChange | lowercase"
 		(selectCategory)="selectedCataegory($event)"
 		*ngIf="data.createNew"
 	></app-category-dropdown>
 	<br />
 
-	source.productData:
-	<pre>{{ source.productData | json }}</pre>
+	source.category:
+	<pre>{{ source.category | json }}</pre>
 	source.formValue:
 	<pre>{{ source.formValue | json }}</pre>
 	<form [formGroup]="productForm" (submit)="onSubmit(source.formValue)">
@@ -87,12 +88,19 @@
 				<mat-form-field appearance="fill">
 					<mat-label>Choose a date</mat-label>
 					<input formControlName="releaseDate" matInput [matDatepicker]="picker" />
-					<mat-hint>MM/DD/YYYY</mat-hint>
 					<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
 					<mat-datepicker #picker></mat-datepicker>
 				</mat-form-field>
 
-				<div [ngSwitch]="source.category | lowercase">
+				<mat-form-field class="w-100">
+					<mat-select matInput formControlName="subCategoryId" placeholder="SubCategory" [value]="source.formValue.row.subCategoryId">
+						<mat-option *ngFor="let subCategory of source.category?.subCategories" [value]="subCategory.id">
+							{{ subCategory.name }}
+						</mat-option>
+					</mat-select>
+				</mat-form-field>
+
+				<div [ngSwitch]="source.categoryChange | lowercase">
 					<app-record-dialog *ngSwitchCase="categoryEnum.records"></app-record-dialog>
 					<app-clothing-dialog *ngSwitchCase="categoryEnum.clothing"></app-clothing-dialog>
 					<app-shoe *ngSwitchCase="categoryEnum.shoe"></app-shoe>

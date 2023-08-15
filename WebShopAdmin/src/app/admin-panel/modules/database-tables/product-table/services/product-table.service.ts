@@ -55,7 +55,7 @@ export class ProductTableService {
 		searchQuery: string,
 		sort: MatSort | null,
 	): Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }> {
-		this.tableData$ = this.categoryStore.getProducts(productString, pageLimit, page, key, order, searchQuery).pipe(
+		this.tableData$ = this.categoryStore.getPagedProducts(productString, pageLimit, page, key, order, searchQuery).pipe(
 			untilDestroyed(this),
 			switchMap((products: ProductTable) => {
 				this.dataSource.data = products.items;

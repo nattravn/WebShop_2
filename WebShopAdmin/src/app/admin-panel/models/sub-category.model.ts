@@ -2,5 +2,9 @@ export class SubCategory {
 	public id: number;
 	public name: string;
 	public route: string;
-	public subCategoryId: number;
+	public categoryId: number;
+
+	constructor(init?: Partial<SubCategory>) {
+		Object.assign(this, init);
+	}
 }

@@ -34,7 +34,6 @@ export class RecordStore {
 		formData.append('band', modelFormData.band);
 		formData.append('album', modelFormData.album);
 		formData.append('releaseDate', releaseDate.toDateString());
-		formData.append('genre', modelFormData.genre);
 
 		if (fileToUpload) {
 			formData.append('image', fileToUpload, fileToUpload.name);
@@ -64,7 +63,6 @@ export class RecordStore {
 		formData.append('album', modelFormData.album);
 		formData.append('releaseDate', releaseDate.toDateString());
 		// lastUpdateTime is always updated in backend
-		formData.append('genre', modelFormData.genre);
 		if (fileToUpload != null) {
 			formData.append('image', fileToUpload, fileToUpload.name);
 		}

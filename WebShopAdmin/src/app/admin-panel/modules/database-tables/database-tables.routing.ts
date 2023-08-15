@@ -23,18 +23,18 @@ const routes: Routes = [
 					},
 				],
 			},
-			{
-				path: 'products',
-				component: ProductTableComponent,
-				children: [
-					{
-						path: '', // flytta till separata modal routes, inte child routes
-						outlet: 'tablesOutlet',
-						pathMatch: 'full',
-						loadChildren: () => import('../table-dialogs/base-modal.module').then((m) => m.BaseModalModule),
-					},
-				],
-			},
+			// {
+			// 	path: 'products',
+			// 	component: ProductTableComponent,
+			// 	children: [
+			// 		{
+			// 			path: '', // flytta till separata modal routes, inte child routes
+			// 			outlet: 'tablesOutlet',
+			// 			pathMatch: 'full',
+			// 			loadChildren: () => import('../table-dialogs/base-modal.module').then((m) => m.BaseModalModule),
+			// 		},
+			// 	],
+			// },
 			{
 				path: `users/:${AdminCategoryEnum.user}`,
 				component: UserTableComponent,
@@ -52,7 +52,7 @@ const routes: Routes = [
 				children: [
 					{
 						path: 'modal',
-						outlet: 'tablesOutlet',
+						// outlet: 'tablesOutlet',
 						loadChildren: () => import('../table-dialogs/base-modal.module').then((m) => m.BaseModalModule),
 					},
 				],

@@ -5,8 +5,6 @@ export class RecordUpdate extends BaseProduct {
 
 	public album: string;
 
-	public genre: string;
-
 	constructor(init?: Partial<RecordUpdate>) {
 		super();
 		Object.assign(this, init);

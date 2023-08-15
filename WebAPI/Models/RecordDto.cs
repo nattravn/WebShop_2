@@ -9,6 +9,5 @@ namespace WebAPI.Models
     {
         public string Band { get; set; }
         public string Album { get; set; }
-        public string Genre { get; set; }
     }
 }

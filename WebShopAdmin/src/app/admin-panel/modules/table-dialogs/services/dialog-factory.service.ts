@@ -36,8 +36,12 @@ export class DialogFactoryService<T = undefined> {
 				switchMap(() =>
 					this.activatedRoute.paramMap.pipe(
 						tap((paramMap) => {
-							console.log('afterClosed', paramMap);
-							// this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: null}}]);
+							console.log('afterClosed', this.activatedRoute.snapshot);
+							console.log('paramMap', paramMap);
+							// this.router.navigate([
+							// 	`adminpanel/tables/products/${paramMap.get('product')}`,
+							// 	{ outlets: { tablesOutlet: null } },
+							// ]);
 							this._location.back();
 						}),
 					),

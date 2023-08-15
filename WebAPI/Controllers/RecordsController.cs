@@ -12,6 +12,7 @@ using System.Threading;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.Extensions.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using WebAPI.Constants;
 
 namespace WebAPI.Controllers
 {
@@ -195,7 +196,7 @@ namespace WebAPI.Controllers
             }
 
             recordToUpdate.LastUpdatedTime = DateTime.Now;
-            recordToUpdate.CategoryName = "records";
+            recordToUpdate.CategoryName = CategoryNames.Records;
             // map the entity to a RecordForUpdateDto
             // apply the updated field values to that dto
             // map the RecordForUpdateDto back to an entity
