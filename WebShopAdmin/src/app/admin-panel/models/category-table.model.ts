@@ -1,6 +1,6 @@
 import { Category } from './category.model';
 
-export class PagedCategory {
+export class CategoryTable {
 	public currentPage: number;
 
 	public totalItems: number;

@@ -41,17 +41,13 @@ export class RecordDialogComponent implements OnInit {
 	ngOnInit(): void {
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
-			filter((queryParams) => !this.data.createNew),
+			filter(() => !this.data.createNew),
 			switchMap((productData) => {
 				this.populateForm(productData.row as RecordUpdate);
 				return of(null);
 			}),
 			shareReplay(1),
 		);
-	}
-
-	public onClear() {
-		this.productDialogService.recordForm.reset();
 	}
 
 	private populateForm(productUpdate: RecordUpdate) {

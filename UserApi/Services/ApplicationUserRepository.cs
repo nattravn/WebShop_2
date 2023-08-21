@@ -1,15 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using UserApi.Entities;
+using UserApi.Extensions;
 using UserApi.Filter;
 using UserApi.Models;
 using UserApi.ResourceParameters;
-
 
 namespace UserApi.Services
 {
@@ -31,7 +34,7 @@ namespace UserApi.Services
                 throw new ArgumentNullException(nameof(userToAdd));
             }
 
-            _context.ApplicationUsers.Add(userToAdd);
+            _context.Users.Add(userToAdd);
         }
 
         public ApplicationUser GetUser(string userId)
@@ -41,12 +44,12 @@ namespace UserApi.Services
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            return _context.ApplicationUsers.Where(a => a.Id == userId).FirstOrDefault();
+            return _context.Users.Where(a => a.Id == userId).FirstOrDefault();
         }
 
         public IEnumerable<ApplicationUser> GetUsers()
         {
-            return _context.ApplicationUsers.ToList<ApplicationUser>();
+            return _context.Users.ToList<ApplicationUser>();
         }
 
         public IEnumerable<ApplicationUser> GetUsers(UsersResourceParameters usersResourceParameters)
@@ -62,18 +65,18 @@ namespace UserApi.Services
                 return GetUsers();
             }
 
-            var collection = _context.ApplicationUsers as IQueryable<ApplicationUser>;
+            var collection = _context.Users as IQueryable<ApplicationUser>;
 
             if (!string.IsNullOrWhiteSpace(usersResourceParameters.UserName))
             {
                 var userName = usersResourceParameters.UserName.Trim();
-                collection = _context.ApplicationUsers.Where(a => a.UserName == userName);
+                collection = _context.Users.Where(a => a.UserName == userName);
             }
 
             if (!string.IsNullOrWhiteSpace(usersResourceParameters.SearchQuery))
             {
                 var searchQuery = usersResourceParameters.SearchQuery.Trim();
-                collection = _context.ApplicationUsers.Where(a => a.UserName.Contains(searchQuery)
+                collection = _context.Users.Where(a => a.UserName.Contains(searchQuery)
                     || a.FullName.Contains(searchQuery)
                     || a.Id.Equals(searchQuery)
                     || a.Email.Contains(searchQuery));
@@ -89,7 +92,7 @@ namespace UserApi.Services
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            return _context.ApplicationUsers.Any(a => a.Id == userId);
+            return _context.Users.Any(a => a.Id == userId);
         }
 
         public bool Save()
@@ -118,7 +121,7 @@ namespace UserApi.Services
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            return _context.ApplicationUsers.Where(a => userId.Contains(a.Id))
+            return _context.Users.Where(a => userId.Contains(a.Id))
                 .OrderBy(a => a.UserName)
                 .ToList();
         }
@@ -130,12 +133,13 @@ namespace UserApi.Services
                 throw new ArgumentNullException(nameof(applicationUser));
             }
 
-            _context.ApplicationUsers.Remove(applicationUser);
+            _context.Users.Remove(applicationUser);
         }
 
-        public void updateApplicationUser(ApplicationUser userToUpdate)
+        public void updateApplicationUser(string RoleName, string userId)
         {
-            // no code in this implementation
+            var roleId = getRole(RoleName);
+            updateApplicationUserRole(roleId.Id, userId);
         }
 
         public async Task<GetTableListResponseDto<ApplicationUserDto>> GetUsersWithParams(
@@ -143,6 +147,7 @@ namespace UserApi.Services
             int page,
             string key,
             string order,
+            string search,
             CancellationToken cancellationToken)
         {
             //Alternative way to fetch data using PaginatedList class
@@ -153,6 +158,14 @@ namespace UserApi.Services
             //    limit
             //);
 
+            var searchQuery = "";
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                searchQuery = search.Trim().ToLower(CultureInfo.CurrentCulture);
+            }
+
+
             var columnProperty = typeof(ApplicationUserDto).GetProperty(key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
 
             if (columnProperty == null)
@@ -160,12 +173,35 @@ namespace UserApi.Services
                 return new GetTableListResponseDto<ApplicationUserDto> { CurrentPage = 0 };
             }
 
-            var users = await _context.ApplicationUsers
-                                    .AsNoTracking()
-                                    .OrderByMember(key, order == "desc")
-                                    .PaginateAsync(page, limit, cancellationToken);
+            //var roles = _context.UserRoles.AsNoTracking();
+
+            //var users = await _context.Users
+            //                        .AsNoTracking()
+            //                        .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Email.Contains(searchQuery)
+            //                            || a.FullName.Contains(searchQuery)
+            //                            || a.Id.Equals(searchQuery))
+            //                        .OrderByMember(key, order == "desc")
+            //                        .PaginateAsync(page, limit, cancellationToken);
 
 
+            var userRoles = _context.UserRoles.AsNoTracking();
+            var roles = _context.Roles.AsNoTracking();
+
+            var usersQuery = _context.Users
+                .AsNoTracking()
+                .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Email.Contains(searchQuery)
+                                                                || a.FullName.Contains(searchQuery)
+                                                                || a.Id == searchQuery).OrderByMember(key, order == "desc");
+
+            var users = await usersQuery
+                .Select(user => new
+                {
+                    User = user,
+                    RoleName = roles.Where(role => role.Id == userRoles.Where(userRole => userRole.UserId == user.Id).FirstOrDefault().RoleId).FirstOrDefault().Name
+                })
+                .PaginateAsync(page, limit, cancellationToken);
+
+            // var role = await _context.AspNetUserRoles.AsNoTracking().Where()
 
             return new GetTableListResponseDto<ApplicationUserDto>
             {
@@ -174,12 +210,38 @@ namespace UserApi.Services
                 TotalItems = users.TotalItems,
                 Items = users.Items.Select(p => new ApplicationUserDto
                 {
-                    Id = p.Id,
-                    Email = p.Email,
-                    UserName = p.UserName,
-                    FullName = p.FullName
+                    Id = p.User.Id,
+                    Email = p.User.Email,
+                    UserName = p.User.UserName,
+                    FullName = p.User.FullName,
+                    RoleName = p.RoleName
                 }).ToList()
             };
+        }
+
+        public IEnumerable<IdentityRole> GetRoles()
+        {
+            return _context.Roles
+                .OrderBy(a => a.Name)
+                .ToList();
+        }
+
+        public void updateApplicationUserRole(string roleId, string userId)
+        {
+            var userRole = _context.UserRoles.Where(x => x.UserId == userId).FirstOrDefault();
+
+            if (userRole != null)
+            {
+                _context.UserRoles.Remove(userRole);
+            } 
+            _context.UserRoles.Add(new IdentityUserRole<string> { RoleId = roleId, UserId = userId }); ;
+
+            _context.SaveChanges();
+        }
+
+        public IdentityRole getRole(string roleName)
+        {
+            return _context.Roles.Where(x => x.Name == roleName).FirstOrDefault();
         }
     }
 }

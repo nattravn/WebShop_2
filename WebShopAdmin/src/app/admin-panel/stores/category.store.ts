@@ -7,7 +7,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 import { Category } from '../models/category.model';
 import { environment } from 'src/environments/environment';
-import { PagedCategory } from '../models/paged-category.model';
+import { CategoryTable } from '../models/category-table.model';
 import { ProductTable } from '@admin-panel/models/product-table.model';
 
 @UntilDestroy()
@@ -29,9 +29,9 @@ export class CategoryStore {
 		key: string,
 		order: string,
 		keyWord: string,
-	): Observable<PagedCategory> {
+	): Observable<CategoryTable> {
 		return this.http
-			.get<PagedCategory>(`${this.rootURL}/category/GetPagedCategories`, {
+			.get<CategoryTable>(`${this.rootURL}/category/GetPagedCategories`, {
 				params: {
 					limit: limit.toString(),
 					page: page.toString(),

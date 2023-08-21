@@ -52,7 +52,7 @@ import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 		CategoryStore,
 		DialogFactoryService,
 		ProductDialogService,
-		CustomDatePipe
+		CustomDatePipe,
 	],
 })
 export class DatabaseTablesModule {}

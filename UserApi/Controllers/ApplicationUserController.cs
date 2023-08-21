@@ -81,14 +81,15 @@ namespace UserApi.Controllers
             }
 
             // https://vmsdurano.com/asp-net-core-5-implement-web-api-pagination-with-hateoas-links/
-            var records = await _userRepository.GetUsersWithParams(
+            var users = await _userRepository.GetUsersWithParams(
                                     urlQueryParameters.Limit,
                                     urlQueryParameters.Page,
                                     urlQueryParameters.Key,
                                     urlQueryParameters.Order,
+                                    urlQueryParameters.SearchQuery,
                                     cancellationToken);
 
-            return Ok(records);
+            return Ok(users);
         }
 
 
@@ -101,7 +102,6 @@ namespace UserApi.Controllers
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(new Claim[]
             {
                     new Claim(ClaimTypes.NameIdentifier, userId)
-
             });
             
             claimsPrincipal.AddIdentity(claimsIdentity);
@@ -118,13 +118,26 @@ namespace UserApi.Controllers
             return Ok(_mapper.Map<ApplicationUserDto>(userEntity));
         }
 
+        // GET: api/ApplicationUser/roles
+        [HttpGet("roles", Name = "GetRoles")]
+        public async Task<IActionResult> GetAspNetRoles()
+        {
+            // Alternative way of getting a user using the _userManager
+
+            IEnumerable<IdentityRole> roles = _userRepository.GetRoles();
+
+
+
+            return Ok(roles);
+        }
+
 
         [HttpPost]
         [Route("Register")]
         //POST : api/ApplicationUser/Register
         public async Task<Object> CreateApplicationUser(ApplicationUserForCreationDto model)
         {
-            model.Role = "Customer";
+            model.RoleName = "Customer";
 
             var applicationUser = new ApplicationUser()
             {
@@ -136,7 +149,7 @@ namespace UserApi.Controllers
             try
             {
                 var result = await _userManager.CreateAsync(applicationUser, model.Password);
-                await _userManager.AddToRoleAsync(applicationUser, model.Role);
+                await _userManager.AddToRoleAsync(applicationUser, model.RoleName);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -213,11 +226,14 @@ namespace UserApi.Controllers
 
             _mapper.Map(applicationUser, applicationUserFromRepo);
 
-            _userRepository.updateApplicationUser(applicationUserFromRepo);
+            _userRepository.updateApplicationUser(applicationUser.RoleName, applicationUserFromRepo.Id);
+            
 
             _userRepository.Save();
 
-            return NoContent();
+            var applicationUserToReturn1 = _mapper.Map<ApplicationUserDto>(applicationUserFromRepo);
+            applicationUserToReturn1.RoleName = applicationUser.RoleName;
+            return CreatedAtRoute("GetUser", new { userId = applicationUserFromRepo.Id }, applicationUserToReturn1);
 
         }
 
@@ -267,7 +283,8 @@ namespace UserApi.Controllers
             
             _mapper.Map(applicationUserToPath, applicationUserFromRepo);
 
-            _userRepository.updateApplicationUser(applicationUserFromRepo);
+            var applicationUserToPathConverted = _mapper.Map<ApplicationUserForCreationDto>(applicationUserFromRepo);
+            _userRepository.updateApplicationUser(applicationUserToPathConverted.RoleName, applicationUserFromRepo.Id);
 
             _userRepository.Save();
 

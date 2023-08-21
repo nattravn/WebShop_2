@@ -88,6 +88,7 @@ namespace UserApi
 
             // User identity injection
             // This can only take a IdentityUser, ApplicationUser inherit IdentityUser!!!
+            // Otherwise you get the error "AddEntityFrameworkStores can only be called with a user that derives from IdentityUser<TKey>."
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AuthenticationContext>();

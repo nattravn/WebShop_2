@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,10 +25,13 @@ namespace UserApi.Services
             int page,
             string key,
             string direction,
+            string SearchQuery,
             CancellationToken cancellationToken
         );
 
-        void updateApplicationUser(ApplicationUser userToUpdate);
+        void updateApplicationUser(string RoleName, string userId);
+
+        void updateApplicationUserRole(string roleId, string userId);
 
         void AddUser(ApplicationUser userToAdd);
 
@@ -36,6 +40,11 @@ namespace UserApi.Services
         Task<bool> SaveChangesAsync { get; }
 
         bool UserExists(string userId);
+
         bool Save();
+
+        IEnumerable<IdentityRole> GetRoles();
+
+        IdentityRole getRole(string roleName);
     }
 }

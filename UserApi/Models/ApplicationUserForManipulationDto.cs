@@ -27,6 +27,7 @@ namespace UserApi.Models
         [MaxLength(100)]
         public virtual string FullName { get; set; }
 
-        public string Role { get; set; }
+        [Required(ErrorMessage = "You should select a user role")]
+        public string RoleName { get; set; }
     }
 }

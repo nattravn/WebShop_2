@@ -62,23 +62,6 @@ export class ClothingDialogComponent implements OnInit {
 		this.form.get('size').setValue(clothing.size);
 	}
 
-	public onClear() {
-		this.form.reset();
-		this.initializeFormGroup();
-	}
-
-	public onClose() {
-		this.form.reset();
-		this.initializeFormGroup();
-		this.dialogRef.close();
-	}
-
-	private initializeFormGroup() {
-		this.form.setValue({
-			size: '',
-		});
-	}
-
 	/**
 	 * Observable valuse of the form initiated with values
 	 */

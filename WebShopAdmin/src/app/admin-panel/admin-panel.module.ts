@@ -16,6 +16,7 @@ import { CategoryNamePipe } from './pipe/category-name.pipe';
 import { CategoryStore } from './stores/category.store';
 import { AddUserComponent } from './add-user/add-user.component';
 import { ProductStore } from './stores/product.store';
+import { UserTableService } from '@database-tables/user-table/serivces/user-table.service';
 
 @NgModule({
 	declarations: [AdminPanelComponent, CategoryNamePipe, AddUserComponent],
@@ -36,6 +37,7 @@ import { ProductStore } from './stores/product.store';
 		RecordDialogService,
 		ProductTableService,
 		CategoryTableService,
+		UserTableService,
 		CategoryDialogService,
 		BaseModalComponent,
 	],

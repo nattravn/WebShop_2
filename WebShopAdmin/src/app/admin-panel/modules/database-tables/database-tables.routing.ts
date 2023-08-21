@@ -40,8 +40,8 @@ const routes: Routes = [
 				component: UserTableComponent,
 				children: [
 					{
-						path: `:${AdminCategoryEnum.user}`,
-						outlet: 'tablesOutlet',
+						path: 'modal',
+						// outlet: 'tablesOutlet',
 						loadChildren: () => import('../table-dialogs/base-modal.module').then((m) => m.BaseModalModule),
 					},
 				],

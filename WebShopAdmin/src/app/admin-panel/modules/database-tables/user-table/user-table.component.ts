@@ -4,16 +4,18 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { PagedUsers } from 'src/app/admin-panel/models/paged-users.model';
 
 import { ToastrService } from 'ngx-toastr';
-import { Observable, of } from 'rxjs';
-import { shareReplay, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { User } from '@admin-panel/models/user.model';
 import { UserStore } from '@admin-panel/stores/user.store';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 import { UserDialogComponent } from '@table-dialogs/user-dialog/user-dialog.component';
+import { ModuleService } from '@admin-panel/modules/services/module-service.service';
+import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { UserTableService } from './serivces/user-table.service';
 
 export interface IFilterForm {
 	search: FormControl<string>;
@@ -60,9 +62,11 @@ export class UserTableComponent implements OnInit {
 		private dialogFactoryService: DialogFactoryService,
 		public activatedRoute: ActivatedRoute,
 		public router: Router,
+		public moduleService: ModuleService,
+		public userTableService: UserTableService,
 	) {}
 	ngOnInit(): void {
-		this.refreshMatTable('applicationUser', 5, 1, this.active, this.direction);
+		this.userTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
 	}
 
 	public sortData(filterForm: FormGroup, sort: Sort) {
@@ -70,50 +74,87 @@ export class UserTableComponent implements OnInit {
 		this.direction = sort.direction;
 
 		if (!filterForm.value['search']) {
-			this.refreshMatTable('ApplicationUser', 5, 1, sort.active, sort.direction);
+			this.userTableService.refreshMatTable(5, 1, sort.active, sort.direction, '', null);
 		}
 	}
 
 	public onSearchClear(dataSource: MatTableDataSource<User>) {
 		this.filterForm.reset();
 		dataSource.filter = '';
-		this.refreshMatTable('ApplicationUser', 5, 1, this.active, this.direction);
+		this.userTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
 	}
 
 	public updateTable(filterForm: FormGroup, event?: PageEvent) {
-		// this.currentPageIndex = event.pageIndex + 1;
-		// this.currentTableSize = event.pageSize;
+		this.userTableService.currentPage = event.pageIndex + 1;
+		this.userTableService.totalPages = event.pageSize;
 
-		// Temporary solution. Remove if-state and do backend call here with search param
-		if (!filterForm.get('search').value) {
-			this.refreshMatTable('ApplicationUser', event.pageSize, event.pageIndex + 1, this.active, this.direction);
-		}
+		this.userTableService.refreshMatTable(
+			event.pageSize,
+			event.pageIndex + 1,
+			this.active,
+			this.direction,
+			filterForm.value['search'],
+			null,
+		);
 	}
 
 	public applyFilter(event: Event, dataSource: MatTableDataSource<User>) {
 		const filterValue = (event.target as HTMLInputElement).value;
 
-		this.tableData$ = this.userStore.getUsersByKeyWord(filterValue, '').pipe(
-			switchMap((x: User[]) => {
-				dataSource.data = x ? x : [];
-				dataSource.paginator = this.paginator;
-				dataSource.sort = this.sort;
-				return of({ items: dataSource, totalItems: x.length });
-			}),
-			shareReplay(1),
-		);
+		// this.tableData$ = this.userStore.getUsersByKeyWord(filterValue, '').pipe(
+		// 	switchMap((x: User[]) => {
+		// 		dataSource.data = x ? x : [];
+		// 		dataSource.paginator = this.paginator;
+		// 		dataSource.sort = this.sort;
+		// 		return of({ items: dataSource, totalItems: x.length });
+		// 	}),
+		// 	shareReplay(1),
+		// );
+
+		this.userTableService.refreshMatTable(5, 1, this.active, this.direction, filterValue, null);
 	}
 
 	public onDelete(row: any) {
 		if (confirm('Are you sure to delete this record?')) {
-			this.userStore.deleteUser(row.id).subscribe(() => {
-				this.toastr.warning('Deleted successfully', 'EMP. Register');
-				this.refreshMatTable('endpoint', 5, 1, this.active, this.direction);
-			});
+			return this.userStore
+				.deleteUser(row.id)
+				.pipe(
+					switchMap(() => {
+						this.toastr.warning('Deleted successfully', 'EMP. Register');
+						return this.userTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
+					}),
+				)
+				.subscribe();
 		}
 	}
 
 	public onEdit(row: any, paramMap: any) {
+		this.moduleService.userFormData$.next({
+			row: row,
+			currentPage: this.userTableService.currentPage,
+			totalPages: this.userTableService.totalPages,
+			order: this.userTableService.order,
+			sortKey: this.userTableService.sortKey,
+		});
+
+		// this.selectedCategory = row;
+
+		this.router
+			.navigate([`adminpanel/tables/users/${AdminCategoryEnum.user}/modal`], {
+				queryParams: { createNewProduct: true },
+			})
+			.then(() => {
+				this.dialogFactoryService.open({
+					headerText: 'Header text record',
+					category: {
+						id: 99,
+						name: paramMap.get('user'),
+						route: 'user',
+					},
+					createNew: false,
+					template: this.userDialogTemplate,
+				});
+			});
 		// this.recordDialogService.populateForm(row);
 		// if(paramMap.get('product')){
 		// 	this.router.navigate(['adminpanel/tables/products/'+paramMap.get('product'), {outlets: {tablesOutlet: paramMap.get('product')}}]);
@@ -146,10 +187,8 @@ export class UserTableComponent implements OnInit {
 	public onCreate(paramMap: ParamMap) {
 		this.userStore.userForm.reset();
 
-		console.log('userDialogTemplate: ', this.userDialogTemplate);
-
 		this.router
-			.navigate(['adminpanel/tables/users/user', { outlets: { tablesOutlet: 'users' } }], {
+			.navigate(['adminpanel/tables/users/user/modal'], {
 				queryParams: { createNewProduct: true },
 			})
 			.then(() => {
@@ -164,20 +203,5 @@ export class UserTableComponent implements OnInit {
 					template: this.userDialogTemplate,
 				});
 			});
-	}
-
-	private refreshMatTable(endpoint: string, pageSize: number, pageIndex: number, active: string, direction: string) {
-		this.tableData$ = this.userStore.getPagedUsers(endpoint, pageSize, pageIndex, active, direction).pipe(
-			switchMap((pagedUsers: PagedUsers) => {
-				const dataSource = new MatTableDataSource<User>();
-				dataSource.data = pagedUsers.items;
-				dataSource.sort = this.sort;
-				// dataSource.paginator = this.paginator;
-				return of({ items: dataSource, totalItems: pagedUsers.totalItems });
-			}),
-			shareReplay(1),
-		);
-
-		return this.tableData$;
 	}
 }

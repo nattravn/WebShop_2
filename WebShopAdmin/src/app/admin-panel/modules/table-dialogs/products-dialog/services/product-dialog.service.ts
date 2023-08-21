@@ -87,7 +87,6 @@ export class ProductDialogService {
 	}
 
 	public createProduct(productUpdate: BaseProduct, fileToUpload: File): Observable<RecordModel | Clothing | ShoeUpdate> {
-		console.log('productUpdate: ', productUpdate.categoryName.toLocaleLowerCase());
 		if (productUpdate.categoryName.toLocaleLowerCase() === CategoryNameEnum.shoes) {
 			productUpdate.categoryName = CategoryNameEnum.shoes;
 			const newShoe = new ShoeUpdate({ ...productUpdate, ...this.clothingForm.value });

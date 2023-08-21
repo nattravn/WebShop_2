@@ -15,7 +15,7 @@ import { ProductDialogService } from './services/product-dialog.service';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { shareReplay, switchMap, startWith, delay, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
-import { ProductUpdate } from '@admin-panel/models/product-update.model';
+import { ProductDialog } from '@admin-panel/models/product-dialog.model';
 import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 import { RecordModel } from '@admin-panel/models/record.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -94,7 +94,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 
 	// public dialogRef: MatDialogRef<RecordDialogComponent>
 
-	public populateForm$ = new Observable<ProductUpdate<RecordModel | Clothing | BaseProduct>>();
+	public populateForm$ = new Observable<ProductDialog<RecordModel | Clothing | BaseProduct>>();
 
 	public category$ = new ReplaySubject<Category>(1);
 
@@ -158,7 +158,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		// },);
 	}
 
-	public populateForm(productUpdate: ProductUpdate<RecordModel | Clothing | BaseProduct>) {
+	public populateForm(productUpdate: ProductDialog<RecordModel | Clothing | BaseProduct>) {
 		this.productForm.get('row').get('id').setValue(productUpdate.row.id);
 		this.productForm.get('row').get('releaseDate').setValue(productUpdate.row.releaseDate);
 		this.productForm.get('row').get('description').setValue(productUpdate.row.description);
@@ -214,7 +214,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 	}
 
-	public onSubmit(form: ProductUpdate<RecordUpdate | Clothing>): void {
+	public onSubmit(form: ProductDialog<RecordUpdate | Clothing>): void {
 		if (this.productForm.invalid || !form.row.categoryName) {
 			console.error('Form invalid or missing CategoryName. Form invalid: ', this.productForm.invalid, form);
 			return;
@@ -225,7 +225,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 			untilDestroyed(this),
 			switchMap((user) => {
 				// Set forms userId to in logged user
-				form.row.editorUserId = user.userId;
+				form.row.editorUserId = user.id;
 
 				// Create or update
 				if (!form.row.id || this.data.createNew) {
@@ -235,7 +235,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 				}
 			}),
 			map((updatedProduct: RecordModel | Clothing) => {
-				const productUpdate = new ProductUpdate<RecordModel | Clothing>({ ...form, row: updatedProduct });
+				const productUpdate = new ProductDialog<RecordModel | Clothing>({ ...form, row: updatedProduct });
 
 				this.populateForm(productUpdate);
 

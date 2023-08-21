@@ -97,6 +97,7 @@ export class CategoryTableComponent implements AfterViewInit, OnInit {
 	) {}
 	ngAfterViewInit(): void {
 		this.categoryTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
+		this.cd.detectChanges();
 		// throw new Error('Method not implemented.');
 	}
 	ngOnInit() {

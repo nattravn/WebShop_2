@@ -1,5 +1,44 @@
-<p>user-dialog works!</p>
+<ng-container
+	*ngIf="{
+		formValue: formValue$ | async,
+		productData: populateForm$ | async,
+		roles: roles$ | async
+	} as source"
+>
+	<pre>{{ source.formValue | json }}</pre>
+	<form [formGroup]="userForm" (submit)="onSubmit(source.formValue)">
+		<div class="controls-container" formGroupName="row">
+			<mat-form-field class="w-100">
+				<input formControlName="id" [readonly]="true" matInput placeholder="userId" />
+			</mat-form-field>
 
-<ng-template #userDialogTemplate>
-	<p>user-dialog template works!</p>
-</ng-template>
+			<mat-form-field class="w-100">
+				<input formControlName="fullName" matInput placeholder="fullName" />
+				<mat-error>This field is mandatory.</mat-error>
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
+				<input formControlName="email" matInput placeholder="email" />
+				<mat-error>Invalid email address.</mat-error>
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
+				<input formControlName="password" matInput placeholder="password" />
+				<mat-error>Password is missing</mat-error>
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
+				<mat-select matInput formControlName="roleName" placeholder="role" [value]="source.formValue.row.roleName">
+					<mat-option *ngFor="let role of source.roles" [value]="role.name">
+						{{ role.name }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<div class="button-row">
+				<button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">Submit</button>
+				<button mat-raised-button color="warn" type="button" (click)="onClear()">Clear</button>
+			</div>
+		</div>
+	</form>
+</ng-container>

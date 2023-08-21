@@ -12,7 +12,7 @@ import { SubCategory } from '@admin-panel/models/sub-category.model';
 import { Observable } from 'rxjs';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
-import { CategoryUpdate } from '@admin-panel/models/category-update.model';
+import { CategoryDialog } from '@admin-panel/models/category-dialog.model';
 
 export interface ICategoryDialogForm {
 	id: FormControl<number>;
@@ -63,7 +63,7 @@ export class CategoryDialogComponent implements OnInit {
 		}),
 	});
 
-	public populateForm$ = new Observable<CategoryUpdate>();
+	public populateForm$ = new Observable<CategoryDialog>();
 
 	constructor(
 		public categoryDialogService: CategoryDialogService,
@@ -85,7 +85,7 @@ export class CategoryDialogComponent implements OnInit {
 		);
 	}
 
-	public onSubmit(form: CategoryUpdate) {
+	public onSubmit(form: CategoryDialog) {
 		this.userStore
 			.getUserProfile()
 			.pipe(
@@ -135,7 +135,7 @@ export class CategoryDialogComponent implements OnInit {
 		this.subCategoryArray.push(form);
 	}
 
-	public populateForm(category: CategoryUpdate) {
+	public populateForm(category: CategoryDialog) {
 		this.form.get('row').get('id').setValue(category.row.id);
 		this.form.get('row').get('route').setValue(category.row.route);
 		this.form.get('row').get('name').setValue(category.row.name);

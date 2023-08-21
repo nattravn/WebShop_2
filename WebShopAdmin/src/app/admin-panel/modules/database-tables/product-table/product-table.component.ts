@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Router, RouterOutlet } from '@angular/router'
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
-import { shareReplay, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 import { Clothing } from '@admin-panel/models/clothing.model';
 import { RecordModel } from '@admin-panel/models/record.model';
@@ -132,10 +132,8 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		active: string,
 		direction: string,
 		searchQuery: string,
-	): Observable<{ items: MatTableDataSource<RecordModel | Clothing>; totalItems: number }> {
-		return this.productTableService
-			.refreshMatTable(productString, pageLimit, page, active, direction, searchQuery, null)
-			.pipe(untilDestroyed(this), shareReplay(1));
+	): void {
+		this.productTableService.refreshMatTable(productString, pageLimit, page, active, direction, searchQuery, null);
 
 		// this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction,searchQuery).pipe(
 		// 	untilDestroyed(this),
@@ -158,6 +156,8 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		// const filterValue = (event.target as HTMLInputElement).value;
 
 		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
+
+		// TODO remove firstPage() maybe
 		this.paginator.firstPage();
 		this.refreshMatTable(
 			this.activatedRoute.snapshot.paramMap.get('product'),

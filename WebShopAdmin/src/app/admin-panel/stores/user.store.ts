@@ -5,7 +5,7 @@ import { FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } fro
 import { EMPTY, from, Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-import { PagedUsers } from '@admin-panel/models/paged-users.model';
+import { UsersTable } from '@admin-panel/models/users-table.model';
 import { UserItem } from '@admin-panel/models/user-item.model';
 import { User } from '@admin-panel/models/user.model';
 import { environment } from '@environments/environment';
@@ -13,6 +13,8 @@ import { environment } from '@environments/environment';
 import { ClothingStore } from './clothing.store';
 import { RecordStore } from './record.store';
 import { ShoeStore } from './shoe.store';
+import { UserUpdate } from '@admin-panel/models/user-update.model';
+import { Role } from '@admin-panel/models/roles.model';
 
 export interface IUserForm {
 	email: FormControl<string>;
@@ -35,19 +37,6 @@ export class UserStore {
 	public userList: User[];
 
 	public userStatus = 'Log in';
-
-	// public formModel = this.fb.group<IUserForm>({
-	// 	userName: ['', Validators.required],
-	// 	email: new FormControl('', Validators.required),
-	// 	fullName: [''],
-	// 	passwords: this.fb.group<IUserPasswords>(
-	// 		{
-	// 			password: ['', [Validators.required, Validators.minLength(4)]],
-	// 			confirmPassword: ['', Validators.required],
-	// 		},
-	// 		{ validator: this.comparePasswords },
-	// 	),
-	// });
 
 	public userForm = new FormGroup<IUserForm>({
 		email: new FormControl('', Validators.required),
@@ -85,6 +74,27 @@ export class UserStore {
 		return this.http.post(`${this.baseUrl}/ApplicationUser/Register`, body);
 	}
 
+	public createUser(user: UserUpdate): Observable<any> {
+		const body = {
+			userName: user.userName,
+			email: user.email,
+			fullName: user.fullName,
+			password: user.password,
+			role: user.roleName,
+		};
+		return this.http.post<any>(`${this.baseUrl}/ApplicationUser/Register`, body);
+	}
+
+	public updateUser(user: UserUpdate): Observable<any> {
+		// const body = {
+		// 	userName: user.userName,
+		// 	email: user.email,
+		// 	fullName: user.fullName,
+		// 	password: user.password,
+		// };
+		return this.http.put<any>(`${this.baseUrl}/ApplicationUser/${user.id}`, user);
+	}
+
 	public login(formData) {
 		this.userStatus = 'Log out';
 		console.log('formData: ', formData);
@@ -115,14 +125,16 @@ export class UserStore {
 		page: number,
 		column: string,
 		direction: string,
-	): Observable<PagedUsers> {
+		keyWord: string,
+	): Observable<UsersTable> {
 		return this.http
-			.get<PagedUsers>(`${this.baseUrl}/${route}/GetPagedUsers`, {
+			.get<UsersTable>(`${this.baseUrl}/${route}/GetPagedUsers`, {
 				params: {
 					limit: limit.toString(),
 					page: page.toString(),
 					key: column,
 					order: direction,
+					searchQuery: keyWord ? keyWord.toString() : '',
 				},
 			})
 			.pipe(
@@ -185,30 +197,6 @@ export class UserStore {
 		return from(this.http.get(this.baseUrl + +'/ApplicationUser').toPromise());
 	}
 
-	public initializeFormGroup() {
-		this.userForm.setValue({
-			email: '',
-			userName: '',
-			fullName: '',
-			passwords: {
-				password: '',
-				confirmPassword: '',
-			},
-		});
-	}
-
-	public populateMenuForm(rec: any) {
-		this.userForm.setValue({
-			email: rec.email,
-			userName: rec.userName,
-			fullName: rec.fullName,
-			passwords: {
-				password: '',
-				confirmPassword: '',
-			},
-		});
-	}
-
 	public getUsersByKeyWord(keyWord: string, property: string) {
 		// let params: URLSearchParams = new URLSearchParams();
 		// params.set('user', keyWord);
@@ -229,6 +217,11 @@ export class UserStore {
 
 	public deleteUser(id: number) {
 		return this.http.delete(`${this.baseUrl}/ApplicationUser/${id}`);
+	}
+
+	// api/ApplicationUser/roles
+	public getRoles(): Observable<Role> {
+		return this.http.get<Role>(`${this.baseUrl}/ApplicationUser/roles`);
 	}
 
 	private comparePasswords(fb: FormGroup<IUserPasswords>): ValidatorFn {

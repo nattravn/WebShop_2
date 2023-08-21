@@ -1,6 +1,6 @@
 import { User } from './user.model';
 
-export class PagedUsers {
+export class UsersTable {
 	public currentPage: number;
 
 	public totalItems: number;

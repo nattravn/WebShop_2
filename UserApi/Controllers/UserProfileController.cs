@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using UserApi.Entities;
+using UserApi.Models;
 using UserApi.Services;
 
 namespace WebAPI.Controllers
@@ -19,10 +21,13 @@ namespace WebAPI.Controllers
     {
         private UserManager<ApplicationUser> _userManager;
         private readonly IApplicationUserRepository _applicationUserRepository;
+        private readonly IMapper _mapper;
         public UserProfileController(
             UserManager<ApplicationUser> userManager,
-            IApplicationUserRepository applicationUserRepository)
+            IApplicationUserRepository applicationUserRepository,
+            IMapper mapper)
         {
+            _mapper = mapper;
             _userManager = userManager;
             _applicationUserRepository = applicationUserRepository ??
                throw new ArgumentNullException(nameof(applicationUserRepository));
@@ -35,14 +40,8 @@ namespace WebAPI.Controllers
         {
             var accessToken = Request.Headers[HeaderNames.Authorization];
             string userId = User.Claims.First(c => c.Type == "UserID").Value;
-            var user = await _userManager.FindByIdAsync(userId);
-            return new
-            {
-                user.FullName,
-                user.Email,
-                user.UserName,
-                userId
-            };
+            ApplicationUser userEntity = await _userManager.FindByIdAsync(userId);
+            return Ok(_mapper.Map<ApplicationUserDto>(userEntity));
         }
 
         [HttpGet]

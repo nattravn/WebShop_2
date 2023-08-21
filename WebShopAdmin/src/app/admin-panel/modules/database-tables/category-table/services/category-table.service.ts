@@ -8,7 +8,7 @@ import { Category } from '@admin-panel/models/category.model';
 import { CategoryStore } from '@admin-panel/stores/category.store';
 import { MatSort } from '@angular/material/sort';
 import { shareReplay, switchMap } from 'rxjs/operators';
-import { PagedCategory } from '@admin-panel/models/paged-category.model';
+import { CategoryTable } from '@admin-panel/models/category-table.model';
 
 @UntilDestroy()
 @Injectable()
@@ -38,7 +38,7 @@ export class CategoryTableService {
 	): Observable<{ items: MatTableDataSource<Category>; totalItems: number }> {
 		this.tableData$ = this.categoryStore.getPagedCategories(pageLimit, page, key, order, searchQuery).pipe(
 			untilDestroyed(this),
-			switchMap((products: PagedCategory) => {
+			switchMap((products: CategoryTable) => {
 				this.dataSource.data = products.items;
 				this.sortKey = key;
 				this.order = order;
