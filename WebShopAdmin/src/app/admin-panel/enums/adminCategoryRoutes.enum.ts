@@ -1,4 +1,4 @@
-export enum AdminCategoryEnum {
+export enum AdminCategoryRoutesEnum {
 	shoe = 'shoes',
 	records = 'records',
 	clothing = 'clothings',

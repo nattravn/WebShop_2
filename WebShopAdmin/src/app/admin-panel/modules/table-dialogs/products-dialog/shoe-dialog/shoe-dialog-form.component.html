@@ -1,8 +1,15 @@
-<form [formGroup]="productDialogService.shoeForm" class="normal-form">
-	<div class="controls-container">
-		<mat-form-field class="w-100">
-			<input formControlName="label" matInput placeholder="Label" />
-			<mat-error>Invalid label.</mat-error>
-		</mat-form-field>
-	</div>
-</form>
+<ng-container
+	*ngIf="{
+		noooothing: populateForm$ | async,
+		formValue: productDialogService.recordFormValue$ | async
+	} as source"
+>
+	<form [formGroup]="productDialogService.shoeForm" class="normal-form">
+		<div class="controls-container">
+			<mat-form-field class="w-100">
+				<input formControlName="size" matInput placeholder="size" />
+				<mat-error>Invalid label.</mat-error>
+			</mat-form-field>
+		</div>
+	</form>
+</ng-container>

@@ -1,7 +1,7 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 
 import { DialogData } from 'src/app/admin-panel/models/dialog-data.model';
 import { CategoryStore } from 'src/app/admin-panel/stores/category.store';
@@ -21,7 +21,7 @@ export class DialogComponent {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild(RouterOutlet) outlet: RouterOutlet;
 
-	public categoryEnum = AdminCategoryEnum;
+	public categoryEnum = AdminCategoryRoutesEnum;
 
 	public dialogService: DialogService;
 
@@ -47,7 +47,6 @@ export class DialogComponent {
 
 	public onClose() {
 		this.dialogRef.close();
-
 		// this.dialogService.close();
 
 		// this.paramMapProduct$ = this.activatedRoute.paramMap.pipe(

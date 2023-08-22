@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -25,7 +25,7 @@ export interface IClothingForm {
 	selector: 'app-clothing-dialog',
 	templateUrl: './clothing-dialog.component.html',
 })
-export class ClothingDialogComponent implements OnInit {
+export class ClothingDialogComponent implements OnInit, OnDestroy {
 	public populateForm$ = new Observable<any>();
 
 	public form = new FormGroup<IClothingForm>({
@@ -46,6 +46,10 @@ export class ClothingDialogComponent implements OnInit {
 		public productDialogService: ProductDialogService,
 	) {}
 
+	ngOnDestroy() {
+		this.productDialogService.clothingForm.reset();
+	}
+
 	ngOnInit() {
 		this.populateForm$ = this.moduleService.productData$.pipe(
 			untilDestroyed(this),
@@ -59,13 +63,13 @@ export class ClothingDialogComponent implements OnInit {
 	}
 
 	public populateForm(clothing: ClothingUpdate) {
-		this.form.get('size').setValue(clothing.size);
+		this.productDialogService.clothingForm.get('size').setValue(clothing.size);
 	}
 
 	/**
 	 * Observable valuse of the form initiated with values
 	 */
 	public get formValue$(): Observable<any> {
-		return this.form.valueChanges.pipe(startWith(this.form.value), shareReplay(1));
+		return this.productDialogService.clothingForm.valueChanges.pipe(startWith(this.form.value), shareReplay(1));
 	}
 }

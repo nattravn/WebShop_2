@@ -8,7 +8,7 @@ import { AuthService } from '@app/log-in/auth/services/auth.service';
 import { ProductTableService } from '@database-tables/product-table/services/product-table.service';
 
 import { CategoryStore } from '../admin-panel/stores/category.store';
-import { AdminCategoryEnum } from './enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from './enums/adminCategoryRoutes.enum';
 import { Category } from './models/category.model';
 
 @Component({
@@ -17,7 +17,7 @@ import { Category } from './models/category.model';
 	styleUrls: ['./admin-panel.component.scss'],
 })
 export class AdminPanelComponent {
-	public adminCategoryEnum = AdminCategoryEnum;
+	public adminCategoryEnum = AdminCategoryRoutesEnum;
 
 	public categories$ = new Observable<Category[]>();
 

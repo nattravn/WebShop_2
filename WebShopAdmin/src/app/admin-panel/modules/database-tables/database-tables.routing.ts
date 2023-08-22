@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 
 import { CategoryTableComponent } from './category-table/category-table.component';
 import { DatabaseTableContainerComponent } from './database-tables-container.component';
@@ -36,7 +36,7 @@ const routes: Routes = [
 			// 	],
 			// },
 			{
-				path: `users/:${AdminCategoryEnum.user}`,
+				path: `users/:${AdminCategoryRoutesEnum.user}`,
 				component: UserTableComponent,
 				children: [
 					{
@@ -47,7 +47,7 @@ const routes: Routes = [
 				],
 			},
 			{
-				path: `categories/:${AdminCategoryEnum.category}`,
+				path: `categories/:${AdminCategoryRoutesEnum.category}`,
 				component: CategoryTableComponent,
 				children: [
 					{

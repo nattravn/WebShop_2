@@ -69,6 +69,8 @@ export class ShoeStore {
 		formData.append('creatorUserId', modelFormData.creatorUserId);
 		formData.append('subCategory', modelFormData.subCategoryId.toString());
 
+		formData.append('size', modelFormData.size);
+
 		return this.http.post<ShoeUpdate>(`${this.baseUrl}/shoes`, formData).pipe(
 			tap(() => {
 				this.toastr.success('inserted successfully', 'EMP. Register');
@@ -96,6 +98,8 @@ export class ShoeStore {
 		formData.append('categoryId', JSON.stringify(modelFormData.categoryId));
 		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
 		formData.append('editorUserId', modelFormData.editorUserId);
+
+		formData.append('size', modelFormData.size);
 
 		return this.http.put<ShoeUpdate>(`${this.baseUrl}/shoes/${modelFormData.id}`, formData).pipe(
 			tap(() => {

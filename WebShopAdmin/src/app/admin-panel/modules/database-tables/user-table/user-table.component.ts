@@ -14,7 +14,7 @@ import { UserStore } from '@admin-panel/stores/user.store';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 import { UserDialogComponent } from '@table-dialogs/user-dialog/user-dialog.component';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { UserTableService } from './serivces/user-table.service';
 
 export interface IFilterForm {
@@ -140,7 +140,7 @@ export class UserTableComponent implements OnInit {
 		// this.selectedCategory = row;
 
 		this.router
-			.navigate([`adminpanel/tables/users/${AdminCategoryEnum.user}/modal`], {
+			.navigate([`adminpanel/tables/users/${AdminCategoryRoutesEnum.user}/modal`], {
 				queryParams: { createNewProduct: true },
 			})
 			.then(() => {

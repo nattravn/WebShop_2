@@ -77,7 +77,7 @@
               "properties": "explicit",
               "parameterProperties": "explicit"
             },
-						"ignoredMethodNames": ["ngOnInit", "canActivate", "transform", "ngAfterContentChecked", "ngAfterViewInit"],
+						"ignoredMethodNames": ["ngOnInit", "canActivate", "transform", "ngAfterContentChecked", "ngAfterViewInit", "ngOnDestroy"],
 						"ignoredPropertyNames": ["@ViewChild"]
           }
         ],

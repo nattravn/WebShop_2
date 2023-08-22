@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BehaviorSubject, Observable, ReplaySubject, of } from 'rxjs';
 
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { Category } from '@admin-panel/models/category.model';
 import { DialogData } from '@admin-panel/models/dialog-data.model';
 import { CategoryStore } from '@admin-panel/stores/category.store';
@@ -25,6 +25,9 @@ import { ProductTableService } from '@database-tables/product-table/services/pro
 import { Clothing } from '@admin-panel/models/clothing.model';
 import { RecordUpdate } from '@admin-panel/models/record-update.model';
 import { BaseProduct } from '@admin-panel/models/base-product.model';
+import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
+import { ShoeUpdate } from '@admin-panel/models/shoe-update.model';
+import { Shoe } from '@admin-panel/models/shoe.model';
 
 export interface IProductForm {
 	currentPage: FormControl<number>;
@@ -84,7 +87,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	});
 
 	public imgSrcReplay$ = new ReplaySubject<string>(1);
-	public categoryEnum = AdminCategoryEnum;
+	public categoryEnum = AdminCategoryRoutesEnum;
 
 	public categoryChange$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
@@ -158,7 +161,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		// },);
 	}
 
-	public populateForm(productUpdate: ProductDialog<RecordModel | Clothing | BaseProduct>) {
+	public populateForm(productUpdate: ProductDialog<RecordUpdate | ClothingUpdate | ShoeUpdate | BaseProduct>) {
 		this.productForm.get('row').get('id').setValue(productUpdate.row.id);
 		this.productForm.get('row').get('releaseDate').setValue(productUpdate.row.releaseDate);
 		this.productForm.get('row').get('description').setValue(productUpdate.row.description);
@@ -214,9 +217,12 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
 	}
 
-	public onSubmit(form: ProductDialog<RecordUpdate | Clothing>): void {
-		if (this.productForm.invalid || !form.row.categoryName) {
-			console.error('Form invalid or missing CategoryName. Form invalid: ', this.productForm.invalid, form);
+	public onSubmit(
+		baseProductform: ProductDialog<RecordUpdate | ClothingUpdate | ShoeUpdate>,
+		productForm: RecordModel | Clothing | Shoe,
+	): void {
+		if (this.productForm.invalid || !baseProductform.row.categoryName) {
+			console.error('Form invalid or missing CategoryName. Form invalid: ', this.productForm.invalid, baseProductform);
 			return;
 		}
 
@@ -225,17 +231,22 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 			untilDestroyed(this),
 			switchMap((user) => {
 				// Set forms userId to in logged user
-				form.row.editorUserId = user.id;
+				baseProductform.row.editorUserId = user.id;
+
+				console.log('productForm: ', productForm);
 
 				// Create or update
-				if (!form.row.id || this.data.createNew) {
-					return this.productDialogService.createProduct(form.row, this.fileToUpload);
+				if (!baseProductform.row.id || this.data.createNew) {
+					return this.productDialogService.createProduct(baseProductform.row, this.fileToUpload, productForm);
 				} else {
-					return this.productDialogService.updateProduct(form.row, this.fileToUpload);
+					return this.productDialogService.updateProduct(baseProductform.row, this.fileToUpload, productForm);
 				}
 			}),
-			map((updatedProduct: RecordModel | Clothing) => {
-				const productUpdate = new ProductDialog<RecordModel | Clothing>({ ...form, row: updatedProduct });
+			map((updatedProduct: RecordUpdate | ClothingUpdate | ShoeUpdate) => {
+				const productUpdate = new ProductDialog<RecordUpdate | ClothingUpdate | ShoeUpdate>({
+					...baseProductform,
+					row: updatedProduct,
+				});
 
 				this.populateForm(productUpdate);
 
@@ -245,10 +256,10 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 				this.productTableService
 					.refreshMatTable(
 						productUpdate.row.categoryName.toLocaleLowerCase(),
-						form.totalPages,
-						form.currentPage,
-						form.sortKey,
-						form.order,
+						baseProductform.totalPages,
+						baseProductform.currentPage,
+						baseProductform.sortKey,
+						baseProductform.order,
 						'',
 						null,
 					)
@@ -293,7 +304,7 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 	/**
 	 * Observable valuse of the form initiated with values
 	 */
-	public get formValue$(): Observable<any> {
+	public get baseProductFormValue$(): Observable<any> {
 		return this.productForm.valueChanges.pipe(startWith(this.productForm.value), shareReplay(1));
 	}
 }

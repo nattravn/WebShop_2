@@ -18,9 +18,13 @@ import { environment } from '@environments/environment';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 
 import { ProductTableService } from './services/product-table.service';
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { CategoryIdEnum } from '@admin-panel/enums/categoryId.enum';
 import { BaseProduct } from '@admin-panel/models/base-product.model';
+import { RecordUpdate } from '@admin-panel/models/record-update.model';
+import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
+import { ShoeUpdate } from '@admin-panel/models/shoe-update.model';
+import { AdminCategoryNameEnum } from '@admin-panel/enums/adminCategoryNames.enum';
 // import { RecordUpdate } from '@admin-panel/models/record-update.model';
 // import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
@@ -63,6 +67,8 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 
 	public active = 'title';
 
+	public adminCategoryNameEnum: AdminCategoryNameEnum;
+
 	private direction = 'asc';
 
 	private userDialogTemplate: TemplateRef<any>;
@@ -74,16 +80,16 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		public productTableService: ProductTableService,
 		private router: Router,
 		public activatedRoute: ActivatedRoute,
-		private moduleService: ModuleService,
+		public moduleService: ModuleService,
 	) {}
 	ngOnInit(): void {
 		switch (this.activatedRoute.snapshot.paramMap.get('product')) {
-			case AdminCategoryEnum.records:
+			case AdminCategoryRoutesEnum.records:
 				this.active = 'band';
 				this.definedColumns.splice(2, 0, 'band');
 				this.columnsToDisplay.splice(2, 0, 'band');
 				break;
-			case AdminCategoryEnum.clothing:
+			case AdminCategoryRoutesEnum.clothing:
 				this.active = 'title';
 				this.definedColumns.splice(2, 0, 'size');
 				this.columnsToDisplay.splice(2, 0, 'size');
@@ -201,16 +207,11 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 	}
 
 	public onCreate(paramMap: ParamMap) {
-		this.moduleService.productData$.next({
-			row: {
-				categoryName: paramMap.get('product'),
-				categoryId: CategoryIdEnum[paramMap.get('product')],
-			} as BaseProduct,
-			currentPage: this.productTableService.currentPage,
-			totalPages: this.productTableService.totalPages,
-			order: this.productTableService.order,
-			sortKey: this.productTableService.sortKey,
-		});
+		const row = {
+			categoryName: paramMap.get('product'),
+			categoryId: CategoryIdEnum[paramMap.get('product')],
+		} as BaseProduct;
+		this.moduleService.broadcastProductData(row);
 
 		this.router
 			.navigate([`adminpanel/tables/products/${paramMap.get('product')}/modal`], {
@@ -244,16 +245,18 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		);
 	}
 
-	public onEdit(row: RecordModel | Clothing, paramMap: ParamMap) {
+	public onEdit(row: RecordUpdate | ClothingUpdate | ShoeUpdate, paramMap: ParamMap) {
 		// let updateModel;
 		console.log('paramMap: ', paramMap.get('product'));
-		this.moduleService.productData$.next({
-			row: row,
-			currentPage: this.productTableService.currentPage,
-			totalPages: this.productTableService.totalPages,
-			order: this.productTableService.order,
-			sortKey: this.productTableService.sortKey,
-		});
+		// this.moduleService.productData$.next({
+		// 	row: row,
+		// 	currentPage: this.productTableService.currentPage,
+		// 	totalPages: this.productTableService.totalPages,
+		// 	order: this.productTableService.order,
+		// 	sortKey: this.productTableService.sortKey,
+		// });
+
+		this.moduleService.broadcastProductData(row);
 
 		// switch (paramMap.products) {
 		// 	case 'records':

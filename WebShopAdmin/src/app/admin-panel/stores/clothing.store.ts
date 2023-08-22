@@ -7,6 +7,7 @@ import { tap } from 'rxjs/operators';
 
 import { Clothing } from '@admin-panel/models/clothing.model';
 import { environment } from '@environments/environment';
+import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -45,7 +46,7 @@ export class ClothingStore {
 		);
 	}
 
-	public postClothing(modelFormData: Clothing, fileToUpload: File): Observable<Clothing> {
+	public postClothing(modelFormData: ClothingUpdate, fileToUpload: File): Observable<ClothingUpdate> {
 		const formData: FormData = new FormData();
 		const releaseDate = new Date(modelFormData.releaseDate);
 		formData.append('title', modelFormData.title);
@@ -60,10 +61,10 @@ export class ClothingStore {
 		formData.append('creatorUserId', modelFormData.creatorUserId);
 		formData.append('releaseDate', releaseDate.toDateString());
 
-		return this.http.post<Clothing>(`${this.baseUrl}/Clothings`, formData);
+		return this.http.post<ClothingUpdate>(`${this.baseUrl}/Clothings`, formData);
 	}
 
-	public putClothing(modelFormData: Clothing, fileToUpload: File): Observable<Clothing> {
+	public putClothing(modelFormData: ClothingUpdate, fileToUpload: File): Observable<ClothingUpdate> {
 		const formData: FormData = new FormData();
 		const releaseDate = new Date(modelFormData.releaseDate);
 
@@ -83,7 +84,7 @@ export class ClothingStore {
 		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
 		formData.append('editorUserId', modelFormData.editorUserId);
 
-		return this.http.put<Clothing>(`${this.baseUrl}/Clothings/${modelFormData.id}`, formData).pipe(
+		return this.http.put<ClothingUpdate>(`${this.baseUrl}/Clothings/${modelFormData.id}`, formData).pipe(
 			tap(() => {
 				this.toastr.info('updated successfully', `Clothing:  ${modelFormData.title}`);
 			}),

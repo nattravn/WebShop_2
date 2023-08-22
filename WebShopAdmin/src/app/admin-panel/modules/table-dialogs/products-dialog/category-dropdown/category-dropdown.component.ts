@@ -6,7 +6,7 @@ import { CategoryStore } from '@admin-panel/stores/category.store';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { Category } from '@admin-panel/models/category.model';
 import { RecordStore } from '@admin-panel/stores/record.store';
 import { CategoryDialogComponent } from '@table-dialogs/category-dialog/category-dialog.component';
@@ -30,7 +30,7 @@ export class CategoryDropdownComponent implements OnInit {
 		subCategory: new FormControl(''),
 	});
 
-	public defaultCategory: AdminCategoryEnum = AdminCategoryEnum.records;
+	public defaultCategory: AdminCategoryRoutesEnum = AdminCategoryRoutesEnum.records;
 
 	constructor(
 		public recordService: RecordStore,

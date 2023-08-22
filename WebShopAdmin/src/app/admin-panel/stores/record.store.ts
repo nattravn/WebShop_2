@@ -8,6 +8,7 @@ import { Observable, of, ReplaySubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { RecordModel } from '@admin-panel/models/record.model';
+import { RecordUpdate } from '@admin-panel/models/record-update.model';
 
 @UntilDestroy()
 @Injectable({
@@ -28,11 +29,9 @@ export class RecordStore {
 		this.refreshList();
 	}
 
-	public postRecord(modelFormData: RecordModel, fileToUpload: File): Observable<RecordModel> {
+	public postRecord(modelFormData: RecordUpdate, fileToUpload: File): Observable<RecordUpdate> {
 		const formData: FormData = new FormData();
 		const releaseDate = new Date(modelFormData.releaseDate);
-		formData.append('band', modelFormData.band);
-		formData.append('album', modelFormData.album);
 		formData.append('releaseDate', releaseDate.toDateString());
 
 		if (fileToUpload) {
@@ -48,19 +47,21 @@ export class RecordStore {
 		formData.append('editorUserId', modelFormData.editorUserId);
 		formData.append('creatorUserId', modelFormData.creatorUserId);
 
-		return this.http.post<RecordModel>(`${this.baseUrl}/Records`, formData).pipe(
+		formData.append('band', modelFormData.band);
+		formData.append('album', modelFormData.album);
+
+		return this.http.post<RecordUpdate>(`${this.baseUrl}/Records`, formData).pipe(
 			tap(() => {
 				this.toastr.success('inserted successfully', 'EMP. Register');
 			}),
 		);
 	}
 
-	public putRecord(modelFormData: RecordModel, fileToUpload: File): Observable<RecordModel> {
+	public putRecord(modelFormData: RecordUpdate, fileToUpload: File): Observable<RecordUpdate> {
 		const formData: FormData = new FormData();
 		const releaseDate = new Date(modelFormData.releaseDate);
-		formData.append('band', modelFormData.band);
+
 		formData.append('id', JSON.stringify(modelFormData.id));
-		formData.append('album', modelFormData.album);
 		formData.append('releaseDate', releaseDate.toDateString());
 		// lastUpdateTime is always updated in backend
 		if (fileToUpload != null) {
@@ -68,7 +69,6 @@ export class RecordStore {
 		}
 
 		formData.append('imagePath', modelFormData.imagePath);
-
 		formData.append('description', modelFormData.description);
 		formData.append('title', modelFormData.title);
 		formData.append('price', JSON.stringify(modelFormData.price));
@@ -76,7 +76,10 @@ export class RecordStore {
 		formData.append('subCategoryId', JSON.stringify(modelFormData.subCategoryId));
 		formData.append('editorUserId', modelFormData.editorUserId);
 
-		return this.http.put<RecordModel>(`${this.baseUrl}/Records/${modelFormData.id}`, formData).pipe(
+		formData.append('band', modelFormData.band);
+		formData.append('album', modelFormData.album);
+
+		return this.http.put<RecordUpdate>(`${this.baseUrl}/Records/${modelFormData.id}`, formData).pipe(
 			tap(() => {
 				this.toastr.info('updated successfully', 'EMP. Register');
 			}),

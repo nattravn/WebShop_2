@@ -23,7 +23,7 @@ import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.ser
 
 import { CategoryTableService } from './services/category-table.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { AdminCategoryEnum } from '@admin-panel/enums/adminCategory.enum';
+import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
@@ -198,7 +198,7 @@ export class CategoryTableComponent implements AfterViewInit, OnInit {
 		// });
 
 		this.router
-			.navigate([`adminpanel/tables/categories/${AdminCategoryEnum.category}/modal`], {
+			.navigate([`adminpanel/tables/categories/${AdminCategoryRoutesEnum.category}/modal`], {
 				queryParams: { createNewProduct: true },
 			})
 			.then(() => {
@@ -228,7 +228,7 @@ export class CategoryTableComponent implements AfterViewInit, OnInit {
 		this.selectedCategory = row;
 
 		this.router
-			.navigate([`adminpanel/tables/categories/${AdminCategoryEnum.category}/modal`], {
+			.navigate([`adminpanel/tables/categories/${AdminCategoryRoutesEnum.category}/modal`], {
 				queryParams: { createNewProduct: true },
 			})
 			.then(() => {

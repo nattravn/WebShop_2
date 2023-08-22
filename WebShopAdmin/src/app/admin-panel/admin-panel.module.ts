@@ -17,6 +17,7 @@ import { CategoryStore } from './stores/category.store';
 import { AddUserComponent } from './add-user/add-user.component';
 import { ProductStore } from './stores/product.store';
 import { UserTableService } from '@database-tables/user-table/serivces/user-table.service';
+import { ModuleService } from './modules/services/module-service.service';
 
 @NgModule({
 	declarations: [AdminPanelComponent, CategoryNamePipe, AddUserComponent],
@@ -40,6 +41,7 @@ import { UserTableService } from '@database-tables/user-table/serivces/user-tabl
 		UserTableService,
 		CategoryDialogService,
 		BaseModalComponent,
+		ModuleService,
 	],
 })
 export class AdminPanelModule {}

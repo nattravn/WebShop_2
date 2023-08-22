@@ -5,31 +5,29 @@ import { ReplaySubject } from 'rxjs';
 import { ProductDialog } from '@admin-panel/models/product-dialog.model';
 import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 import { RecordUpdate } from '@admin-panel/models/record-update.model';
-import { RecordModel } from '@admin-panel/models/record.model';
-import { Clothing } from '@admin-panel/models/clothing.model';
 import { BaseProduct } from '@admin-panel/models/base-product.model';
 import { CategoryDialog } from '@admin-panel/models/category-dialog.model';
 import { UsersDialog } from '@admin-panel/models/users-dialog.model';
+import { ProductTableService } from '@database-tables/product-table/services/product-table.service';
+import { ShoeUpdate } from '@admin-panel/models/shoe-update.model';
 
-@Injectable({
-	providedIn: 'root',
-})
+@Injectable()
 export class ModuleService {
-	public productData$ = new ReplaySubject<ProductDialog<RecordModel | Clothing | BaseProduct>>(1);
+	public productData$ = new ReplaySubject<ProductDialog<RecordUpdate | ClothingUpdate | ShoeUpdate | BaseProduct>>(1);
 	public categoryFormData$ = new ReplaySubject<CategoryDialog>(1);
 	public userFormData$ = new ReplaySubject<UsersDialog>(1);
 	public productDataRecord$ = new ReplaySubject<ProductDialog<RecordUpdate>>(1);
 	public productDataClothing$ = new ReplaySubject<ProductDialog<ClothingUpdate>>(1);
 
-	constructor() {}
+	constructor(private productTableService: ProductTableService) {}
 
-	// public updateProductForm(row: RecordModel) {
-	// 	this.productData$.next({
-	// 		row: row,
-	// 		currentPage: this.productTableService.currentPageIndex,
-	// 		totalPages: this.productTableService.currentTableSize,
-	// 		order: this.productTableService.order,
-	// 		sortKey: this.productTableService.sortKey,
-	// 	});
-	// }
+	public broadcastProductData(data: RecordUpdate | ClothingUpdate | ShoeUpdate | BaseProduct) {
+		this.productData$.next({
+			row: data,
+			currentPage: this.productTableService.currentPage,
+			totalPages: this.productTableService.totalPages,
+			order: this.productTableService.order,
+			sortKey: this.productTableService.sortKey,
+		});
+	}
 }

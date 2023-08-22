@@ -5,7 +5,8 @@
 		categoryChange: categoryChange$ | async,
 		category: category$ | async,
 		productData: populateForm$ | async,
-		formValue: formValue$ | async
+		baseProductFormValue: baseProductFormValue$ | async,
+		productFormValue: productDialogService.productFormValue$ | async
 	} as source"
 >
 	<app-category-dropdown
@@ -17,9 +18,9 @@
 
 	source.category:
 	<pre>{{ source.category | json }}</pre>
-	source.formValue:
-	<pre>{{ source.formValue | json }}</pre>
-	<form [formGroup]="productForm" (submit)="onSubmit(source.formValue)">
+	source.baseProductFormValue:
+	<pre>{{ source.baseProductFormValue | json }}</pre>
+	<form [formGroup]="productForm" (submit)="onSubmit(source.baseProductFormValue, source.productFormValue)">
 		<div formGroupName="row">
 			<div class="controls-container">
 				<mat-form-field class="w-100">
@@ -93,7 +94,12 @@
 				</mat-form-field>
 
 				<mat-form-field class="w-100">
-					<mat-select matInput formControlName="subCategoryId" placeholder="SubCategory" [value]="source.formValue.row.subCategoryId">
+					<mat-select
+						matInput
+						formControlName="subCategoryId"
+						placeholder="SubCategory"
+						[value]="source.baseProductFormValue.row.subCategoryId"
+					>
 						<mat-option *ngFor="let subCategory of source.category?.subCategories" [value]="subCategory.id">
 							{{ subCategory.name }}
 						</mat-option>

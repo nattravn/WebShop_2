@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -22,7 +22,7 @@ import { RecordUpdate } from '@admin-panel/models/record-update.model';
 	styleUrls: ['./record-dialog.component.css'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecordDialogComponent implements OnInit {
+export class RecordDialogComponent implements OnInit, OnDestroy {
 	public populateForm$ = new Observable<any>();
 
 	constructor(
@@ -37,6 +37,10 @@ export class RecordDialogComponent implements OnInit {
 		@Inject(MAT_DIALOG_DATA)
 		public data: DialogData,
 	) {}
+
+	ngOnDestroy() {
+		this.productDialogService.recordForm.reset();
+	}
 
 	ngOnInit(): void {
 		this.populateForm$ = this.moduleService.productData$.pipe(
