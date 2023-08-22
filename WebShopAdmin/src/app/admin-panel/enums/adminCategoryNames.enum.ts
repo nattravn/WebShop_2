@@ -1,7 +1,7 @@
 export enum AdminCategoryNameEnum {
-	shoe = 'Shoes',
+	shoes = 'Shoes',
 	records = 'Records',
-	clothing = 'Clothings',
+	clothings = 'Clothings',
 	category = 'Categories',
 	user = 'Users',
 }

@@ -16,6 +16,7 @@ import { UserDialogComponent } from '@table-dialogs/user-dialog/user-dialog.comp
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { UserTableService } from './serivces/user-table.service';
+import { AdminCategoryNameEnum } from '@admin-panel/enums/adminCategoryNames.enum';
 
 export interface IFilterForm {
 	search: FormControl<string>;
@@ -47,6 +48,8 @@ export class UserTableComponent implements OnInit {
 	public dataSource = new MatTableDataSource<User>();
 
 	public searchKey = '';
+
+	public adminCategoryNameEnum = AdminCategoryNameEnum;
 
 	// private currentPageIndex = 1;
 

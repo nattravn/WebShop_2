@@ -67,7 +67,7 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 
 	public active = 'title';
 
-	public adminCategoryNameEnum: AdminCategoryNameEnum;
+	public adminCategoryNameEnum = AdminCategoryNameEnum;
 
 	private direction = 'asc';
 

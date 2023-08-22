@@ -5,8 +5,8 @@
 		tableData: productTableService.tableData$ | async
 	} as source"
 >
-	<h2>{{ adminCategoryNameEnum[source.activatedRouteEvent.get("product")] }}</h2>
 	<div class="container float-left">
+		<h2>{{ adminCategoryNameEnum[source.activatedRouteEvent.get("product")] }}</h2>
 		<div class="my-2">
 			<button class="p-2" mat-raised-button (click)="onCreate(source.activatedRouteEvent)"><mat-icon>add</mat-icon>Create</button>
 

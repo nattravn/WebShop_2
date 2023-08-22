@@ -26,6 +26,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { FormControl, FormGroup } from '@angular/forms';
+import { AdminCategoryNameEnum } from '@admin-panel/enums/adminCategoryNames.enum';
 
 export interface IFilterForm {
 	search: FormControl<string>;
@@ -82,6 +83,8 @@ export class CategoryTableComponent implements AfterViewInit, OnInit {
 	};
 
 	public active = 'name';
+
+	public adminCategoryNameEnum = AdminCategoryNameEnum;
 
 	private direction = 'asc';
 

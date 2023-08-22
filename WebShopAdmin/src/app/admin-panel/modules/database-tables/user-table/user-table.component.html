@@ -5,6 +5,7 @@
 	} as source"
 >
 	<div class="search-div">
+		<h2>{{ adminCategoryNameEnum.user }}</h2>
 		<button mat-raised-button (click)="onCreate(source.activatedRouteEvent)"><mat-icon>add</mat-icon>Create</button>
 		<form form class="d-inline p-2" [formGroup]="filterForm">
 			<mat-form-field class="search-form-field" floatLabel="never" [formGroup]="filterForm">
