@@ -190,8 +190,9 @@ namespace UserApi.Services
             var usersQuery = _context.Users
                 .AsNoTracking()
                 .WhereIf(string.IsNullOrEmpty(searchQuery), a => a.Email.Contains(searchQuery)
+                                                                || a.UserName.Contains(searchQuery)
                                                                 || a.FullName.Contains(searchQuery)
-                                                                || a.Id == searchQuery).OrderByMember(key, order == "desc");
+                                                                || a.Id == searchQuery).OrderByMember(key, order == "desc").OrderByMember(key, order == "desc");
 
             var users = await usersQuery
                 .Select(user => new

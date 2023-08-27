@@ -13,7 +13,7 @@ import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.ser
 import { DialogService } from '@table-dialogs/services/dialog.service';
 import { ProductDialogService } from './services/product-dialog.service';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
-import { shareReplay, switchMap, startWith, delay, map } from 'rxjs/operators';
+import { shareReplay, switchMap, startWith, delay, map, catchError } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { ProductDialog } from '@admin-panel/models/product-dialog.model';
 import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
@@ -265,6 +265,10 @@ export class ProductDialogsComponent implements OnInit, AfterViewInit {
 					)
 					.pipe(map(() => productUpdate)),
 			),
+			catchError((error) => {
+				console.error(error);
+				return of(null);
+			}),
 			shareReplay(1),
 		);
 	}

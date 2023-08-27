@@ -124,7 +124,14 @@ export class UserTableComponent implements OnInit {
 				.pipe(
 					switchMap(() => {
 						this.toastr.warning('Deleted successfully', 'EMP. Register');
-						return this.userTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
+						return this.userTableService.refreshMatTable(
+							5,
+							this.userTableService.currentPage,
+							this.active,
+							this.direction,
+							'',
+							null,
+						);
 					}),
 				)
 				.subscribe();

@@ -200,7 +200,7 @@ namespace UserApi.Controllers
         }
 
         [HttpPut("{applicationUserId}")]
-        public IActionResult UpadteCourseAuthor(
+        public async Task<IActionResult> UpadteCourseAuthor(
             string applicationUserId, 
             ApplicationUserForCreationDto applicationUser)
         {
@@ -225,6 +225,13 @@ namespace UserApi.Controllers
             }
 
             _mapper.Map(applicationUser, applicationUserFromRepo);
+
+            var user = await _userManager.FindByNameAsync(applicationUser.UserName);
+            var foundPassword = await _userManager.CheckPasswordAsync(user, applicationUser.Password);
+            if (!await _userManager.CheckPasswordAsync(user, applicationUser.Password))
+            {
+                return BadRequest(new { message = "Password is incorrect" });
+            }
 
             _userRepository.updateApplicationUser(applicationUser.RoleName, applicationUserFromRepo.Id);
             

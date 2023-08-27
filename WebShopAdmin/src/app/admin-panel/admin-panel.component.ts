@@ -10,6 +10,7 @@ import { ProductTableService } from '@database-tables/product-table/services/pro
 import { CategoryStore } from '../admin-panel/stores/category.store';
 import { AdminCategoryRoutesEnum } from './enums/adminCategoryRoutes.enum';
 import { Category } from './models/category.model';
+import { AdminCategoryNameEnum } from './enums/adminCategoryNames.enum';
 
 @Component({
 	selector: 'app-admin-panel',
@@ -18,6 +19,7 @@ import { Category } from './models/category.model';
 })
 export class AdminPanelComponent {
 	public adminCategoryEnum = AdminCategoryRoutesEnum;
+	public adminCategoryNameEnum = AdminCategoryNameEnum;
 
 	public categories$ = new Observable<Category[]>();
 
@@ -31,8 +33,6 @@ export class AdminPanelComponent {
 	}
 
 	public categoryRoute(category) {
-		console.log('change route');
-
 		// Ta det i två svep, först reseta outlet sen navigera ny route, går inte att göra det i samma
 		// setTimeout(()=>{
 		// 	this.router.navigate(['adminpanel/tables/products/'+category.route, { outlets: { tablesOutlet: null }}], {replaceUrl:true});

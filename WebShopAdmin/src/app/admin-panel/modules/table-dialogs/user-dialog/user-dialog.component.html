@@ -18,13 +18,21 @@
 			</mat-form-field>
 
 			<mat-form-field class="w-100">
+				<input formControlName="userName" matInput placeholder="fullName" />
+				<mat-error>This field is mandatory.</mat-error>
+			</mat-form-field>
+
+			<mat-form-field class="w-100">
 				<input formControlName="email" matInput placeholder="email" />
 				<mat-error>Invalid email address.</mat-error>
 			</mat-form-field>
 
 			<mat-form-field class="w-100">
 				<input formControlName="password" matInput placeholder="password" />
-				<mat-error>Password is missing</mat-error>
+				<mat-error>
+					<div *ngIf="userForm.controls['row'].controls['password'].errors?.passwordMissMatch" class="text-danger">Password miss match</div>
+					<div *ngIf="userForm.controls['row'].controls['password'].errors?.required" class="text-danger">This field is mandatory</div>
+				</mat-error>
 			</mat-form-field>
 
 			<mat-form-field class="w-100">

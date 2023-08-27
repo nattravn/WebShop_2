@@ -7,18 +7,20 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-2">
-				<h1>Record Register</h1>
+				<h1>{{ adminCategoryNameEnum.products }}</h1>
 				<ul *ngFor="let category of source.categoris">
 					<li (click)="categoryRoute(category)">{{ category.name }}</li>
 				</ul>
+				<h1>{{ adminCategoryNameEnum.system }}</h1>
 				<ul>
-					<li [routerLink]="['tables/categories/' + adminCategoryEnum.category, { outlets: { tablesOutlet: null } }]">Categories</li>
+					<li [routerLink]="['tables/categories/' + adminCategoryEnum.category, { outlets: { tablesOutlet: null } }]">
+						{{ adminCategoryNameEnum.category }}
+					</li>
 				</ul>
 				<ul>
-					<li [routerLink]="['tables/users/' + adminCategoryEnum.user, { outlets: { tablesOutlet: null } }]">Users</li>
-				</ul>
-				<ul>
-					<li [routerLink]="['tables/']">Back</li>
+					<li [routerLink]="['tables/users/' + adminCategoryEnum.user, { outlets: { tablesOutlet: null } }]">
+						{{ adminCategoryNameEnum.user }}
+					</li>
 				</ul>
 			</div>
 			<div class="col-10">

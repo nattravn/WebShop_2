@@ -170,11 +170,12 @@
 					}
 				],
 				"no-shadow": [
-					"error",
+					"off",
 					{
 						"hoist": "all"
 					}
 				],
+				"@typescript-eslint/no-shadow": ["error"],
 				"no-throw-literal": "error",
 				"no-undef-init": "error",
 				"no-underscore-dangle": "off",

@@ -10,7 +10,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserTableService } from '@database-tables/user-table/serivces/user-table.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Observable, of } from 'rxjs';
-import { delay, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { catchError, delay, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 export interface IUserDialogForm {
 	currentPage: FormControl<number>;
@@ -116,6 +116,11 @@ export class UserDialogComponent {
 					.refreshMatTable(form.totalPages, form.currentPage, form.sortKey, form.order, '', null)
 					.pipe(map(() => productUpdate)),
 			),
+			catchError((error) => {
+				this.userForm.controls.row.controls.password.setErrors({ passwordMissMatch: true });
+				console.error('error: ', error.error.message);
+				return of(null);
+			}),
 			shareReplay(1),
 		);
 	}
@@ -123,7 +128,7 @@ export class UserDialogComponent {
 	public populateForm(category: UsersDialog) {
 		this.userForm.get('row').get('email').setValue(category.row.email);
 		this.userForm.get('row').get('fullName').setValue(category.row.fullName);
-		this.userForm.get('row').get('password').setValue(category.row.password);
+		this.userForm.get('row').get('password').setValue('****');
 		this.userForm.get('row').get('id').setValue(category.row.id);
 		this.userForm.get('row').get('userName').setValue(category.row.userName);
 		this.userForm.get('row').get('roleName').setValue(category.row.roleName);

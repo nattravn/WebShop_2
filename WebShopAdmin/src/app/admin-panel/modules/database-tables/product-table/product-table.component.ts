@@ -83,6 +83,7 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		public moduleService: ModuleService,
 	) {}
 	ngOnInit(): void {
+		// Update columns in table depending on route/product
 		switch (this.activatedRoute.snapshot.paramMap.get('product')) {
 			case AdminCategoryRoutesEnum.records:
 				this.active = 'band';
@@ -113,6 +114,13 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		// console.log('this.sort: ', this.sort);
 		// this.productTableService.dataSource.sort = this.sort;
 		// this.productTableService.dataSource.paginator = this.paginator;
+	}
+
+	public redirectTo(uri: string) {
+		// https://stackoverflow.com/questions/40983055/how-to-reload-the-current-route-with-the-angular-2-router
+		this.router
+			.navigateByUrl('/', { skipLocationChange: true })
+			.then(() => this.router.navigate([`adminpanel/tables/products/${uri}`]));
 	}
 
 	public sortData(filterForm: FormGroup, sort: Sort) {
@@ -199,7 +207,15 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 					untilDestroyed(this),
 					switchMap(() => {
 						this.toastr.warning('Deleted successfully');
-						return this.productTableService.refreshMatTable(row.categoryName, 5, 1, this.active, this.direction, '', null);
+						return this.productTableService.refreshMatTable(
+							row.categoryName,
+							5,
+							this.productTableService.currentPage,
+							this.active,
+							this.direction,
+							'',
+							null,
+						);
 					}),
 				)
 				.subscribe();

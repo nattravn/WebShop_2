@@ -76,8 +76,6 @@
 		</div>
 	</div>
 
-	<a [routerLink]="['./']">reset</a>
-	<a [routerLink]="['/adminpanel/tables/products/clothings']">clothing</a>
-
-	<router-outlet name="tablesOutlet"></router-outlet>
+	<a (click)="redirectTo('clothings')">Show clothing</a>
+	<a [routerLink]="['../../']">Back</a>
 </ng-container>

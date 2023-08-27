@@ -1,14 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import {
-	AfterViewInit,
-	ChangeDetectorRef,
-	Component,
-	OnInit,
-	QueryList,
-	TemplateRef,
-	ViewChild,
-	ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, QueryList, TemplateRef, ViewChild, ViewChildren } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
@@ -44,7 +35,7 @@ export interface IFilterForm {
 		]),
 	],
 })
-export class CategoryTableComponent implements AfterViewInit, OnInit {
+export class CategoryTableComponent implements AfterViewInit {
 	// eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
 	@ViewChild('outerSort', { static: true }) sort: MatSort;
 
@@ -102,9 +93,6 @@ export class CategoryTableComponent implements AfterViewInit, OnInit {
 		this.categoryTableService.refreshMatTable(5, 1, this.active, this.direction, '', null);
 		this.cd.detectChanges();
 		// throw new Error('Method not implemented.');
-	}
-	ngOnInit() {
-		console.log('hi');
 	}
 
 	public toggleRow(element: Category) {
