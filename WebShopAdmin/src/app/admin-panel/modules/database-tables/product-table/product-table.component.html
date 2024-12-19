@@ -2,34 +2,21 @@
 	*ngIf="{
 		routerEvent: routerEvent$ | async,
 		activatedRouteEvent: activatedRoute.paramMap | async,
-		tableData: productTableService.tableData$ | async
+		tableData: productTableService.tableData$ | async,
+		category: activatedRoute.snapshot.paramMap.get('product') | category | async
 	} as source"
 >
 	<div class="container float-left">
-		<h2>{{ adminCategoryNameEnum[source.activatedRouteEvent.get("product")] }}</h2>
+		<h2>{{ source.category?.name }}</h2>
 		<div class="my-2">
-			<button class="p-2" mat-raised-button (click)="onCreate(source.activatedRouteEvent)"><mat-icon>add</mat-icon>Create</button>
+			<button class="p-2" mat-raised-button (click)="onCreate(source.category)"><mat-icon>add</mat-icon>Create</button>
 
 			<form form class="d-inline p-2" [formGroup]="filterForm">
 				<mat-form-field>
-					<input
-						matInput
-						formControlName="search"
-						placeholder="Search"
-						autocomplete="off"
-						(keyup)="applyFilter($event, source.tableData?.items, filterForm)"
-						#input
-					/>
+					<input matInput formControlName="search" placeholder="Search" autocomplete="off" (keyup)="applyFilter(filterForm)" #input />
 				</mat-form-field>
 			</form>
-			<button
-				mat-button
-				matSufix
-				mat-icon-button
-				aria-label="Clear"
-				*ngIf="filterForm.get('search').value"
-				(click)="onSearchClear(source.tableData?.items)"
-			>
+			<button mat-button matSufix mat-icon-button aria-label="Clear" *ngIf="filterForm.get('search').value" (click)="onSearchClear()">
 				<mat-icon>close</mat-icon>
 			</button>
 		</div>
@@ -49,7 +36,7 @@
 				<ng-container matColumnDef="actions">
 					<mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
 					<mat-cell *matCellDef="let row">
-						<a class="btn btn-sm btn-info text-white" (click)="onEdit(row, source.activatedRouteEvent)"><i class="fa fa-pencil"></i></a>
+						<a class="btn btn-sm btn-info text-white" (click)="onEdit(row, source.category)"><i class="fa fa-pencil"></i></a>
 						<a class="btn btn-sm btn-danger text-white ml-1" (click)="onDelete(row)"><i class="fa fa-trash"></i></a>
 					</mat-cell>
 				</ng-container>

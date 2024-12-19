@@ -8,9 +8,12 @@ import { MaterialModule } from 'src/app/material/material.module';
 
 import { ToastrService } from 'ngx-toastr';
 
+import { CategoryPipe } from '@admin-panel/pipe/category.pipe';
+import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 import { CategoryStore } from '@admin-panel/stores/category.store';
 import { RecordStore } from '@admin-panel/stores/record.store';
 import { UserStore } from '@admin-panel/stores/user.store';
+import { ProductDialogService } from '@table-dialogs/products-dialog/services/product-dialog.service';
 import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.service';
 
 import { RecordDialogService } from '../table-dialogs/products-dialog/record-dialog/services/record-dialog.service';
@@ -19,8 +22,6 @@ import { DatabaseTableContainerComponent } from './database-tables-container.com
 import { CategoryTableRoutes } from './database-tables.routing';
 import { ProductTableComponent } from './product-table/product-table.component';
 import { UserTableComponent } from './user-table/user-table.component';
-import { ProductDialogService } from '@table-dialogs/products-dialog/services/product-dialog.service';
-import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 
 @NgModule({
 	imports: [
@@ -37,6 +38,7 @@ import { CustomDatePipe } from '@admin-panel/pipe/custom.datepipe';
 		CategoryTableComponent,
 		ProductTableComponent,
 		UserTableComponent,
+		CategoryPipe,
 	],
 	exports: [
 		DatabaseTableContainerComponent,

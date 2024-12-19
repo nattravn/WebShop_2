@@ -12,7 +12,6 @@ import { ProductTableService } from './modules/database-tables/product-table/ser
 import { BaseModalComponent } from './modules/table-dialogs/base-modal.component';
 import { CategoryDialogService } from './modules/table-dialogs/category-dialog/services/category-dialog.service';
 import { RecordDialogService } from './modules/table-dialogs/products-dialog/record-dialog/services/record-dialog.service';
-import { CategoryNamePipe } from './pipe/category-name.pipe';
 import { CategoryStore } from './stores/category.store';
 import { AddUserComponent } from './add-user/add-user.component';
 import { ProductStore } from './stores/product.store';
@@ -20,7 +19,7 @@ import { UserTableService } from '@database-tables/user-table/serivces/user-tabl
 import { ModuleService } from './modules/services/module-service.service';
 
 @NgModule({
-	declarations: [AdminPanelComponent, CategoryNamePipe, AddUserComponent],
+	declarations: [AdminPanelComponent, AddUserComponent],
 
 	imports: [
 		AdminRoutingModule,
