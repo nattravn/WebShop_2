@@ -1,6 +1,6 @@
 {
 	"prettier.configPath": ".prettierrc",
-	"editor.tabSize": 2,
+	"editor.tabSize": 4,
 	"editor.detectIndentation": false,
   "importSorter.importStringConfiguration.quoteMark": "single",
 	"importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 120,
