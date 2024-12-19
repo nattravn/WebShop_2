@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, ParamMap, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ToastrService } from 'ngx-toastr';
@@ -19,12 +19,12 @@ import { DialogFactoryService } from '@table-dialogs/services/dialog-factory.ser
 
 import { ProductTableService } from './services/product-table.service';
 import { AdminCategoryRoutesEnum } from '@admin-panel/enums/adminCategoryRoutes.enum';
-import { CategoryIdEnum } from '@admin-panel/enums/categoryId.enum';
 import { BaseProduct } from '@admin-panel/models/base-product.model';
 import { RecordUpdate } from '@admin-panel/models/record-update.model';
 import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 import { ShoeUpdate } from '@admin-panel/models/shoe-update.model';
 import { AdminCategoryNameEnum } from '@admin-panel/enums/adminCategoryNames.enum';
+import { Category } from '@admin-panel/models/category.model';
 // import { RecordUpdate } from '@admin-panel/models/record-update.model';
 // import { ClothingUpdate } from '@admin-panel/models/clothing-update.model';
 
@@ -124,7 +124,6 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 	}
 
 	public sortData(filterForm: FormGroup, sort: Sort) {
-		console.log('sort: ', sort);
 		this.active = sort.active;
 		this.direction = sort.direction;
 		// this.paginator.firstPage();
@@ -148,29 +147,9 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		searchQuery: string,
 	): void {
 		this.productTableService.refreshMatTable(productString, pageLimit, page, active, direction, searchQuery, null);
-
-		// this.tableData$ = this.recordStore.getProducts(productString,pageLimit,page,active,direction,searchQuery).pipe(
-		// 	untilDestroyed(this),
-		// 	switchMap(records => {
-		// 		let dataSource = new MatTableDataSource<Record | Clothing>();
-
-		// 		dataSource.data = records.items;
-		// 		dataSource.sort = this.sort;
-		// 		//dataSource.paginator = this.paginator;
-
-		// 		return of({items: dataSource, totalItems: records.totalItems});
-		// 	}),
-		// 	shareReplay(1),
-		// )
-
-		// return this.tableData$;
 	}
 
-	public applyFilter(event: Event, dataSource: MatTableDataSource<RecordModel | Clothing>, filterForm: FormGroup) {
-		// const filterValue = (event.target as HTMLInputElement).value;
-
-		// const eventUrl = this.router.url.substring(this.router.url.lastIndexOf('/') + 1);
-
+	public applyFilter(filterForm: FormGroup) {
 		// TODO remove firstPage() maybe
 		this.paginator.firstPage();
 		this.refreshMatTable(
@@ -181,19 +160,9 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 			this.direction,
 			filterForm.value['search'],
 		);
-
-		// this.tableData$ = this.recordStore.getRecordsByKeyWord(filterValue, '').pipe(
-		// 	switchMap((content: (Record | Clothing)[]) => {
-		// 		dataSource.data = content ? content : [];
-		// 		dataSource.paginator = this.paginator;
-		// 		dataSource.sort = this.sort;
-		// 		return of({items: dataSource, totalItems: content.length});
-		// 	}),
-		// 	shareReplay(1)
-		// )
 	}
 
-	public onSearchClear(dataSource: MatTableDataSource<RecordModel | Clothing>) {
+	public onSearchClear() {
 		this.filterForm.reset();
 
 		this.refreshMatTable(this.activatedRoute.snapshot.paramMap.get('product'), 5, 1, this.active, this.direction, '');
@@ -222,29 +191,31 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		}
 	}
 
-	public onCreate(paramMap: ParamMap) {
+	public onCreate(category: Category) {
 		const row = {
-			categoryName: paramMap.get('product'),
-			categoryId: CategoryIdEnum[paramMap.get('product')],
+			categoryName: category.name,
+			categoryId: category.id,
 		} as BaseProduct;
 		this.moduleService.broadcastProductData(row);
 
-		this.router
-			.navigate([`adminpanel/tables/products/${paramMap.get('product')}/modal`], {
-				queryParams: { createNewProduct: true },
-			})
-			.then(() => {
-				this.dialogFactoryService.open({
-					headerText: 'Header text record',
-					category: {
-						id: 99,
-						name: paramMap.get('product'),
-						route: 'products',
-					},
-					createNew: true,
-					template: this.userDialogTemplate,
+		if (category.name) {
+			this.router
+				.navigate([`adminpanel/tables/products/${category.route}/modal`], {
+					queryParams: { createNewProduct: true },
+				})
+				.then(() => {
+					this.dialogFactoryService.open({
+						headerText: `Create new ${category.name} product`,
+						category: {
+							id: 99,
+							name: category.name,
+							route: 'products',
+						},
+						createNew: true,
+						template: this.userDialogTemplate,
+					});
 				});
-			});
+		}
 	}
 
 	public updateTable(paramMap: any, filterForm: FormGroup, event?: PageEvent) {
@@ -261,66 +232,20 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		);
 	}
 
-	public onEdit(row: RecordUpdate | ClothingUpdate | ShoeUpdate, paramMap: ParamMap) {
-		// let updateModel;
-		console.log('paramMap: ', paramMap.get('product'));
-		// this.moduleService.productData$.next({
-		// 	row: row,
-		// 	currentPage: this.productTableService.currentPage,
-		// 	totalPages: this.productTableService.totalPages,
-		// 	order: this.productTableService.order,
-		// 	sortKey: this.productTableService.sortKey,
-		// });
-
+	public onEdit(row: RecordUpdate | ClothingUpdate | ShoeUpdate, category: Category) {
 		this.moduleService.broadcastProductData(row);
 
-		// switch (paramMap.products) {
-		// 	case 'records':
-		// 		updateModel = new RecordUpdate(row as RecordUpdate);
-
-		// 		this.moduleService.productDataRecord$.next({
-		// 			row: updateModel,
-		// 			currentPage: this.productTableService.currentPage,
-		// 			totalPages: this.productTableService.totalPages,
-		// 			order: this.productTableService.order,
-		// 			sortKey: this.productTableService.sortKey,
-		// 		});
-
-		// 		break;
-		// 	case 'clothing':
-		// 		this.moduleService.productDataClothing$.next({
-		// 			row: updateModel,
-		// 			currentPage: this.productTableService.currentPage,
-		// 			totalPages: this.productTableService.totalPages,
-		// 			order: this.productTableService.order,
-		// 			sortKey: this.productTableService.sortKey,
-		// 		});
-
-		// 		updateModel = new ClothingUpdate(row as ClothingUpdate);
-		// 		break;
-		// 	default:
-		// 		this.moduleService.productDataRecord$.next({
-		// 			row: updateModel,
-		// 			currentPage: this.productTableService.currentPage,
-		// 			totalPages: this.productTableService.totalPages,
-		// 			order: this.productTableService.order,
-		// 			sortKey: this.productTableService.sortKey,
-		// 		});
-		// 		updateModel = new RecordUpdate(row as RecordUpdate);
-		// 		break;
-		// }
-
-		if (paramMap.get('product')) {
+		if (category.name) {
 			this.router
-				.navigate([`adminpanel/tables/products/${paramMap.get('product')}/modal`], {
+				.navigate([`adminpanel/tables/products/${category.route}/modal`], {
 					queryParams: { createNewProduct: false },
 				})
 				.then(() => {
 					this.dialogFactoryService.open({
-						headerText: 'Header text record',
+						headerText: `Edit ${category.name}`,
 						category: {
 							id: 99,
-							name: paramMap.get('product'),
+							name: category.name,
 							route: 'products',
 						},
 						createNew: false,
@@ -335,17 +260,6 @@ export class ProductTableComponent implements AfterViewInit, OnInit {
 		// 		id: 0,
 		// 		name: 'record',
 		// 		route: this.activatedRoute.snapshot.params['product']
-		// 	},
-		// 	createNew: false,
-		// 	template: this.userDialogTemplate
-		// });
-
-		// this.dialog = this.dialogFactoryService.open({
-		// 	headerText: 'Header text',
-		// 	category: {
-		// 		id: 0,
-		// 		name: 'dfgfdg',
-		// 		route: 'test'
 		// 	},
 		// 	createNew: false,
 		// 	template: this.userDialogTemplate

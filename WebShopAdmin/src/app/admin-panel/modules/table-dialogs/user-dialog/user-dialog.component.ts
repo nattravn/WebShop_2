@@ -4,7 +4,7 @@ import { UserUpdate } from '@admin-panel/models/user-update.model';
 import { UsersDialog } from '@admin-panel/models/users-dialog.model';
 import { ModuleService } from '@admin-panel/modules/services/module-service.service';
 import { UserStore } from '@admin-panel/stores/user.store';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserTableService } from '@database-tables/user-table/serivces/user-table.service';
@@ -35,7 +35,7 @@ export interface IUserDataForm {
 	templateUrl: './user-dialog.component.html',
 	styleUrls: ['./user-dialog.component.css'],
 })
-export class UserDialogComponent {
+export class UserDialogComponent implements OnInit {
 	public userForm = new FormGroup<IUserDialogForm>({
 		currentPage: new FormControl(1),
 		totalPages: new FormControl(1),

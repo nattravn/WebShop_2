@@ -14,12 +14,7 @@
 		(selectCategory)="selectedCataegory($event)"
 		*ngIf="data.createNew"
 	></app-category-dropdown>
-	<br />
 
-	source.category:
-	<pre>{{ source.category | json }}</pre>
-	source.baseProductFormValue:
-	<pre>{{ source.baseProductFormValue | json }}</pre>
 	<form [formGroup]="productForm" (submit)="onSubmit(source.baseProductFormValue, source.productFormValue)">
 		<div formGroupName="row">
 			<div class="controls-container">
