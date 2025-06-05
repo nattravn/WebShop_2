@@ -1,29 +1,40 @@
 {
 	"compileOnSave": false,
 	"compilerOptions": {
-		"baseUrl": "./", // This must be specified if "paths" is.
-		"outDir": "./dist/out-tsc",
-		"noUnusedLocals": true,
-		"sourceMap": true,
-		"declaration": false,
-		"downlevelIteration": true,
-		"experimentalDecorators": true,
-		"module": "es2020",
-		"moduleResolution": "node",
-		"importHelpers": true,
-		"target": "es2020",
-		"lib": [
-			"es2018",
-			"dom"
-		],
-		"paths": {
-			"@database-tables/*": ["src/app/admin-panel/modules/database-tables/*"],
-			"@table-dialogs/*": ["src/app/admin-panel/modules/table-dialogs/*"],
-			"@admin-panel/*": ["src/app/admin-panel/*"],
-			"@environments/*": ["src/environments/*"],
-			"@app/*": ["src/app/*"],
-		}
-	},
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "es2020",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "@database-tables/*": [
+        "src/app/admin-panel/modules/database-tables/*"
+      ],
+      "@table-dialogs/*": [
+        "src/app/admin-panel/modules/table-dialogs/*"
+      ],
+      "@admin-panel/*": [
+        "src/app/admin-panel/*"
+      ],
+      "@environments/*": [
+        "src/environments/*"
+      ],
+      "@app/*": [
+        "src/app/*"
+      ]
+    },
+    "useDefineForClassFields": false
+  },
 		"angularCompilerOptions": {
 		"fullTemplateTypeCheck": true,
 		"strictInjectionParameters": true
