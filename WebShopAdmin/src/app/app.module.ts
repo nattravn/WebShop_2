@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './guard/auth.interceptor';
 import { AuthComponent } from './log-in/auth/auth.component';
+import { NgZorroAntdMobileModule } from 'ng-zorro-antd-mobile';
 
 @NgModule({
 	declarations: [AppComponent, AuthComponent],
@@ -25,6 +26,8 @@ import { AuthComponent } from './log-in/auth/auth.component';
 			timeOut: 2000,
 			positionClass: 'toast-top-right',
 		}),
+		FormsModule,
+		NgZorroAntdMobileModule,
 	],
 	providers: [
 		{

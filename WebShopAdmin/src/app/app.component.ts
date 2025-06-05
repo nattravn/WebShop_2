@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-	selector: 'app-root',
-	templateUrl: './app.component.html',
-	styleUrls: ['./app.component.scss'],
+	selector: "app-root",
+	templateUrl: "./app.component.html",
+	styleUrls: ["./app.component.scss"],
 })
 
 /**
@@ -17,5 +17,14 @@ import { Component } from '@angular/core';
  * https://www.youtube.com/watch?v=AHqIrJ_PlPY
  */
 export class AppComponent {
-	public title = 'WebShopAdmin';
+	public onVisibleChange($event: any) {
+		throw new Error("Method not implemented.");
+	}
+	public onSelect($event: any) {
+		throw new Error("Method not implemented.");
+	}
+	public onLeftClick() {
+		throw new Error("Method not implemented.");
+	}
+	public title = "WebShopAdmin";
 }

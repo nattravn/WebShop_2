@@ -2,30 +2,31 @@
 	"prettier.configPath": ".prettierrc",
 	"editor.tabSize": 4,
 	"editor.detectIndentation": false,
-  "importSorter.importStringConfiguration.quoteMark": "single",
+	"importSorter.importStringConfiguration.quoteMark": "single",
+	"editor.formatOnSave": false,
 	"importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 120,
-  "importSorter.sortConfiguration.customOrderingRules.rules": [
-    {
-        "type": "importMember",
-        "regex": "^$",
-        "orderLevel": 10,
-        "disableSort": true
-    },
-    {
-        "regex": "@angular",
-        "orderLevel": 20
-    },
-    {
-      "regex": "rxjs|ngx|@ngneat",
-      "orderLevel": 30
-    },
-    {
-      "regex": "@environment|@admin-panel|@app|@database-tables|@table-dialogs",
-      "orderLevel": 40
-    },
-    {
-      "regex": "^[.]",
-      "orderLevel": 50
-    },
-  ]
+	"importSorter.sortConfiguration.customOrderingRules.rules": [
+		{
+			"type": "importMember",
+			"regex": "^$",
+			"orderLevel": 10,
+			"disableSort": true
+		},
+		{
+			"regex": "@angular",
+			"orderLevel": 20
+		},
+		{
+			"regex": "rxjs|ngx|@ngneat",
+			"orderLevel": 30
+		},
+		{
+			"regex": "@environment|@admin-panel|@app|@database-tables|@table-dialogs",
+			"orderLevel": 40
+		},
+		{
+			"regex": "^[.]",
+			"orderLevel": 50
+		}
+	]
 }
