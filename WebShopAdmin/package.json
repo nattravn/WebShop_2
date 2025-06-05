@@ -24,8 +24,7 @@
     "@ngneat/until-destroy": "^8.0.3",
     "bootstrap": "^4.3.1",
     "font-awesome": "^4.7.0",
-    "ng-zorro-antd-mobile": "^10.0.0",
-    "ngx-toastr": "^13.2.0",
+    "ngx-toastr": "^15.2.2",
     "rxjs": "~6.5.4",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
