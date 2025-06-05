@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -12,28 +12,22 @@ import { AppComponent } from "./app.component";
 import { AuthInterceptor } from "./guard/auth.interceptor";
 import { AuthComponent } from "./log-in/auth/auth.component";
 
-@NgModule({
-	declarations: [AppComponent, AuthComponent],
-	imports: [
-		BrowserModule,
-		AppRoutingModule,
-		BrowserAnimationsModule,
-		ReactiveFormsModule,
-		AdminPanelModule,
-		HttpClientModule,
-		ToastrModule.forRoot({
-			timeOut: 2000,
-			positionClass: "toast-top-right",
-		}),
-		FormsModule,
-	],
-	providers: [
-		{
-			provide: HTTP_INTERCEPTORS,
-			useClass: AuthInterceptor,
-			multi: true,
-		},
-	],
-	bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [AppComponent, AuthComponent],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        AdminPanelModule,
+        ToastrModule.forRoot({
+            timeOut: 2000,
+            positionClass: "toast-top-right",
+        }),
+        FormsModule], providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
