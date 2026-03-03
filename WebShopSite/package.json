@@ -24,7 +24,7 @@
     "@angular/platform-browser-dynamic": "~21.2.0",
     "@angular/router": "~21.2.0",
     "core-js": "^3.6.0",
-    "firebase": "^7.6.1",
+    "firebase": "^7.24.0",
     "json5": "^2.1.1",
     "ngx-order-pipe": "^2.0.4",
     "ngx-pagination": "^5.0.0",
@@ -35,7 +35,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular/cli": "~10.2.0",
+    "@angular/cli": "~21.2.0",
     "@angular/compiler-cli": "~10.2.2",
     "@angular/language-service": "~10.2.2",
     "@schematics/angular": "^8.3.21",
