@@ -15,7 +15,7 @@
     "@angular/animations": "^10.2.2",
     "@angular/cdk": "^21.2.0",
     "@angular/common": "~21.2.0",
-    "@angular/compiler": "~10.2.2",
+    "@angular/compiler": "~19.2.20",
     "@angular/core": "^19.2.19",
     "@angular/fire": "^20.0.1",
     "@angular/forms": "~21.2.0",
